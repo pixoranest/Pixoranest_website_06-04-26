@@ -97,7 +97,14 @@ function ChatWidget() {
     return () => { alive.current = false; clearTimeout(timer.current) }
   }, [])
 
-  useEffect(() => { bottom.current?.scrollIntoView({ behavior: "smooth" }) }, [visible, typing])
+  useEffect(() => {
+    if (bottom.current) {
+      bottom.current.scrollTo({
+        top: bottom.current.scrollHeight,
+        behavior: "smooth"
+      })
+    }
+  }, [visible, typing])
 
   return (
     <div style={{
@@ -119,7 +126,7 @@ function ChatWidget() {
         </div>
       </div>
       {/* messages */}
-      <div style={{ padding: 14, minHeight: 220, maxHeight: 240, overflowY: "auto", display: "flex", flexDirection: "column", gap: 8 }}>
+      <div ref={bottom} style={{ padding: 14, minHeight: 220, maxHeight: 240, overflowY: "auto", display: "flex", flexDirection: "column", gap: 8 }}>
         <AnimatePresence>
           {MSGS.filter(m => visible.includes(m.id)).map(msg => (
             <motion.div key={msg.id}
@@ -147,7 +154,6 @@ function ChatWidget() {
             </div>
           </motion.div>
         )}
-        <div ref={bottom} />
       </div>
       {/* input bar */}
       <div style={{ borderTop: `1px solid ${C.border}`, padding: "10px 14px", display: "flex", alignItems: "center", gap: 8 }}>
