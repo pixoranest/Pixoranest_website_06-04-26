@@ -1,11 +1,14 @@
 export const navLinks = [
   { label: "Home", href: "/" },
   { label: "Solutions", href: "/solutions" },
+  { label: "Customer Stories", href: "/customer-stories" },
   { label: "Industries", href: "/industries" },
   { label: "Blog", href: "/blog" },
+  { label: "Partners", href: "https://pixoranest.in/", external: true },
   { label: "Pricing", href: "/pricing" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
+  
 ]
 
 export const socialLinks = [
@@ -402,7 +405,7 @@ export const teamMembers = [
   },
   {
     name: "Jitendra Kumar Yadav",
-    role: "HR & AI Voice Automation Specialist",
+    role: "HR & AI Automation Transformation Specialist",
     image: "/team/jitendra-kumar-yadav.jpg",
   },
   {
@@ -426,7 +429,7 @@ export const teamMembers = [
 
 export const footerLinks = {
   company: [
-    { label: "Shop", href: "https://shop.pixoranest.com", external: true },
+    
     { label: "Projects", href: "/solutions" },
     { label: "Services", href: "/solutions" },
     { label: "About Us", href: "/about" },

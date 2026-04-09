@@ -68,8 +68,9 @@ export function Footer() {
   className="h-8 w-auto"
 />
             <p className="text-sm leading-relaxed text-muted-foreground">
-              We build intelligent automation systems that help agencies and
-              businesses scale without chaos.
+              We design AI-powered automation systems that streamline operations, qualify leads, and help businesses scale faster with less manual effort.
+Trusted by growing businesses to automate workflows and increase efficiency.
+From lead capture to conversion, our AI handles the heavy lifting — so you can focus on growth.
             </p>
             <div className="flex items-center gap-2">
               {allFooterSocials.map((social) => {

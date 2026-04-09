@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "export",
+  // ❌ IMPORTANT: Static export REMOVE chesam
+  // output: "export",
+
   trailingSlash: true,
 
   typescript: {

@@ -77,7 +77,7 @@
 }
 
 /* =========================
-   BASE STYLES
+   BASE STYLES (GLOBAL FIX 🔥)
 ========================= */
 
 @layer base {
@@ -85,19 +85,30 @@
     @apply border-border outline-ring/50;
   }
 
- body {
-  background: linear-gradient(
-    180deg,
-    #dbeafe 0%,
-    #eaf4ff 50%,
-    #f8fbff 100%
-  );
-  color: var(--foreground);
-}
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    background: linear-gradient(
+      180deg,
+      #dbeafe 0%,
+      #eaf4ff 40%,
+      #f4f8ff 70%,
+      #f8fbff 100%
+    );
+    color: var(--foreground);
+    overflow-x: hidden; /* 🔥 prevent unwanted scroll */
+  }
+
+  /* 🔥 Prevent sections overriding background */
+  section {
+    background: transparent;
+  }
 }
 
 /* =========================
-   GRID BACKGROUND (NEW 🔥)
+   GRID BACKGROUND
 ========================= */
 
 .grid-bg {
@@ -108,7 +119,7 @@
 }
 
 /* =========================
-   GLASS EFFECT (UPDATED)
+   GLASS EFFECT
 ========================= */
 
 .glass {
@@ -129,6 +140,59 @@
 
 .glow-blue {
   box-shadow: 0 0 40px rgba(37, 99, 235, 0.15);
+}
+
+/* =========================
+   FORM STYLES
+========================= */
+
+.form-label {
+  @apply text-sm text-white/70 mb-2 block;
+}
+
+.form-input {
+  @apply w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 
+  text-white placeholder:text-white/40 outline-none 
+  focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30;
+}
+
+/* =========================
+   SELECT INPUT FIX
+========================= */
+
+.select-input {
+  @apply w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 
+  text-white outline-none 
+  focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* dropdown fix */
+select option {
+  color: black !important;
+  background: white !important;
+}
+
+/* =========================
+   POPUP ANIMATION
+========================= */
+
+@keyframes popup {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-popup {
+  animation: popup 0.3s ease-out;
 }
 
 /* =========================

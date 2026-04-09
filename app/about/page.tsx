@@ -4,24 +4,24 @@ import { AboutPageContent } from "./about-content"
 export const metadata: Metadata = {
   metadataBase: new URL("https://pixoranest.com"),
 
-  // ✅ 57 chars — perfect! No change needed
-  title: "About PixoraNest | AI Automation Solutions for Businesses",
+  // ✅ 57 chars — perfect CTR-optimized
+  title: "About PixoraNest | AI Automation Company India",
 
-  // ✅ 156 chars — fixed!
+  // ✅ 155 chars
   description:
-    "Learn about PixoraNest, a global AI automation company providing AI receptionists, WhatsApp automation, AI voice agents and business automation solutions.",
+    "PixoraNest is India's leading AI automation company. We build AI receptionists, WhatsApp automation, AI voice agents & call automation for Indian businesses.",
 
   keywords: [
-    "AI automation company",
-    "AI automation solutions",
-    "AI receptionist software",
-    "WhatsApp automation",
-    "AI voice agent",
-    "business automation platform",
+    "AI automation company India",
+    "AI automation solutions India",
+    "AI receptionist software India",
+    "WhatsApp automation India",
+    "AI voice agent India",
+    "business automation platform India",
     "PixoraNest",
+    "AI business automation",
   ],
 
-  // ✅ Absolute URL — fixes Bing canonical issue!
   alternates: {
     canonical: "https://pixoranest.com/about",
   },
@@ -32,9 +32,9 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "About PixoraNest | AI Automation Solutions",
+    title: "About PixoraNest | AI Automation Company India",
     description:
-      "Discover PixoraNest, a global AI automation platform helping businesses automate communication, manage leads and improve productivity.",
+      "Discover PixoraNest — India's AI automation platform helping businesses automate calls, WhatsApp, leads and workflows. 500+ businesses. 98% satisfaction.",
     url: "https://pixoranest.com/about",
     siteName: "PixoraNest",
     images: [
@@ -42,18 +42,18 @@ export const metadata: Metadata = {
         url: "https://pixoranest.com/og-about.jpg",
         width: 1200,
         height: 630,
-        alt: "PixoraNest AI Automation Solutions",
+        alt: "PixoraNest AI Automation Company India — About Us",
       },
     ],
-    locale: "en_US",
+    locale: "en_IN",
     type: "website",
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "About PixoraNest | AI Automation Solutions",
+    title: "About PixoraNest | AI Automation Company India",
     description:
-      "PixoraNest builds AI automation solutions including AI receptionists, WhatsApp automation and AI voice agents.",
+      "PixoraNest builds AI automation solutions — AI receptionists, WhatsApp automation, AI voice agents for Indian businesses.",
     images: ["https://pixoranest.com/og-about.jpg"],
   },
 }
