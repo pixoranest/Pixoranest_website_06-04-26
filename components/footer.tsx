@@ -2,6 +2,13 @@ import Link from "next/link"
 import { footerLinks, socialLinks } from "@/lib/data"
 import { Mail, Phone, MapPin } from "lucide-react"
 
+/* ─── Local type override until lib/data.ts is updated ─── */
+interface FooterLink {
+  label: string
+  href: string
+  external?: boolean
+}
+
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="currentColor" viewBox="0 0 24 24">
@@ -56,21 +63,29 @@ const allFooterSocials = [
 ]
 
 export function Footer() {
+  /* Cast company links to FooterLink so `external` is recognised by TS.
+     The real fix is to add `external?: boolean` to the type in lib/data.ts —
+     share that file and I will update it too. */
+  const companyLinks = footerLinks.company as FooterLink[]
+
   return (
     <footer className="border-t border-border bg-card">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+
           {/* Brand */}
           <div className="space-y-4">
-               <img
-  src="/images/logo-pixoranest.png"
-  alt="PixoraNest Logo"
-  className="h-8 w-auto"
-/>
+            <img
+              src="/images/logo-pixoranest.png"
+              alt="PixoraNest Logo"
+              className="h-8 w-auto"
+            />
             <p className="text-sm leading-relaxed text-muted-foreground">
-              We design AI-powered automation systems that streamline operations, qualify leads, and help businesses scale faster with less manual effort.
-Trusted by growing businesses to automate workflows and increase efficiency.
-From lead capture to conversion, our AI handles the heavy lifting — so you can focus on growth.
+              We design AI-powered automation systems that streamline operations,
+              qualify leads, and help businesses scale faster with less manual
+              effort. Trusted by growing businesses to automate workflows and
+              increase efficiency. From lead capture to conversion, our AI
+              handles the heavy lifting — so you can focus on growth.
             </p>
             <div className="flex items-center gap-2">
               {allFooterSocials.map((social) => {
@@ -97,7 +112,7 @@ From lead capture to conversion, our AI handles the heavy lifting — so you can
               Company
             </h3>
             <ul className="space-y-3">
-              {footerLinks.company.map((link) => (
+              {companyLinks.map((link) => (
                 <li key={link.label} className="flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                   {link.external ? (
@@ -160,7 +175,6 @@ From lead capture to conversion, our AI handles the heavy lifting — so you can
                 <Phone className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                 <a
                   href="tel:+919460686266"
-
                   className="text-sm text-muted-foreground transition-colors hover:text-primary"
                 >
                   +91 94606 86266
@@ -169,8 +183,8 @@ From lead capture to conversion, our AI handles the heavy lifting — so you can
               <div className="flex items-start gap-2.5">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                 <p className="text-sm leading-relaxed text-muted-foreground">
-                  PixoraNest, 1st Floor, near Tehsil Bhawan,
-                  Narayanpur, Rajasthan 301024, India
+                  PixoraNest, 1st Floor, near Tehsil Bhawan, Narayanpur,
+                  Rajasthan 301024, India
                 </p>
               </div>
             </div>
@@ -193,8 +207,8 @@ From lead capture to conversion, our AI handles the heavy lifting — so you can
             </p>
             <p className="mt-1 max-w-sm text-xs leading-relaxed text-muted-foreground/70">
               PixoraNest uses WhatsApp Business API in compliance with Meta
-              policies. Messages are sent only to users who opt in. Reply
-              STOP to unsubscribe.
+              policies. Messages are sent only to users who opt in. Reply STOP
+              to unsubscribe.
             </p>
           </div>
         </div>

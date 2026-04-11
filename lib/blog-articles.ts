@@ -12,6 +12,12 @@ export interface BlogArticle {
   tableOfContents: { id: string; label: string }[]
   sections: ArticleSection[]
   relatedSlugs: string[]
+  // ─── SEO / Metadata fields (used in page.tsx generateMetadata) ───
+  metaDescription?: string
+  publishedDate?: string
+  modifiedDate?: string
+  seoKeywords?: string[]
+  faqs?: { question: string; answer: string }[]
 }
 
 export interface ArticleSection {
@@ -26,7 +32,6 @@ export interface ArticleSection {
   code?: { language: string; code: string; caption: string }
   checklist?: string[]
   caseStudies?: { industry: string; problem: string; solution: string; result: string }[]
-  
 }
 
 const blogImageMap: Record<string, string> = {
@@ -37,10 +42,8 @@ const blogImageMap: Record<string, string> = {
   "business-workflow-automation": "/blog/workflow-automation.jpg",
   "whatsapp-automation-10x-leads": "/blog/whatsapp-leads.jpg",
   "ai-receptionist-growth-guide": "/blog/ai-receptionist.jpg",
-
-  // ✅ YOUR BLOG FIX
   "why-small-businesses-lose-leads": "/blog/hero.png",
-   "missed-calls-lost-money-indian-businesses": "/blog/01-missed-calls-hero.jpg",
+  "missed-calls-lost-money-indian-businesses": "/blog/01-missed-calls-hero.jpg",
 }
 
 export function getBlogImage(slug: string): string {
@@ -386,63 +389,61 @@ app.post('/webhook/whatsapp', (req, res) => {
       "crm-automation-leadnest",
       "customer-support-automation-echo-assist",
     ],
-  },   // ✅ clean close of first blog
-"why-small-businesses-lose-leads": {
-  slug: "why-small-businesses-lose-leads",
-  title: "Why Most Small Businesses Lose Leads (And Don't Even Know It)",
-  subtitle: "You're getting leads. But you're losing them silently. Here's why.",
-  category: "Sales",
-  tags: [
-    "small business lead generation",
-    "lead management system",
-    "sales automation",
-    "follow-up automation",
-    "CRM for small businesses",
-    "WhatsApp lead management",
-    "lead nurturing",
-    "business automation tools",
-    "conversion rate optimization",
-    "lead capture system",
-    "omnichannel communication",
-    "marketing automation",
-    "digital marketing ROI",
-    "customer engagement",
-    "sales pipeline management"
-  ],
-  author: "PixoraNest Team",
-  authorRole: "Growth Experts",
-  date: "Apr 02, 2026",
-  readTime: "6 min read",
-  heroImage: "/blog/hero.png",
+  },
 
-  tableOfContents: [
-    { id: "hidden-reality", label: "Hidden Reality" },
-    { id: "problem", label: "Where Leads Are Lost" },
-    { id: "cost", label: "Cost of Lost Leads" },
-    { id: "why-worse", label: "Why This Problem Is Getting Worse" },
-    { id: "solution", label: "Solution" },
-    { id: "impact", label: "What Changes" },
-    { id: "bottom-line", label: "Bottom Line" },
-    { id: "cta", label: "Get Started" }
-  ],
-
-  sections: [
-    {
-      id: "hidden-reality",
-      title: "The Hidden Reality: Your Leads Are There. Your System Isn't.",
-      content: `You're running ads. You're posting on social media. You're investing time and money into <strong>small business lead generation</strong> every single week. But somehow, the results don't match the effort.
+  "why-small-businesses-lose-leads": {
+    slug: "why-small-businesses-lose-leads",
+    title: "Why Most Small Businesses Lose Leads (And Don't Even Know It)",
+    subtitle: "You're getting leads. But you're losing them silently. Here's why.",
+    category: "Sales",
+    tags: [
+      "small business lead generation",
+      "lead management system",
+      "sales automation",
+      "follow-up automation",
+      "CRM for small businesses",
+      "WhatsApp lead management",
+      "lead nurturing",
+      "business automation tools",
+      "conversion rate optimization",
+      "lead capture system",
+      "omnichannel communication",
+      "marketing automation",
+      "digital marketing ROI",
+      "customer engagement",
+      "sales pipeline management",
+    ],
+    author: "PixoraNest Team",
+    authorRole: "Growth Experts",
+    date: "Apr 02, 2026",
+    readTime: "6 min read",
+    heroImage: "/blog/hero.png",
+    tableOfContents: [
+      { id: "hidden-reality", label: "Hidden Reality" },
+      { id: "problem", label: "Where Leads Are Lost" },
+      { id: "cost", label: "Cost of Lost Leads" },
+      { id: "why-worse", label: "Why This Problem Is Getting Worse" },
+      { id: "solution", label: "Solution" },
+      { id: "impact", label: "What Changes" },
+      { id: "bottom-line", label: "Bottom Line" },
+      { id: "cta", label: "Get Started" },
+    ],
+    sections: [
+      {
+        id: "hidden-reality",
+        title: "The Hidden Reality: Your Leads Are There. Your System Isn't.",
+        content: `You're running ads. You're posting on social media. You're investing time and money into <strong>small business lead generation</strong> every single week. But somehow, the results don't match the effort.
 
 Here's a question worth sitting with: <em>What if the problem isn't how many leads you're getting — but how many you're silently losing?</em>
 
 Most small business owners never see this gap. There's no alert, no notification, no report that says "You just lost 14 potential customers today." It just happens — quietly, repeatedly, every single day.
 
-This blog breaks down exactly where leads fall through the cracks, why it's happening faster than ever, and how a smarter <strong>lead management system</strong> can completely change your business outcomes.`
-    },
-
-    {
-      id: "problem",
-      title: "Where Small Businesses Are Losing Leads Right Now",
-      content: `1. Slow Response Time Is Killing Your Conversions
+This blog breaks down exactly where leads fall through the cracks, why it's happening faster than ever, and how a smarter <strong>lead management system</strong> can completely change your business outcomes.`,
+      },
+      {
+        id: "problem",
+        title: "Where Small Businesses Are Losing Leads Right Now",
+        content: `1. Slow Response Time Is Killing Your Conversions
 
 We live in an age of instant gratification. Customers doing product research are simultaneously messaging 3 to 5 businesses. Whoever responds first — wins.
 
@@ -463,13 +464,12 @@ Each of these missed touchpoints is a missed sale. <strong>WhatsApp lead managem
 4. Manual Processes Create Invisible Mistakes
 
 <strong>Business automation tools</strong> remove human dependency and improve your <strong>sales pipeline management</strong>.`,
-      image: "/blog/problem.png"
-    },
-
-    {
-      id: "cost",
-      title: "The Real Cost of Lost Leads",
-      content: `Lost leads aren't just missed sales. They represent wasted <strong>customer acquisition cost</strong>.
+        image: "/blog/problem.png",
+      },
+      {
+        id: "cost",
+        title: "The Real Cost of Lost Leads",
+        content: `Lost leads aren't just missed sales. They represent wasted <strong>customer acquisition cost</strong>.
 
 Every missed lead means:
 
@@ -479,23 +479,21 @@ Every missed lead means:
 - Competitors gaining your customers
 
 Most businesses actually have a <strong>digital marketing ROI</strong> problem — not a lead problem.`,
-      image: "/blog/infographic.png"
-    },
-
-    {
-      id: "why-worse",
-      title: "Why This Problem Is Getting Worse",
-      content: `Customers expect <strong>24/7 customer support automation</strong>. They won't wait.
+        image: "/blog/infographic.png",
+      },
+      {
+        id: "why-worse",
+        title: "Why This Problem Is Getting Worse",
+        content: `Customers expect <strong>24/7 customer support automation</strong>. They won't wait.
 
 Managing <strong>lead tracking</strong> across platforms like WhatsApp, Instagram, and websites manually is impossible.
 
 Businesses that don't automate — lose.`,
-    },
-
-    {
-      id: "solution",
-      title: "How Smart Businesses Fix This with Automation",
-      content: `Smart businesses use a <strong>lead capture system</strong> with automation.
+      },
+      {
+        id: "solution",
+        title: "How Smart Businesses Fix This with Automation",
+        content: `Smart businesses use a <strong>lead capture system</strong> with automation.
 
 - <strong>Automated responses</strong> instantly reply
 - Centralized <strong>CRM for small businesses</strong>
@@ -503,86 +501,77 @@ Businesses that don't automate — lose.`,
 - Strong <strong>lead qualification</strong> process
 
 Everything works without manual effort.`,
-      image: "/blog/solution.png"
-    },
-
-    {
-      id: "impact",
-      title: "What Changes When You Fix Your System",
-      content: `After implementing <strong>marketing automation</strong>:
+        image: "/blog/solution.png",
+      },
+      {
+        id: "impact",
+        title: "What Changes When You Fix Your System",
+        content: `After implementing <strong>marketing automation</strong>:
 
 - Faster response time
 - Better <strong>conversion rate optimization</strong>
 - Higher <strong>customer engagement</strong>
 - Less manual work
-- Increased revenue`
-    },
-
-    {
-      id: "bottom-line",
-      title: "The Bottom Line",
-      content: `Your problem is not <strong>lead generation strategy</strong>.
+- Increased revenue`,
+      },
+      {
+        id: "bottom-line",
+        title: "The Bottom Line",
+        content: `Your problem is not <strong>lead generation strategy</strong>.
 
 It's <strong>lead management</strong>.
 
 <strong>Small business growth</strong> depends on speed, follow-ups, and systems.
 
-Build the system. Growth follows.`
-    },
-
-    {
-      id: "cta",
-      title: "Ready to Stop Losing Leads?",
-      content: `Every day without <strong>automated follow-up</strong> means lost revenue.
+Build the system. Growth follows.`,
+      },
+      {
+        id: "cta",
+        title: "Ready to Stop Losing Leads?",
+        content: `Every day without <strong>automated follow-up</strong> means lost revenue.
 
 👉 <strong>Book a Free Demo</strong> and automate your entire lead process today.`,
-      image: "/blog/cta.png"
-    }
-  ],
+        image: "/blog/cta.png",
+      },
+    ],
+    relatedSlugs: ["leadnest-whatsapp-business-automation"],
+  },
 
-  relatedSlugs: ["leadnest-whatsapp-business-automation"]
-},
-
-"missed-calls-lost-money-indian-businesses": {
-  slug: "missed-calls-lost-money-indian-businesses",
-  title: "Missed Calls = Lost Money: The Hidden Problem Draining Indian Businesses Every Day",
-  subtitle: "Every missed call is a missed sale. Here's how Indian businesses are losing revenue silently.",
-  category: "AI",
-  tags: ["AI Automation", "Missed Calls", "Lead Generation", "Sales"],
-  author: "PixoraNest Team",
-  authorRole: "AI Automation Experts",
-  date: "Apr 03, 2026",
-  readTime: "8 min read",
-
-  heroImage: "/blog/01-missed-calls-hero.jpg",
-
-  tableOfContents: [
-    { id: "intro", label: "The Missed Call Problem" },
-    { id: "india-behavior", label: "India is Phone-First" },
-    { id: "cost", label: "Real Cost of Missed Calls" },
-    { id: "problem", label: "Why Businesses Miss Calls" },
-    { id: "solution", label: "AI Solution" },
-    { id: "seo", label: "Growth Loop" },
-    { id: "conclusion", label: "Final Thoughts" }
-  ],
-
-  sections: [
-
-    {
-      id: "intro",
-      title: "The Call That Didn't Get Answered",
-      content: `A potential customer finds your business, calls you — and no one answers.
+  "missed-calls-lost-money-indian-businesses": {
+    slug: "missed-calls-lost-money-indian-businesses",
+    title: "Missed Calls = Lost Money: The Hidden Problem Draining Indian Businesses Every Day",
+    subtitle: "Every missed call is a missed sale. Here's how Indian businesses are losing revenue silently.",
+    category: "AI",
+    tags: ["AI Automation", "Missed Calls", "Lead Generation", "Sales"],
+    author: "PixoraNest Team",
+    authorRole: "AI Automation Experts",
+    date: "Apr 03, 2026",
+    readTime: "8 min read",
+    heroImage: "/blog/01-missed-calls-hero.jpg",
+    tableOfContents: [
+      { id: "intro", label: "The Missed Call Problem" },
+      { id: "india-behavior", label: "India is Phone-First" },
+      { id: "cost", label: "Real Cost of Missed Calls" },
+      { id: "problem", label: "Why Businesses Miss Calls" },
+      { id: "solution", label: "AI Solution" },
+      { id: "seo", label: "Growth Loop" },
+      { id: "conclusion", label: "Final Thoughts" },
+    ],
+    sections: [
+      {
+        id: "intro",
+        title: "The Call That Didn't Get Answered",
+        content: `A potential customer finds your business, calls you — and no one answers.
 
 That one missed call could be worth thousands. Now multiply that across days, weeks, and months.
 
-This is the <strong>silent revenue leak in Indian businesses</strong> that most owners don't even notice.`
-    },
-
-    {
-      id: "india-behavior",
-      title: "India is a Phone-First Nation",
-      image: "/blog/03-india-phone-first.jpg",
-      content: `In India, customers prefer calling over filling forms or emails.
+This is the <strong>silent revenue leak in Indian businesses</strong> that most owners don't even notice.`,
+      },
+      {
+        id: "india-behavior",
+        title: "India is a Phone-First Nation",
+        image: "/blog/03-india-phone-first.jpg",
+        content: `In India, customers prefer calling over filling forms or emails.
 
 <ul>
 <li><strong>68% of customers call before making a purchase</strong></li>
@@ -590,14 +579,13 @@ This is the <strong>silent revenue leak in Indian businesses</strong> that most 
 </ul>
 
 Your phone is your <strong>primary conversion channel</strong>.  
-If you miss calls, you are losing <strong>high-intent leads</strong> every day.`
-    },
-
-    {
-      id: "cost",
-      title: "The Real Cost of a Missed Call",
-      image: "/blog/02-real-cost-missed-calls.jpg",
-      content: `Let’s break down the <strong>real cost of missed calls</strong>.
+If you miss calls, you are losing <strong>high-intent leads</strong> every day.`,
+      },
+      {
+        id: "cost",
+        title: "The Real Cost of a Missed Call",
+        image: "/blog/02-real-cost-missed-calls.jpg",
+        content: `Let's break down the <strong>real cost of missed calls</strong>.
 
 <ul>
 <li><strong>4 missed calls per day</strong></li>
@@ -613,13 +601,12 @@ That means:
 <li><strong>₹25 lakh lost per year</strong></li>
 </ul>
 
-This is a <strong>silent revenue loss happening in most Indian businesses</strong>.`
-    },
-
-    {
-      id: "problem",
-      title: "Why Businesses Miss Calls",
-      content: `Most businesses don’t lose leads due to lack of demand — they lose them due to <strong>poor response systems</strong>.
+This is a <strong>silent revenue loss happening in most Indian businesses</strong>.`,
+      },
+      {
+        id: "problem",
+        title: "Why Businesses Miss Calls",
+        content: `Most businesses don't lose leads due to lack of demand — they lose them due to <strong>poor response systems</strong>.
 
 <ul>
 <li><strong>Limited staff availability</strong></li>
@@ -629,14 +616,13 @@ This is a <strong>silent revenue loss happening in most Indian businesses</stron
 </ul>
 
 Customers expect <strong>instant responses</strong>.  
-If you don’t respond quickly, they move to competitors.`
-    },
-
-    {
-      id: "solution",
-      title: "AI That Never Misses a Call",
-      image: "/blog/04-ai-receptionist-24-7.jpg",
-      content: `This is where <strong>AI-powered call automation</strong> changes everything.
+If you don't respond quickly, they move to competitors.`,
+      },
+      {
+        id: "solution",
+        title: "AI That Never Misses a Call",
+        image: "/blog/04-ai-receptionist-24-7.jpg",
+        content: `This is where <strong>AI-powered call automation</strong> changes everything.
 
 <ul>
 <li><strong>Every call is answered instantly</strong></li>
@@ -647,14 +633,13 @@ If you don’t respond quickly, they move to competitors.`
 
 With an <strong>AI receptionist system</strong>, you never miss an opportunity.
 
-No missed calls. No lost revenue.`
-    },
-
-    {
-      id: "seo",
-      title: "The AI Automation Growth Loop",
-      image: "/blog/05-business-flywheel.jpg",
-      content: `AI automation creates a <strong>compounding growth system</strong>.
+No missed calls. No lost revenue.`,
+      },
+      {
+        id: "seo",
+        title: "The AI Automation Growth Loop",
+        image: "/blog/05-business-flywheel.jpg",
+        content: `AI automation creates a <strong>compounding growth system</strong>.
 
 <ul>
 <li><strong>Faster response time</strong> → better experience</li>
@@ -664,37 +649,31 @@ No missed calls. No lost revenue.`
 <li><strong>More leads</strong> → increased revenue</li>
 </ul>
 
-This is known as the <strong>AI automation flywheel effect</strong>.`
-    },
-
-    {
-      id: "conclusion",
-      title: "Final Thought",
-      content: `Your problem is not lack of leads.
+This is known as the <strong>AI automation flywheel effect</strong>.`,
+      },
+      {
+        id: "conclusion",
+        title: "Final Thought",
+        content: `Your problem is not lack of leads.
 
 Your problem is <strong>missed opportunities</strong>.
 
-Fix your <strong>lead response system</strong>, and your revenue will grow automatically.`
-    },
-
-    {
-      id: "cta",
-      title: "Ready to Stop Losing Business?",
-      content: `Every missed call is <strong>lost revenue</strong>.
+Fix your <strong>lead response system</strong>, and your revenue will grow automatically.`,
+      },
+      {
+        id: "cta",
+        title: "Ready to Stop Losing Business?",
+        content: `Every missed call is <strong>lost revenue</strong>.
 
 👉 <strong>Book a free demo</strong> and see how AI can capture every lead for your business.
 
-Start building a <strong>no-missed-call system</strong> today.`
-    }
+Start building a <strong>no-missed-call system</strong> today.`,
+      },
+    ],
+    relatedSlugs: ["why-small-businesses-lose-leads"],
+  },
+} // 👈 FINAL CLOSE
 
-  ],
-
-  relatedSlugs: ["why-small-businesses-lose-leads"]
-},
-
-} // 👈 FINAL CLOSE (VERY IMPORTANT)
-
-// Fallback: generate a default article for slugs that don't have full content
 export function getArticleForSlug(slug: string): BlogArticle | null {
   return blogArticles[slug] || null
 }

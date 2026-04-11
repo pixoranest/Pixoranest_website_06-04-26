@@ -10,6 +10,8 @@ import LeadPopup from "@/components/lead-popup"
 import TopBar from "@/components/topbar"
 
 import "./globals.css"
+import { metadata } from "./seo_metadata";
+export { metadata };
 
 // ─── Fonts ────────────────────────────────────────────────────────────────────
 const inter = Inter({
@@ -37,118 +39,7 @@ export const viewport: Viewport = {
 }
 
 // ─── Global Metadata ──────────────────────────────────────────────────────────
-export const metadata: Metadata = {
 
-  // ── Base URL (all relative URLs resolve against this) ─────────────────────
-  metadataBase: new URL(SITE_URL),
-
-  // ── Title ─────────────────────────────────────────────────────────────────
-  // Default: 58 chars — within 50-60 target ✅
-  title: {
-    default:  "PixoraNest | AI Automation Services for Businesses in India",
-    template: "%s | PixoraNest",
-  },
-
-  // ── Meta Description — 157 chars ✅ ──────────────────────────────────────
-  description:
-    "PixoraNest offers AI automation services for Indian businesses — AI receptionist, WhatsApp lead management, smart call routing & social media automation. Start free.",
-
-  // ── Keywords (secondary ranking signal) ───────────────────────────────────
-  keywords: [
-    "AI automation services India",
-    "AI receptionist for business India",
-    "WhatsApp lead management software India",
-    "AI call routing software India",
-    "social media automation tool India",
-    "AI voice agent for business India",
-    "business automation India",
-    "AI chatbot for small business India",
-  ],
-
-  // ── Author / Publisher (E-E-A-T) ──────────────────────────────────────────
-  authors:   [{ name: "PixoraNest", url: SITE_URL }],
-  creator:   "PixoraNest",
-  publisher: "PixoraNest",
-
-  // ── Canonical & hreflang ──────────────────────────────────────────────────
-  alternates: {
-    canonical: SITE_URL,
-    languages: {
-      "en-IN": SITE_URL,
-    },
-  },
-
-  // ── Crawl Directives ──────────────────────────────────────────────────────
-  robots: {
-    index:  true,
-    follow: true,
-    googleBot: {
-      index:               true,
-      follow:              true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet":       -1,
-    },
-  },
-
-  // ── Open Graph ────────────────────────────────────────────────────────────
-  openGraph: {
-    type:        "website",
-    locale:      "en_IN",
-    url:         SITE_URL,
-    siteName:    SITE_NAME,
-    title:       "PixoraNest | AI Automation Services for Businesses in India",
-    description:
-      "Automate your business with PixoraNest — AI receptionist, WhatsApp lead management, smart call routing & social media automation built for Indian businesses.",
-    images: [
-      {
-        url:    OG_IMAGE,
-        width:  1200,
-        height: 630,
-        alt:    "PixoraNest AI Automation Services for Businesses in India",
-        type:   "image/jpeg",
-      },
-    ],
-  },
-
-  // ── Twitter / X Card ──────────────────────────────────────────────────────
-  twitter: {
-    card:        "summary_large_image",
-    title:       "PixoraNest | AI Automation Services for Businesses in India",
-    description:
-      "AI receptionist, WhatsApp lead management, call routing & social media automation for Indian startups and SMBs.",
-    images:  [OG_IMAGE],
-    creator: "@pixoranest",  // 🔁 update to your actual handle
-    site:    "@pixoranest",
-  },
-
-  // ── Site Verification ─────────────────────────────────────────────────────
-  verification: {
-    google: "YOUR_GOOGLE_SEARCH_CONSOLE_CODE", // 🔁 replace with real token
-    other: {
-      "msvalidate.01": "254D74A4F4E2A9C12BC0FB201FB3F634",
-    },
-  },
-
-  // ── Misc ──────────────────────────────────────────────────────────────────
-  applicationName: SITE_NAME,
-  referrer:        "origin-when-cross-origin",
-  formatDetection: {
-    email:     false,
-    address:   false,
-    telephone: false,
-  },
-
-  // ── Icons ─────────────────────────────────────────────────────────────────
-  icons: {
-    icon: [
-      { url: "/favicon.ico" },
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
-    ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
-  },
-}
 
 // ─── JSON-LD: Organization Schema (E-E-A-T trust signal) ──────────────────────
 const organizationSchema = {

@@ -79,7 +79,7 @@ export function BlogArticleContent({
 }: BlogArticleContentProps) {
   const [activeSection, setActiveSection] = useState("")
   const [copied, setCopied] = useState(false)
-  // FIX: shareUrl must be set client-side only to avoid SSR hydration mismatch
+  // shareUrl must be set client-side only to avoid SSR hydration mismatch
   const [shareUrl, setShareUrl] = useState("")
 
   useEffect(() => {
@@ -116,17 +116,6 @@ export function BlogArticleContent({
   const relatedPosts = article
     ? blogPosts.filter((p) => article.relatedSlugs.includes(p.slug))
     : blogPosts.filter((p) => p.slug !== slug).slice(0, 3)
-
-  // Estimate reading time for display
-  const wordCount =
-    article?.sections
-      ?.flatMap((s) => [
-        s.content ?? "",
-        ...(s.subsections?.map((ss) => ss.content) ?? []),
-      ])
-      .join(" ")
-      .split(/\s+/).length ?? 0
-  const readingTimeMin = Math.max(1, Math.ceil(wordCount / 200))
 
   return (
     <div className="pt-24">
@@ -247,7 +236,7 @@ export function BlogArticleContent({
 
             <time
               className="flex items-center gap-1.5"
-              dateTime={article?.publishedDate ?? post.date}
+              dateTime={post.date}
             >
               <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
               {post.date}
@@ -387,41 +376,6 @@ export function BlogArticleContent({
                 </motion.div>
               ) : (
                 <FallbackArticle post={post} />
-              )}
-
-              {/* FAQ Section */}
-              {article?.faqs && article.faqs.length > 0 && (
-                <motion.section
-                  variants={fadeInUp}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  className="mt-16"
-                  aria-labelledby="faq-heading"
-                >
-                  <h2
-                    id="faq-heading"
-                    className="mb-8 text-2xl font-bold text-foreground sm:text-3xl"
-                  >
-                    Frequently Asked Questions
-                  </h2>
-                  <div className="flex flex-col gap-4">
-                    {article.faqs.map((faq, i) => (
-                      <details
-                        key={i}
-                        className="group rounded-xl border border-border bg-card/50 p-5"
-                      >
-                        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-foreground">
-                          {faq.question}
-                          <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-90" />
-                        </summary>
-                        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                          {faq.answer}
-                        </p>
-                      </details>
-                    ))}
-                  </div>
-                </motion.section>
               )}
 
               {/* Internal Links */}

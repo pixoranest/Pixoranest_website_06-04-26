@@ -1,4 +1,4 @@
 :HL["/_next/static/chunks/95bbd13a3ea91ecd.css","style"]
-:HL["/_next/static/chunks/90eb3fba9882fcdd.css","style"]
+:HL["/_next/static/chunks/d6b62d61ba9e69d0.css","style"]
 :HL["/images/logo-pixoranest.png","image"]
-0:{"buildId":"CLzGQjYQMTp1puw-znCTO","tree":{"name":"","paramType":null,"paramKey":"","hasRuntimePrefetch":false,"slots":{"children":{"name":"/_not-found","paramType":null,"paramKey":"/_not-found","hasRuntimePrefetch":false,"slots":{"children":{"name":"__PAGE__","paramType":null,"paramKey":"__PAGE__","hasRuntimePrefetch":false,"slots":null,"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":true},"staleTime":300}
+0:{"buildId":"JfPRA0SZtDSKvIniw2e1c","tree":{"name":"","paramType":null,"paramKey":"","hasRuntimePrefetch":false,"slots":{"children":{"name":"/_not-found","paramType":null,"paramKey":"/_not-found","hasRuntimePrefetch":false,"slots":{"children":{"name":"__PAGE__","paramType":null,"paramKey":"__PAGE__","hasRuntimePrefetch":false,"slots":null,"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":true},"staleTime":300}
