@@ -3,6 +3,17 @@ import { notFound } from "next/navigation"
 import { industries } from "@/lib/data"
 import { IndustryPageContent } from "./industry-content"
 
+/*
+  FIX: generateStaticParams now derives slugs directly from the `industries`
+  data array instead of a hardcoded list.
+
+  The previous hardcoded list was missing slugs (e.g. "it-saas" vs "technology",
+  "startups" was listed but may not match the actual slug in data). Any mismatch
+  causes Next.js to skip generating that page → 404 at runtime on Hostinger.
+
+  Deriving from data ensures every industry slug is always included and stays
+  in sync automatically when new industries are added.
+*/
 export function generateStaticParams() {
   return industries.map((industry) => ({
     industry: industry.slug,
@@ -25,7 +36,7 @@ const industryMeta: Record<string, {
       "healthcare chatbot", "clinic AI automation",
     ],
   },
-  "e-commerce": {
+  ecommerce: {
     titleSuffix: "E-Commerce & Online Retail",
     descriptionOverride:
       "AI automation for e-commerce businesses. Recover abandoned carts, automate customer support, track orders & boost conversions 5x with PixoraNest AI — live in 24 hours.",
@@ -83,7 +94,7 @@ const industryMeta: Record<string, {
       "property AI automation",
     ],
   },
-  technology: {
+  "it-saas": {
     titleSuffix: "Technology & SaaS",
     additionalKeywords: [
       "AI SaaS support automation", "churn prevention AI",
@@ -238,7 +249,6 @@ export default async function IndustryPage({
         serviceUrl: `https://pixoranest.com/industries/${industry.slug}`,
       },
     },
-    // FAQ Schema for top questions
     "@graph": [
       {
         "@type": "FAQPage",

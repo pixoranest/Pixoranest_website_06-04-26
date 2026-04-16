@@ -1,6 +1,6 @@
 :HL["/_next/static/chunks/95bbd13a3ea91ecd.css","style"]
-:HL["/_next/static/chunks/d6b62d61ba9e69d0.css","style"]
+:HL["/_next/static/chunks/7e58c5a3bd5764a3.css","style"]
 :HL["/_next/static/media/2a65768255d6b625-s.p.d19752fb.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/_next/static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/images/logo-pixoranest.png","image"]
-0:{"buildId":"JfPRA0SZtDSKvIniw2e1c","tree":{"name":"","paramType":null,"paramKey":"","hasRuntimePrefetch":false,"slots":{"children":{"name":"industries","paramType":null,"paramKey":"industries","hasRuntimePrefetch":false,"slots":{"children":{"name":"industry","paramType":"d","paramKey":"real-estate","hasRuntimePrefetch":false,"slots":{"children":{"name":"__PAGE__","paramType":null,"paramKey":"__PAGE__","hasRuntimePrefetch":false,"slots":null,"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":true},"staleTime":300}
+0:{"buildId":"IevnpSt1kbOQByEZmPikj","tree":{"name":"","paramType":null,"paramKey":"","hasRuntimePrefetch":false,"slots":{"children":{"name":"industries","paramType":null,"paramKey":"industries","hasRuntimePrefetch":false,"slots":{"children":{"name":"industry","paramType":"d","paramKey":"real-estate","hasRuntimePrefetch":false,"slots":{"children":{"name":"__PAGE__","paramType":null,"paramKey":"__PAGE__","hasRuntimePrefetch":false,"slots":null,"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":true},"staleTime":300}

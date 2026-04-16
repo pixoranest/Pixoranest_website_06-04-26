@@ -1,9 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion"
-import { useState, useRef } from "react"
-import { fadeInUp, staggerContainer } from "@/lib/animations"
+import { useState, useEffect, useRef } from "react"
 import { SectionWrapper } from "@/components/section-wrapper"
 import { solutions } from "@/lib/data"
 import {
@@ -20,7 +18,7 @@ const iconMap: Record<string, React.ElementType> = {
   GraduationCap, Hotel, Building, Monitor, Rocket,
 }
 
-// ─── Themes ───────────────────────────────────────────────────────────────
+// ─── Themes ───────────────────────────────────────────────────────────────────
 const industryTheme: Record<string, {
   color: string; light: string; gradient: string
   darkGradient: string; particleColor: string
@@ -39,7 +37,7 @@ const industryTheme: Record<string, {
 
 const defaultTheme = { color: "#2563eb", light: "#eff6ff", gradient: "from-blue-50 to-indigo-50/20", darkGradient: "linear-gradient(135deg, #0a1628, #1e3a5f)", particleColor: "#2563eb" }
 
-// ─── Stats per industry ───────────────────────────────────────────────────
+// ─── Stats per industry ───────────────────────────────────────────────────────
 const industryStats: Record<string, { value: string; label: string; icon: React.ElementType }[]> = {
   Heart:         [{ value: "60%", label: "Cost reduction", icon: TrendingUp }, { value: "24/7", label: "Patient support", icon: Clock }, { value: "3x", label: "Faster response", icon: Zap }],
   ShoppingCart:  [{ value: "40%", label: "Cart recovery",  icon: TrendingUp }, { value: "24/7", label: "Support",         icon: Clock }, { value: "5x", label: "Conversion",       icon: Zap }],
@@ -54,7 +52,7 @@ const industryStats: Record<string, { value: string; label: string; icon: React.
 }
 const defaultStats = [{ value: "60%", label: "Cost reduction", icon: TrendingUp }, { value: "24/7", label: "Support", icon: Clock }, { value: "3x", label: "Faster", icon: Zap }]
 
-// ─── Workflow steps ───────────────────────────────────────────────────────
+// ─── Workflow steps ───────────────────────────────────────────────────────────
 const workflowSteps = [
   { step: "01", label: "Lead Arrives",   icon: Phone,         desc: "Customer contacts via call, WhatsApp, or web" },
   { step: "02", label: "AI Qualifies",   icon: Bot,           desc: "AI instantly qualifies and categorises the lead" },
@@ -63,7 +61,7 @@ const workflowSteps = [
   { step: "05", label: "Deal Closed",    icon: TrendingUp,    desc: "Converted customer with full audit trail" },
 ]
 
-// ─── Case study data ──────────────────────────────────────────────────────
+// ─── Case study data ──────────────────────────────────────────────────────────
 const caseStudyData: Record<string, {
   company: string; challenge: string; result: string
   before: { label: string; value: string }[]
@@ -99,7 +97,7 @@ const caseStudyData: Record<string, {
   },
 }
 
-// ─── FAQ data ─────────────────────────────────────────────────────────────
+// ─── FAQ data ─────────────────────────────────────────────────────────────────
 const faqData: Record<string, { q: string; a: string }[]> = {
   Heart: [
     { q: "How does AI automation help healthcare clinics reduce costs?", a: "AI replaces manual call handling, appointment booking, and follow-up reminders — cutting staff costs by 60% while maintaining 24/7 patient engagement." },
@@ -117,156 +115,54 @@ const faqData: Record<string, { q: string; a: string }[]> = {
   ],
 }
 
-// ── Particles ───────────────────────────────────────────────────────────────
-function Particles({ color }: { color: string }) {
-  const particles = Array.from({ length: 15 }, (_, i) => ({
-    id: i, x: Math.random() * 100, y: Math.random() * 100,
-    size: Math.random() * 2.5 + 1, duration: Math.random() * 4 + 3, delay: Math.random() * 3,
-  }))
+// ── useInView hook ────────────────────────────────────────────────────────────
+function useInView(threshold = 0.15) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [inView, setInView] = useState(false)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect() } }, { threshold })
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [threshold])
+  return { ref, inView }
+}
+
+// ── FadeIn ────────────────────────────────────────────────────────────────────
+function FadeIn({ children, delay = 0, style = {}, className = "" }: {
+  children: React.ReactNode; delay?: number; style?: React.CSSProperties; className?: string
+}) {
+  const { ref, inView } = useInView()
   return (
-    <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
-      {particles.map(p => (
-        <motion.div key={p.id}
-          animate={{ y: [0, -25, 0], opacity: [0, 0.5, 0], scale: [0, 1, 0] }}
-          transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, ease: "easeInOut" }}
-          style={{ position: "absolute", left: `${p.x}%`, top: `${p.y}%`, width: p.size, height: p.size, borderRadius: "50%", background: color, filter: "blur(0.5px)" }}
-        />
-      ))}
+    <div ref={ref} className={className} style={{
+      opacity: inView ? 1 : 0,
+      transform: inView ? "translateY(0)" : "translateY(24px)",
+      transition: `opacity 0.55s ease ${delay}ms, transform 0.55s ease ${delay}ms`,
+      ...style,
+    }}>
+      {children}
     </div>
   )
 }
 
-// ─── Hero Visual ──────────────────────────────────────────────────────────
-function IndustryHeroVisual({ iconKey, color, light }: { iconKey: string; color: string; light: string }) {
-  const Icon = iconMap[iconKey] || Monitor
-  const stats = industryStats[iconKey] || defaultStats
-
-  const floatingCards = [
-    { icon: Phone,         label: "AI Receptionist", delay: 0.2 },
-    { icon: MessageCircle, label: "WhatsApp Bot",     delay: 0.45 },
-    { icon: PhoneCall,     label: "Call Automation",  delay: 0.7 },
-    { icon: Mic,           label: "Voice Agent",      delay: 0.95 },
-  ]
-
+// ── AnimBar ───────────────────────────────────────────────────────────────────
+function AnimBar({ pct, color, delay = 0 }: { pct: number; color: string; delay?: number }) {
+  const { ref, inView } = useInView()
   return (
-    <div style={{ position: "relative", width: "100%", maxWidth: 440, margin: "0 auto" }}>
-      {/* Background aura */}
+    <div ref={ref} style={{ height: 7, background: "#f1f5f9", borderRadius: 4, overflow: "hidden" }}>
       <div style={{
-        position: "absolute", inset: "-30px",
-        background: `radial-gradient(ellipse at 55% 40%, ${color}15 0%, transparent 65%)`,
-        pointerEvents: "none", borderRadius: "50%",
+        height: "100%",
+        background: `linear-gradient(90deg, ${color}, ${color}80)`,
+        borderRadius: 4,
+        width: inView ? `${pct}%` : "0%",
+        transition: `width 1.2s cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
       }} />
-
-      {/* Center icon */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.4 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.7, type: "spring", stiffness: 120 }}
-        style={{
-          width: 100, height: 100, borderRadius: "50%",
-          background: `linear-gradient(135deg, ${light}, ${color}08)`,
-          border: `2.5px solid ${color}35`,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          margin: "0 auto 24px",
-          boxShadow: `0 0 0 16px ${color}08, 0 12px 40px ${color}25`,
-        }}
-      >
-        <motion.div
-          animate={{ scale: [1, 1.12, 1] }}
-          transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <Icon size={42} color={color} />
-        </motion.div>
-      </motion.div>
-
-      {/* Pulse rings */}
-      {[1, 2].map(i => (
-        <motion.div key={i}
-          animate={{ scale: [1, 2.2], opacity: [0.2, 0] }}
-          transition={{ duration: 2.5, repeat: Infinity, delay: i * 1, ease: "easeOut" }}
-          style={{
-            position: "absolute", left: "50%", top: 0,
-            transform: "translateX(-50%)",
-            width: 100, height: 100, borderRadius: "50%",
-            border: `1.5px solid ${color}`,
-            pointerEvents: "none",
-          }}
-        />
-      ))}
-
-      {/* Floating tool cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
-        {floatingCards.map((card, i) => {
-          const CardIcon = card.icon
-          return (
-            <motion.div key={i}
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: card.delay, duration: 0.5, type: "spring" }}
-            >
-              <motion.div
-                animate={{ y: [0, -6, 0] }}
-                transition={{ duration: 3.2 + i * 0.4, repeat: Infinity, ease: "easeInOut" }}
-                whileHover={{ scale: 1.06, boxShadow: `0 12px 32px ${color}20` }}
-                style={{
-                  background: "#fff", border: "1px solid #eaeef2",
-                  borderRadius: 16, padding: "14px 16px",
-                  display: "flex", alignItems: "center", gap: 11,
-                  boxShadow: "0 2px 14px rgba(0,0,0,0.06)",
-                  cursor: "default", transition: "box-shadow 0.2s",
-                }}
-              >
-                <div style={{
-                  width: 38, height: 38, borderRadius: 11,
-                  background: `${color}10`, border: `1px solid ${color}20`,
-                  display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                }}>
-                  <CardIcon size={17} color={color} />
-                </div>
-                <span style={{ fontSize: 12, fontWeight: 700, color: "#0a0f1e", lineHeight: 1.3 }}>
-                  {card.label}
-                </span>
-              </motion.div>
-            </motion.div>
-          )
-        })}
-      </div>
-
-      {/* Stats */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.3 }}
-        style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}
-      >
-        {stats.map((s, i) => {
-          const SI = s.icon
-          return (
-            <motion.div key={i}
-              whileHover={{ y: -4, boxShadow: `0 10px 24px ${color}15` }}
-              style={{
-                background: "#fff", border: "1px solid #eaeef2",
-                borderRadius: 14, padding: "14px 8px",
-                textAlign: "center", boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
-                transition: "all 0.2s", cursor: "default",
-              }}
-            >
-              <SI size={15} color={color} style={{ margin: "0 auto 7px" }} />
-              <p style={{ fontSize: 19, fontWeight: 800, color: "#0a0f1e", margin: 0, letterSpacing: "-0.02em" }}>
-                {s.value}
-              </p>
-              <p style={{ fontSize: 10, color: "#94a3b8", margin: 0, lineHeight: 1.4, fontWeight: 500 }}>
-                {s.label}
-              </p>
-            </motion.div>
-          )
-        })}
-      </motion.div>
     </div>
   )
 }
 
-// ─── Solution Card ─────────────────────────────────────────────────────────
+// ── SolutionCard ──────────────────────────────────────────────────────────────
 function SolutionCard({ title, description, index, color, light }: {
   title: string; description: string; index: number; color: string; light: string
 }) {
@@ -275,30 +171,28 @@ function SolutionCard({ title, description, index, color, light }: {
   const [hovered, setHovered] = useState(false)
 
   return (
-    <motion.div
-      variants={fadeInUp}
-      onHoverStart={() => setHovered(true)}
-      onHoverEnd={() => setHovered(false)}
-      whileHover={{ y: -8, boxShadow: `0 24px 48px -12px ${color}22` }}
-      transition={{ duration: 0.25 }}
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
-        background: "#fff", border: `1.5px solid ${hovered ? color + "30" : "#eaeef2"}`,
+        background: "#fff",
+        border: `1.5px solid ${hovered ? color + "30" : "#eaeef2"}`,
         borderRadius: 22, padding: 26,
         position: "relative", overflow: "hidden",
-        transition: "border-color 0.3s",
+        transform: hovered ? "translateY(-8px)" : "",
+        boxShadow: hovered ? `0 24px 48px -12px ${color}22` : "",
+        transition: "all 0.25s ease",
       }}
     >
-      {/* Top bar */}
-      <motion.div
-        animate={{ scaleX: hovered ? 1 : 0.3, opacity: hovered ? 1 : 0.6 }}
-        style={{
-          position: "absolute", top: 0, left: 0, right: 0, height: 3,
-          background: `linear-gradient(90deg, ${color}, ${color}60)`,
-          borderRadius: "22px 22px 0 0", transformOrigin: "left",
-        }}
-      />
+      <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, height: 3,
+        background: `linear-gradient(90deg, ${color}, ${color}60)`,
+        borderRadius: "22px 22px 0 0", transformOrigin: "left",
+        transform: hovered ? "scaleX(1)" : "scaleX(0.3)",
+        opacity: hovered ? 1 : 0.6,
+        transition: "transform 0.3s ease, opacity 0.3s ease",
+      }} />
 
-      {/* Dot pattern */}
       <div style={{
         position: "absolute", top: 0, right: 0, width: 100, height: 100,
         backgroundImage: `radial-gradient(${color}12 1px, transparent 1px)`,
@@ -316,41 +210,32 @@ function SolutionCard({ title, description, index, color, light }: {
         <Icon size={22} color={color} />
       </div>
 
-      <h3 style={{ fontSize: 16, fontWeight: 800, color: "#0a0f1e", marginBottom: 9, letterSpacing: "-0.02em" }}>
-        {title}
-      </h3>
-      <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.75, margin: 0 }}>
-        {description}
-      </p>
+      <h3 style={{ fontSize: 16, fontWeight: 800, color: "#0a0f1e", marginBottom: 9, letterSpacing: "-0.02em" }}>{title}</h3>
+      <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.75, margin: 0 }}>{description}</p>
 
       <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 7 }}>
-        <motion.div
-          animate={{ opacity: [1, 0.2, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          style={{ width: 6, height: 6, borderRadius: "50%", background: color }}
-        />
+        <div style={{
+          width: 6, height: 6, borderRadius: "50%", background: color,
+          animation: "pulse 2s infinite",
+        }} />
         <span style={{ fontSize: 11, color: color, fontWeight: 700, letterSpacing: "0.04em" }}>AI POWERED</span>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
-// ─── FAQ Item ──────────────────────────────────────────────────────────────
-function FAQItem({ q, a, color, index }: { q: string; a: string; color: string; index: number }) {
+// ── FAQItem ───────────────────────────────────────────────────────────────────
+function FAQItem({ q, a, color }: { q: string; a: string; color: string }) {
   const [open, setOpen] = useState(false)
 
   return (
-    <motion.div
-      variants={fadeInUp}
-      style={{
-        background: open ? "#fff" : "#fff",
-        border: `1.5px solid ${open ? color + "35" : "#eaeef2"}`,
-        borderLeft: `3px solid ${color}`,
-        borderRadius: 16, overflow: "hidden",
-        boxShadow: open ? `0 8px 24px ${color}10` : "none",
-        transition: "border-color 0.3s, box-shadow 0.3s",
-      }}
-    >
+    <div style={{
+      border: `1.5px solid ${open ? color + "35" : "#eaeef2"}`,
+      borderLeft: `3px solid ${color}`,
+      borderRadius: 16, overflow: "hidden",
+      boxShadow: open ? `0 8px 24px ${color}10` : "none",
+      transition: "border-color 0.3s, box-shadow 0.3s",
+    }}>
       <button
         onClick={() => setOpen(!open)}
         style={{
@@ -360,45 +245,151 @@ function FAQItem({ q, a, color, index }: { q: string; a: string; color: string; 
         }}
       >
         <span style={{ fontSize: 14, fontWeight: 700, color: "#0a0f1e", lineHeight: 1.5 }}>{q}</span>
-        <motion.div animate={{ rotate: open ? 45 : 0 }} transition={{ duration: 0.2 }}>
-          <div style={{
-            width: 28, height: 28, borderRadius: "50%",
-            background: open ? color : `${color}12`,
-            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-            transition: "background 0.2s",
-          }}>
-            {open
-              ? <Minus size={13} color="#fff" />
-              : <Plus size={13} color={color} />
-            }
-          </div>
-        </motion.div>
+        <div style={{
+          width: 28, height: 28, borderRadius: "50%",
+          background: open ? color : `${color}12`,
+          display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+          transition: "background 0.2s",
+        }}>
+          {open ? <Minus size={13} color="#fff" /> : <Plus size={13} color={color} />}
+        </div>
       </button>
 
-      <motion.div
-        initial={false}
-        animate={{ height: open ? "auto" : 0, opacity: open ? 1 : 0 }}
-        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        style={{ overflow: "hidden" }}
-      >
-        <p style={{ padding: "0 22px 20px", fontSize: 13, color: "#64748b", lineHeight: 1.8, margin: 0 }}>
-          {a}
-        </p>
-      </motion.div>
-    </motion.div>
+      <div style={{
+        overflow: "hidden",
+        maxHeight: open ? 300 : 0,
+        opacity: open ? 1 : 0,
+        transition: "max-height 0.35s ease, opacity 0.3s ease",
+      }}>
+        <p style={{ padding: "0 22px 20px", fontSize: 13, color: "#64748b", lineHeight: 1.8, margin: 0 }}>{a}</p>
+      </div>
+    </div>
   )
 }
 
-// ─── Main Component ────────────────────────────────────────────────────────
+// ── IndustryHeroVisual ────────────────────────────────────────────────────────
+function IndustryHeroVisual({ iconKey, color, light }: { iconKey: string; color: string; light: string }) {
+  const Icon = iconMap[iconKey] || Monitor
+  const stats = industryStats[iconKey] || defaultStats
+
+  const floatingCards = [
+    { icon: Phone,         label: "AI Receptionist", delay: "0.2s" },
+    { icon: MessageCircle, label: "WhatsApp Bot",     delay: "0.45s" },
+    { icon: PhoneCall,     label: "Call Automation",  delay: "0.7s" },
+    { icon: Mic,           label: "Voice Agent",      delay: "0.95s" },
+  ]
+
+  return (
+    <div style={{ position: "relative", width: "100%", maxWidth: 440, margin: "0 auto" }}>
+      <div style={{
+        position: "absolute", inset: "-30px",
+        background: `radial-gradient(ellipse at 55% 40%, ${color}15 0%, transparent 65%)`,
+        pointerEvents: "none", borderRadius: "50%",
+      }} />
+
+      {/* Center icon */}
+      <div style={{
+        width: 100, height: 100, borderRadius: "50%",
+        background: `linear-gradient(135deg, ${light}, ${color}08)`,
+        border: `2.5px solid ${color}35`,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        margin: "0 auto 24px",
+        boxShadow: `0 0 0 16px ${color}08, 0 12px 40px ${color}25`,
+        animation: "fadeSlideUp 0.7s ease both",
+      }}>
+        <div style={{ animation: "scaleBreath 2.8s ease-in-out infinite" }}>
+          <Icon size={42} color={color} />
+        </div>
+      </div>
+
+      {/* Pulse rings */}
+      {[1, 2].map(i => (
+        <div key={i} style={{
+          position: "absolute", left: "50%", top: 0, transform: "translateX(-50%)",
+          width: 100, height: 100, borderRadius: "50%",
+          border: `1.5px solid ${color}`,
+          pointerEvents: "none",
+          animation: `pulseRing 2.5s ease-out ${i}s infinite`,
+        }} />
+      ))}
+
+      {/* Floating cards — 2-col grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+        {floatingCards.map((card, i) => {
+          const CardIcon = card.icon
+          return (
+            <div key={i} style={{ opacity: 0, animation: `fadeSlideUp 0.5s ease ${card.delay} forwards` }}>
+              <div
+                style={{
+                  background: "#fff", border: "1px solid #eaeef2",
+                  borderRadius: 16, padding: "14px 16px",
+                  display: "flex", alignItems: "center", gap: 11,
+                  boxShadow: "0 2px 14px rgba(0,0,0,0.06)",
+                  cursor: "default",
+                  animation: `floatUpDown ${3.2 + i * 0.4}s ease-in-out ${i * 300}ms infinite`,
+                  transition: "box-shadow 0.2s",
+                  minWidth: 0,
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = `0 12px 32px ${color}20`; (e.currentTarget as HTMLDivElement).style.transform = "scale(1.06)" }}
+                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 14px rgba(0,0,0,0.06)"; (e.currentTarget as HTMLDivElement).style.transform = "" }}
+              >
+                <div style={{
+                  width: 38, height: 38, borderRadius: 11,
+                  background: `${color}10`, border: `1px solid ${color}20`,
+                  display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                }}>
+                  <CardIcon size={17} color={color} />
+                </div>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "#0a0f1e", lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{card.label}</span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Stats */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, opacity: 0, animation: "fadeSlideUp 0.5s ease 1.3s forwards" }}>
+        {stats.map((s, i) => {
+          const SI = s.icon
+          return (
+            <div key={i}
+              style={{
+                background: "#fff", border: "1px solid #eaeef2",
+                borderRadius: 14, padding: "14px 8px",
+                textAlign: "center", boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+                transition: "all 0.2s", cursor: "default",
+                minWidth: 0,
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)"; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 10px 24px ${color}15` }}
+              onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ""; (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 10px rgba(0,0,0,0.05)" }}
+            >
+              <SI size={15} color={color} style={{ margin: "0 auto 7px", display: "block" }} />
+              <p style={{ fontSize: 19, fontWeight: 800, color: "#0a0f1e", margin: 0, letterSpacing: "-0.02em" }}>{s.value}</p>
+              <p style={{ fontSize: 10, color: "#94a3b8", margin: 0, lineHeight: 1.4, fontWeight: 500 }}>{s.label}</p>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// ─── Interface ────────────────────────────────────────────────────────────────
 interface IndustryData {
   title: string; slug: string; description: string; icon: string;
 }
 
+// ─── Shared padding constant — single source of truth ─────────────────────────
+// All raw <section> tags use this. SectionWrapper applies it automatically.
+const SECTION_PX = "px-4 sm:px-6 lg:px-12 xl:px-16"
+const SECTION_MAX = "mx-auto w-full max-w-7xl"
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 export function IndustryPageContent({ industry }: { industry: IndustryData }) {
   const Icon = iconMap[industry.icon] || Monitor
   const theme = industryTheme[industry.icon] || defaultTheme
   const stats = industryStats[industry.icon] || defaultStats
-  const faqs = (faqData[industry.icon] || faqData.default)
+  const faqs = faqData[industry.icon] || faqData.default
   const caseStudy = caseStudyData[industry.icon] || caseStudyData.default
 
   const benefits = [
@@ -409,19 +400,30 @@ export function IndustryPageContent({ industry }: { industry: IndustryData }) {
     "Scalable AI solutions that grow as your business grows",
     "Industry-specific compliance and data security built-in",
   ]
-
   const benefitIcons = [TrendingUp, Clock, Shield, BarChart3, Users, Bot]
 
   return (
-    <div className="pt-24" style={{ fontFamily: "'Inter', -apple-system, sans-serif" }}>
+    <div className="pt-24 overflow-x-hidden" style={{ fontFamily: "'Inter', -apple-system, sans-serif" }}>
+      <style>{`
+        @keyframes floatUpDown { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
+        @keyframes fadeSlideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes scaleBreath { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
+        @keyframes pulseRing { 0%{transform:translateX(-50%) scale(1);opacity:0.2} 100%{transform:translateX(-50%) scale(2.2);opacity:0} }
+        @keyframes progressFill { from{width:0%} to{width:var(--target-w)} }
+        @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+      `}</style>
 
-      {/* ══════════════════════════════════════════
+      {/* ══════════════════════════════════════════════════════
           HERO
-      ══════════════════════════════════════════ */}
-      <section className={`px-4 pb-20 pt-10 sm:px-6 lg:px-8 relative overflow-hidden`}
+          Outer: full-bleed background
+          Inner: max-w-7xl centered with responsive px
+      ══════════════════════════════════════════════════════ */}
+      <section
+        className="relative overflow-hidden pb-20 pt-10"
         style={{ background: `linear-gradient(180deg, ${theme.light} 0%, #fff 100%)` }}
       >
-        {/* Dot grid */}
+        {/* Background texture */}
         <div style={{
           position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.4,
           backgroundImage: "radial-gradient(#cbd5e1 1px, transparent 1px)",
@@ -432,58 +434,53 @@ export function IndustryPageContent({ industry }: { industry: IndustryData }) {
           background: `radial-gradient(ellipse at 80% 20%, ${theme.color}08 0%, transparent 50%)`,
         }} />
 
-        <div className="mx-auto max-w-7xl relative">
-          <motion.div variants={fadeInUp} initial="hidden" animate="visible">
+        <div className={`${SECTION_MAX} ${SECTION_PX} relative`}>
+          {/* Back link */}
+          <div style={{ animation: "fadeSlideUp 0.5s ease both", marginBottom: 36 }}>
             <Link href="/industries" style={{
               display: "inline-flex", alignItems: "center", gap: 7,
-              fontSize: 13, color: "#64748b", textDecoration: "none", marginBottom: 36,
+              fontSize: 13, color: "#64748b", textDecoration: "none",
               padding: "8px 14px", background: "#f8fafc", border: "1px solid #e2e8f0",
               borderRadius: 20, fontWeight: 500,
-              transition: "color 0.2s",
             }}>
               <ArrowLeft size={13} /> Back to Industries
             </Link>
-          </motion.div>
+          </div>
 
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-
+          <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left */}
-            <motion.div variants={staggerContainer} initial="hidden" animate="visible">
-              <motion.div variants={fadeInUp} style={{
-                display: "inline-flex", alignItems: "center", gap: 9,
-                background: `${theme.color}10`, border: `1.5px solid ${theme.color}30`,
-                borderRadius: 24, padding: "8px 18px", marginBottom: 24,
-              }}>
-                <Icon size={14} color={theme.color} />
-                <span style={{ fontSize: 12, fontWeight: 700, color: theme.color, letterSpacing: "0.04em" }}>
-                  {industry.title} AI Solutions
-                </span>
-              </motion.div>
+            <div>
+              <div style={{ opacity: 0, animation: "fadeSlideUp 0.5s ease 0.1s forwards" }}>
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 9,
+                  background: `${theme.color}10`, border: `1.5px solid ${theme.color}30`,
+                  borderRadius: 24, padding: "8px 18px", marginBottom: 24,
+                }}>
+                  <Icon size={14} color={theme.color} />
+                  <span style={{ fontSize: 12, fontWeight: 700, color: theme.color, letterSpacing: "0.04em" }}>
+                    {industry.title} AI Solutions
+                  </span>
+                </div>
+              </div>
 
-              <motion.h1 variants={fadeInUp}
-                className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl"
-                style={{ letterSpacing: "-0.03em", lineHeight: 1.1, marginBottom: 22 }}
-              >
+              <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl"
+                style={{ letterSpacing: "-0.03em", lineHeight: 1.1, marginBottom: 22, opacity: 0, animation: "fadeSlideUp 0.5s ease 0.15s forwards" }}>
                 AI Automation for{" "}
                 <span style={{
                   background: `linear-gradient(135deg, ${theme.color}, ${theme.color}aa)`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
                 }}>
                   {industry.title}
                 </span>
-              </motion.h1>
+              </h1>
 
-              <motion.p variants={fadeInUp}
-                className="text-lg leading-relaxed text-muted-foreground"
-                style={{ maxWidth: 520, marginBottom: 32 }}
-              >
+              <p className="text-lg leading-relaxed text-muted-foreground"
+                style={{ maxWidth: 520, marginBottom: 32, opacity: 0, animation: "fadeSlideUp 0.5s ease 0.2s forwards" }}>
                 PixoraNest delivers advanced AI automation for the {industry.title.toLowerCase()} industry
                 — automating customer communication, lead management, call handling, and operations at scale.
-              </motion.p>
+              </p>
 
-              <motion.div variants={fadeInUp} style={{ display: "flex", flexWrap: "wrap", gap: 14, marginBottom: 32 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginBottom: 32, opacity: 0, animation: "fadeSlideUp 0.5s ease 0.25s forwards" }}>
                 <Link href="/contact" style={{
                   background: theme.color, color: "#fff",
                   padding: "14px 30px", borderRadius: 14,
@@ -501,14 +498,10 @@ export function IndustryPageContent({ industry }: { industry: IndustryData }) {
                 }}>
                   View All Solutions
                 </Link>
-              </motion.div>
+              </div>
 
-              <motion.div variants={fadeInUp} style={{ display: "flex", flexWrap: "wrap", gap: 22 }}>
-                {[
-                  { icon: Shield, label: "Enterprise Secure" },
-                  { icon: Clock,  label: "Live in 24 hrs" },
-                  { icon: Zap,    label: "No Setup Fees" },
-                ].map((b, i) => {
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 16, opacity: 0, animation: "fadeSlideUp 0.5s ease 0.3s forwards" }}>
+                {[{ icon: Shield, label: "Enterprise Secure" }, { icon: Clock, label: "Live in 24 hrs" }, { icon: Zap, label: "No Setup Fees" }].map((b, i) => {
                   const BI = b.icon
                   return (
                     <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#475569" }}>
@@ -523,54 +516,46 @@ export function IndustryPageContent({ industry }: { industry: IndustryData }) {
                     </div>
                   )
                 })}
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
 
-            {/* Right */}
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="hidden md:block"
-            >
+            {/* Right — hidden on mobile */}
+            <div className="hidden md:block" style={{ opacity: 0, animation: "fadeSlideUp 0.8s ease 0.2s forwards" }}>
               <IndustryHeroVisual iconKey={industry.icon} color={theme.color} light={theme.light} />
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════
+      {/* ══════════════════════════════════════════════════════
           WORKFLOW TIMELINE
-      ══════════════════════════════════════════ */}
+          Full-bleed bg, inner container for content
+      ══════════════════════════════════════════════════════ */}
       <section style={{
-        background: "#fff",
-        borderTop: "1px solid #f1f5f9", borderBottom: "1px solid #f1f5f9",
+        background: "#fff", borderTop: "1px solid #f1f5f9", borderBottom: "1px solid #f1f5f9",
         padding: "56px 0", overflow: "hidden",
       }}>
-        <div className="max-w-7xl mx-auto px-6">
-          <div style={{ textAlign: "center", marginBottom: 40 }}>
+        <div className={`${SECTION_MAX} ${SECTION_PX}`}>
+          <FadeIn style={{ textAlign: "center", marginBottom: 40 }}>
             <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: theme.color }}>
               How It Works
             </span>
             <h2 style={{ fontSize: 24, fontWeight: 800, color: "#0a0f1e", marginTop: 8, letterSpacing: "-0.025em" }}>
               AI Automation Flow in {industry.title}
             </h2>
-          </div>
+          </FadeIn>
 
-          <div style={{ display: "flex", alignItems: "flex-start", overflowX: "auto", paddingBottom: 8 }} className="no-scrollbar">
+          {/* Horizontally scrollable on small screens */}
+          <div style={{ display: "flex", alignItems: "flex-start", overflowX: "auto", paddingBottom: 8, WebkitOverflowScrolling: "touch" }} className="no-scrollbar">
             {workflowSteps.map((item, i) => {
               const StepIcon = item.icon
               return (
                 <div key={i} style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.1, duration: 0.5 }}
-                    viewport={{ once: true }}
-                    style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "0 24px", maxWidth: 148 }}
-                  >
-                    <motion.div
-                      whileHover={{ scale: 1.12, boxShadow: `0 8px 24px ${theme.color}25` }}
+                  <FadeIn delay={i * 100} style={{
+                    display: "flex", flexDirection: "column", alignItems: "center",
+                    textAlign: "center", paddingLeft: 16, paddingRight: 16, width: 140,
+                  }}>
+                    <div
                       style={{
                         width: 60, height: 60, borderRadius: "50%",
                         background: `linear-gradient(135deg, ${theme.light}, ${theme.color}08)`,
@@ -578,31 +563,28 @@ export function IndustryPageContent({ industry }: { industry: IndustryData }) {
                         display: "flex", alignItems: "center", justifyContent: "center",
                         marginBottom: 12,
                         boxShadow: `0 4px 16px ${theme.color}15`,
-                        cursor: "default", transition: "all 0.2s",
+                        cursor: "default",
+                        transition: "transform 0.2s, box-shadow 0.2s",
+                        flexShrink: 0,
                       }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = "scale(1.12)"; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 24px ${theme.color}25` }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ""; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 4px 16px ${theme.color}15` }}
                     >
                       <StepIcon size={24} color={theme.color} />
-                    </motion.div>
-                    <span style={{ fontSize: 10, fontWeight: 800, color: theme.color, letterSpacing: "0.1em" }}>
-                      STEP {item.step}
-                    </span>
-                    <span style={{ fontSize: 13, fontWeight: 800, color: "#0a0f1e", marginTop: 4 }}>
-                      {item.label}
-                    </span>
-                    <span style={{ fontSize: 11, color: "#94a3b8", marginTop: 5, lineHeight: 1.5 }}>
-                      {item.desc}
-                    </span>
-                  </motion.div>
+                    </div>
+                    <span style={{ fontSize: 10, fontWeight: 800, color: theme.color, letterSpacing: "0.1em" }}>STEP {item.step}</span>
+                    <span style={{ fontSize: 13, fontWeight: 800, color: "#0a0f1e", marginTop: 4 }}>{item.label}</span>
+                    <span style={{ fontSize: 11, color: "#94a3b8", marginTop: 5, lineHeight: 1.5 }}>{item.desc}</span>
+                  </FadeIn>
 
                   {i < workflowSteps.length - 1 && (
-                    <div style={{ width: 52, height: 2, background: `${theme.color}18`, flexShrink: 0, position: "relative", overflow: "hidden", marginBottom: 40 }}>
-                      <motion.div
-                        initial={{ width: "0%" }}
-                        whileInView={{ width: "100%" }}
-                        transition={{ delay: i * 0.2 + 0.3, duration: 0.7 }}
-                        viewport={{ once: true }}
-                        style={{ position: "absolute", top: 0, left: 0, height: "100%", background: `linear-gradient(90deg, ${theme.color}, ${theme.color}60)` }}
-                      />
+                    <div style={{ width: 40, height: 2, background: `${theme.color}18`, flexShrink: 0, position: "relative", overflow: "hidden", marginBottom: 40 }}>
+                      <div style={{
+                        position: "absolute", top: 0, left: 0, height: "100%",
+                        background: `linear-gradient(90deg, ${theme.color}, ${theme.color}60)`,
+                        width: "100%",
+                        animation: `progressFill 0.7s ease ${i * 200 + 300}ms both`,
+                      }} />
                     </div>
                   )}
                 </div>
@@ -612,9 +594,10 @@ export function IndustryPageContent({ industry }: { industry: IndustryData }) {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════
+      {/* ══════════════════════════════════════════════════════
           SOLUTIONS GRID
-      ══════════════════════════════════════════ */}
+          SectionWrapper owns: max-w-7xl + px-4 sm:px-6 lg:px-12 xl:px-16 + py-16 lg:py-20
+      ══════════════════════════════════════════════════════ */}
       <SectionWrapper>
         <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 44 }}>
           <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: theme.color }}>
@@ -631,42 +614,39 @@ export function IndustryPageContent({ industry }: { industry: IndustryData }) {
           </h2>
         </div>
 
-        <motion.div
-          variants={staggerContainer} initial="hidden"
-          whileInView="visible" viewport={{ once: true }}
-          className="grid gap-5 sm:grid-cols-2"
-        >
+        <div className="grid gap-5 sm:grid-cols-2">
           {solutions.slice(0, 4).map((solution, i) => (
-            <Link key={solution.slug} href={`/services/${solution.slug}`} style={{ textDecoration: "none" }}>
-              <SolutionCard
-                title={solution.title} description={solution.description}
-                index={i} color={theme.color} light={theme.light}
-              />
-            </Link>
+            <FadeIn key={solution.slug} delay={i * 80}>
+              <Link href={`/services/${solution.slug}`} style={{ textDecoration: "none" }}>
+                <SolutionCard
+                  title={solution.title} description={solution.description}
+                  index={i} color={theme.color} light={theme.light}
+                />
+              </Link>
+            </FadeIn>
           ))}
-        </motion.div>
+        </div>
       </SectionWrapper>
 
-      {/* ══════════════════════════════════════════
+      {/* ══════════════════════════════════════════════════════
           BENEFITS
-      ══════════════════════════════════════════ */}
-      <section style={{ padding: "80px 24px", background: `linear-gradient(180deg, ${theme.light} 0%, #fff 100%)` }}>
-        <div className="max-w-7xl mx-auto sm:px-8">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
+          Outer: full-bleed background
+          Inner: max-w-7xl centered with responsive px
+      ══════════════════════════════════════════════════════ */}
+      <section
+        className="relative overflow-hidden"
+        style={{ background: `linear-gradient(180deg, ${theme.light} 0%, #fff 100%)` }}
+      >
+        <div className={`${SECTION_MAX} ${SECTION_PX} py-16 lg:py-20`}>
+          <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
 
             {/* Performance card */}
-            <motion.div
-              initial={{ opacity: 0, x: -24 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
+            <FadeIn>
               <div style={{
                 background: "#fff", border: "1.5px solid #eaeef2",
                 borderRadius: 26, padding: 32,
                 boxShadow: "0 4px 28px rgba(0,0,0,0.06)",
               }}>
-                {/* Card header */}
                 <div style={{
                   display: "flex", alignItems: "center", gap: 14,
                   marginBottom: 24, paddingBottom: 20,
@@ -680,9 +660,7 @@ export function IndustryPageContent({ industry }: { industry: IndustryData }) {
                     <Icon size={24} color={theme.color} />
                   </div>
                   <div>
-                    <p style={{ fontSize: 14, fontWeight: 800, color: "#0a0f1e", margin: 0 }}>
-                      {industry.title} Automation
-                    </p>
+                    <p style={{ fontSize: 14, fontWeight: 800, color: "#0a0f1e", margin: 0 }}>{industry.title} Automation</p>
                     <p style={{ fontSize: 12, color: "#94a3b8", margin: 0 }}>Performance overview</p>
                   </div>
                   <div style={{ marginLeft: "auto" }}>
@@ -691,17 +669,12 @@ export function IndustryPageContent({ industry }: { industry: IndustryData }) {
                       padding: "5px 12px", fontSize: 11, fontWeight: 700, color: "#16a34a",
                       display: "flex", alignItems: "center", gap: 5,
                     }}>
-                      <motion.div
-                        animate={{ opacity: [1, 0.2, 1] }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                        style={{ width: 5, height: 5, borderRadius: "50%", background: "#16a34a" }}
-                      />
+                      <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#16a34a", animation: "pulse 1.5s infinite" }} />
                       Live
                     </div>
                   </div>
                 </div>
 
-                {/* Progress bars */}
                 {[
                   { label: "Leads captured",       value: 94, color: theme.color },
                   { label: "Response rate",         value: 98, color: "#22c55e" },
@@ -713,19 +686,10 @@ export function IndustryPageContent({ industry }: { industry: IndustryData }) {
                       <span style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>{m.label}</span>
                       <span style={{ fontSize: 13, color: "#0a0f1e", fontWeight: 800 }}>{m.value}%</span>
                     </div>
-                    <div style={{ height: 7, background: "#f1f5f9", borderRadius: 4, overflow: "hidden" }}>
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${m.value}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1.2, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] }}
-                        style={{ height: "100%", background: `linear-gradient(90deg, ${m.color}, ${m.color}80)`, borderRadius: 4 }}
-                      />
-                    </div>
+                    <AnimBar pct={m.value} color={m.color} delay={i * 150} />
                   </div>
                 ))}
 
-                {/* Stats */}
                 <div style={{
                   display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12,
                   marginTop: 22, paddingTop: 22, borderTop: "1px solid #f1f5f9",
@@ -733,201 +697,182 @@ export function IndustryPageContent({ industry }: { industry: IndustryData }) {
                   {stats.map((s, i) => {
                     const SI = s.icon
                     return (
-                      <motion.div key={i}
-                        whileHover={{ y: -3, boxShadow: `0 8px 20px ${theme.color}12` }}
-                        style={{ textAlign: "center", padding: "12px 6px", borderRadius: 12, cursor: "default", transition: "all 0.2s" }}
+                      <div key={i}
+                        style={{ textAlign: "center", padding: "12px 6px", borderRadius: 12, cursor: "default", transition: "all 0.2s", minWidth: 0 }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = "translateY(-3px)"; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 20px ${theme.color}12` }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ""; (e.currentTarget as HTMLDivElement).style.boxShadow = "" }}
                       >
-                        <SI size={15} color={theme.color} style={{ margin: "0 auto 5px" }} />
+                        <SI size={15} color={theme.color} style={{ margin: "0 auto 5px", display: "block" }} />
                         <p style={{ fontSize: 18, fontWeight: 900, color: "#0a0f1e", margin: 0, letterSpacing: "-0.02em" }}>{s.value}</p>
                         <p style={{ fontSize: 10, color: "#94a3b8", margin: 0 }}>{s.label}</p>
-                      </motion.div>
+                      </div>
                     )
                   })}
                 </div>
               </div>
-            </motion.div>
+            </FadeIn>
 
             {/* Benefits list */}
-            <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-              <motion.span variants={fadeInUp} style={{
-                fontSize: 11, fontWeight: 800, letterSpacing: "0.12em",
-                textTransform: "uppercase", color: theme.color,
-              }}>
-                Key Benefits
-              </motion.span>
-
-              <motion.h2 variants={fadeInUp}
-                className="text-2xl font-bold text-foreground sm:text-3xl mt-2 mb-8"
-                style={{ letterSpacing: "-0.025em" }}
-              >
-                Why {industry.title} Businesses Choose PixoraNest
-              </motion.h2>
+            <div>
+              <FadeIn>
+                <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: theme.color }}>
+                  Key Benefits
+                </span>
+                <h2 className="text-2xl font-bold text-foreground sm:text-3xl mt-2 mb-8" style={{ letterSpacing: "-0.025em" }}>
+                  Why {industry.title} Businesses Choose PixoraNest
+                </h2>
+              </FadeIn>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {benefits.map((b, i) => {
                   const BI = benefitIcons[i % benefitIcons.length]
                   return (
-                    <motion.div key={i} variants={fadeInUp}
-                      whileHover={{ x: 6, boxShadow: `0 4px 20px ${theme.color}10` }}
-                      style={{
-                        display: "flex", alignItems: "center", gap: 14,
-                        background: "#fff", border: "1.5px solid #f1f5f9",
-                        borderRadius: 16, padding: "14px 18px",
-                        cursor: "default", transition: "all 0.25s",
-                      }}
-                    >
-                      <div style={{
-                        width: 40, height: 40, borderRadius: 12,
-                        background: theme.light, border: `1px solid ${theme.color}20`,
-                        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                      }}>
-                        <BI size={18} color={theme.color} />
+                    <FadeIn key={i} delay={i * 60}>
+                      <div
+                        style={{
+                          display: "flex", alignItems: "center", gap: 14,
+                          background: "#fff", border: "1.5px solid #f1f5f9",
+                          borderRadius: 16, padding: "14px 18px",
+                          cursor: "default", transition: "all 0.25s",
+                        }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = "translateX(6px)"; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 4px 20px ${theme.color}10` }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ""; (e.currentTarget as HTMLDivElement).style.boxShadow = "" }}
+                      >
+                        <div style={{
+                          width: 40, height: 40, borderRadius: 12,
+                          background: theme.light, border: `1px solid ${theme.color}20`,
+                          display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                        }}>
+                          <BI size={18} color={theme.color} />
+                        </div>
+                        <p style={{ fontSize: 13, fontWeight: 600, color: "#0a0f1e", margin: 0, lineHeight: 1.6 }}>{b}</p>
+                        <ChevronRight size={14} color={theme.color} style={{ marginLeft: "auto", flexShrink: 0, opacity: 0.5 }} />
                       </div>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: "#0a0f1e", margin: 0, lineHeight: 1.6 }}>
-                        {b}
-                      </p>
-                      <ChevronRight size={14} color={theme.color} style={{ marginLeft: "auto", flexShrink: 0, opacity: 0.5 }} />
-                    </motion.div>
+                    </FadeIn>
                   )
                 })}
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════
+      {/* ══════════════════════════════════════════════════════
           CASE STUDY
-      ══════════════════════════════════════════ */}
+          SectionWrapper owns spacing
+      ══════════════════════════════════════════════════════ */}
       <SectionWrapper>
-        <div style={{ marginBottom: 44 }}>
+        <FadeIn style={{ marginBottom: 44 }}>
           <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: theme.color }}>
             Case Study
           </span>
           <h2 className="text-2xl font-bold text-foreground sm:text-3xl mt-2" style={{ letterSpacing: "-0.025em" }}>
             Real Results in {industry.title}
           </h2>
-        </div>
+        </FadeIn>
 
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          style={{
+        <FadeIn>
+          <div style={{
             background: theme.darkGradient, borderRadius: 28, overflow: "hidden",
             border: `1px solid ${theme.color}20`,
             boxShadow: `0 20px 60px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.04)`,
             position: "relative",
-          }}
-        >
-          <Particles color={theme.color} />
-
-          <div className="grid md:grid-cols-2">
-            {/* Left — story */}
-            <div style={{ padding: "44px 40px", borderRight: "1px solid rgba(255,255,255,0.07)", position: "relative" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
-                <div style={{
-                  width: 40, height: 40, borderRadius: 12,
-                  background: `${theme.color}20`, border: `1px solid ${theme.color}35`,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  boxShadow: `0 0 12px ${theme.color}25`,
-                }}>
-                  <Quote size={18} color={theme.color} />
+          }}>
+            <div className="grid md:grid-cols-2">
+              {/* Left */}
+              <div
+                style={{ padding: "44px 40px", position: "relative" }}
+                className="border-b border-white/[0.07] md:border-b-0 md:border-r md:border-r-white/[0.07]"
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
+                  <div style={{
+                    width: 40, height: 40, borderRadius: 12,
+                    background: `${theme.color}20`, border: `1px solid ${theme.color}35`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    boxShadow: `0 0 12px ${theme.color}25`,
+                  }}>
+                    <Quote size={18} color={theme.color} />
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 14, fontWeight: 800, color: "#fff", margin: 0 }}>{caseStudy.company}</p>
+                    <p style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", margin: 0 }}>{industry.title} Industry</p>
+                  </div>
                 </div>
+
+                <div style={{ marginBottom: 22 }}>
+                  <p style={{ fontSize: 10, fontWeight: 800, color: theme.color, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Challenge</p>
+                  <p style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", lineHeight: 1.8, margin: 0 }}>{caseStudy.challenge}</p>
+                </div>
+
                 <div>
-                  <p style={{ fontSize: 14, fontWeight: 800, color: "#fff", margin: 0 }}>{caseStudy.company}</p>
-                  <p style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", margin: 0 }}>{industry.title} Industry</p>
+                  <p style={{ fontSize: 10, fontWeight: 800, color: "#4ade80", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Solution</p>
+                  <p style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", lineHeight: 1.8, margin: 0 }}>{caseStudy.result}</p>
+                </div>
+
+                <div style={{ display: "flex", gap: 3, marginTop: 22 }}>
+                  {[1, 2, 3, 4, 5].map(i => <Star key={i} size={15} color="#fbbf24" fill="#fbbf24" />)}
                 </div>
               </div>
 
-              <div style={{ marginBottom: 22 }}>
-                <p style={{ fontSize: 10, fontWeight: 800, color: theme.color, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>
-                  Challenge
+              {/* Right */}
+              <div style={{ padding: "44px 40px", position: "relative" }}>
+                <p style={{ fontSize: 11, fontWeight: 800, color: "rgba(255,255,255,0.35)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 22 }}>
+                  Before vs After PixoraNest
                 </p>
-                <p style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", lineHeight: 1.8, margin: 0 }}>
-                  {caseStudy.challenge}
-                </p>
-              </div>
-
-              <div>
-                <p style={{ fontSize: 10, fontWeight: 800, color: "#4ade80", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>
-                  Solution
-                </p>
-                <p style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", lineHeight: 1.8, margin: 0 }}>
-                  {caseStudy.result}
-                </p>
-              </div>
-
-              <div style={{ display: "flex", gap: 3, marginTop: 22 }}>
-                {[1, 2, 3, 4, 5].map(i => (
-                  <Star key={i} size={15} color="#fbbf24" fill="#fbbf24" />
-                ))}
-              </div>
-            </div>
-
-            {/* Right — before/after */}
-            <div style={{ padding: "44px 40px", position: "relative" }}>
-              <p style={{ fontSize: 11, fontWeight: 800, color: "rgba(255,255,255,0.35)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 22 }}>
-                Before vs After PixoraNest
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                {caseStudy.before.map((b, i) => {
-                  const a = caseStudy.after[i]
-                  return (
-                    <motion.div key={i}
-                      initial={{ opacity: 0, x: 20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.1 }}
-                      viewport={{ once: true }}
-                      style={{
-                        background: "rgba(255,255,255,0.04)",
-                        border: "1px solid rgba(255,255,255,0.07)",
-                        borderRadius: 14, padding: "16px 18px",
-                      }}
-                    >
-                      <p style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontWeight: 700, marginBottom: 10 }}>
-                        {b.label}
-                      </p>
-                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                  {caseStudy.before.map((b, i) => {
+                    const a = caseStudy.after[i]
+                    return (
+                      <FadeIn key={i} delay={i * 100}>
                         <div style={{
-                          flex: 1, background: "rgba(239,68,68,0.12)",
-                          border: "1px solid rgba(239,68,68,0.2)",
-                          borderRadius: 10, padding: "8px 12px", textAlign: "center",
+                          background: "rgba(255,255,255,0.04)",
+                          border: "1px solid rgba(255,255,255,0.07)",
+                          borderRadius: 14, padding: "16px 18px",
                         }}>
-                          <span style={{ fontSize: 16, fontWeight: 900, color: "#fca5a5" }}>{b.value}</span>
-                          <span style={{ fontSize: 10, color: "#fca5a5", display: "block", fontWeight: 600 }}>Before</span>
+                          <p style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontWeight: 700, marginBottom: 10 }}>{b.label}</p>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <div style={{
+                              flex: 1, background: "rgba(239,68,68,0.12)",
+                              border: "1px solid rgba(239,68,68,0.2)",
+                              borderRadius: 10, padding: "8px 12px", textAlign: "center", minWidth: 0,
+                            }}>
+                              <span style={{ fontSize: 16, fontWeight: 900, color: "#fca5a5", wordBreak: "break-word" }}>{b.value}</span>
+                              <span style={{ fontSize: 10, color: "#fca5a5", display: "block", fontWeight: 600 }}>Before</span>
+                            </div>
+                            <ArrowRight size={14} color="rgba(255,255,255,0.25)" style={{ flexShrink: 0 }} />
+                            <div style={{
+                              flex: 1, background: "rgba(74,222,128,0.12)",
+                              border: "1px solid rgba(74,222,128,0.2)",
+                              borderRadius: 10, padding: "8px 12px", textAlign: "center", minWidth: 0,
+                            }}>
+                              <span style={{ fontSize: 16, fontWeight: 900, color: "#86efac", wordBreak: "break-word" }}>{a.value}</span>
+                              <span style={{ fontSize: 10, color: "#86efac", display: "block", fontWeight: 600 }}>After</span>
+                            </div>
+                          </div>
                         </div>
-                        <ArrowRight size={14} color="rgba(255,255,255,0.25)" />
-                        <div style={{
-                          flex: 1, background: "rgba(74,222,128,0.12)",
-                          border: "1px solid rgba(74,222,128,0.2)",
-                          borderRadius: 10, padding: "8px 12px", textAlign: "center",
-                        }}>
-                          <span style={{ fontSize: 16, fontWeight: 900, color: "#86efac" }}>{a.value}</span>
-                          <span style={{ fontSize: 10, color: "#86efac", display: "block", fontWeight: 600 }}>After</span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )
-                })}
+                      </FadeIn>
+                    )
+                  })}
+                </div>
               </div>
             </div>
           </div>
-        </motion.div>
+        </FadeIn>
       </SectionWrapper>
 
-      {/* ══════════════════════════════════════════
+      {/* ══════════════════════════════════════════════════════
           FAQ
-      ══════════════════════════════════════════ */}
-      <section style={{ padding: "80px 24px", background: `linear-gradient(180deg, ${theme.light} 0%, #fff 100%)` }}>
-        <div className="max-w-7xl mx-auto sm:px-8">
-          <div className="grid md:grid-cols-2 gap-16 items-start">
-
+          Outer: full-bleed background
+          Inner: max-w-7xl centered with responsive px
+      ══════════════════════════════════════════════════════ */}
+      <section
+        className="relative"
+        style={{ background: `linear-gradient(180deg, ${theme.light} 0%, #fff 100%)` }}
+      >
+        <div className={`${SECTION_MAX} ${SECTION_PX} py-16 lg:py-20`}>
+          <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-start">
             <div>
-              <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: theme.color }}>
-                FAQs
-              </span>
+              <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: theme.color }}>FAQs</span>
               <h2 className="text-2xl font-bold text-foreground sm:text-3xl mt-2 mb-5" style={{ letterSpacing: "-0.025em" }}>
                 Frequently Asked Questions
               </h2>
@@ -935,13 +880,13 @@ export function IndustryPageContent({ industry }: { industry: IndustryData }) {
                 Everything you need to know about AI automation for {industry.title.toLowerCase()} businesses.
               </p>
 
-              {/* CTA card */}
-              <motion.div
-                whileHover={{ y: -4, boxShadow: `0 16px 40px ${theme.color}15` }}
+              <div
                 style={{
                   background: "#fff", border: `1.5px solid ${theme.color}20`,
                   borderRadius: 22, padding: 26, transition: "all 0.3s",
                 }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)"; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 16px 40px ${theme.color}15` }}
+                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ""; (e.currentTarget as HTMLDivElement).style.boxShadow = "" }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
                   <div style={{
@@ -957,8 +902,7 @@ export function IndustryPageContent({ industry }: { industry: IndustryData }) {
                   </div>
                 </div>
                 <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.75, marginBottom: 18 }}>
-                  Pre-configured for {industry.title.toLowerCase()} use cases.
-                  No heavy setup required from your team.
+                  Pre-configured for {industry.title.toLowerCase()} use cases. No heavy setup required from your team.
                 </p>
                 <Link href="/contact" style={{
                   display: "inline-flex", alignItems: "center", gap: 7,
@@ -969,111 +913,97 @@ export function IndustryPageContent({ industry }: { industry: IndustryData }) {
                 }}>
                   Talk to an expert <ArrowRight size={14} />
                 </Link>
-              </motion.div>
+              </div>
             </div>
 
-            <motion.div
-              variants={staggerContainer} initial="hidden"
-              whileInView="visible" viewport={{ once: true }}
-              style={{ display: "flex", flexDirection: "column", gap: 10 }}
-            >
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {faqs.map((faq, i) => (
-                <FAQItem key={i} q={faq.q} a={faq.a} color={theme.color} index={i} />
+                <FadeIn key={i} delay={i * 60}>
+                  <FAQItem q={faq.q} a={faq.a} color={theme.color} />
+                </FadeIn>
               ))}
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════
+      {/* ══════════════════════════════════════════════════════
           CTA
-      ══════════════════════════════════════════ */}
-      <section style={{ padding: "80px 24px", background: "#fff" }}>
-        <motion.div
-          variants={staggerContainer} initial="hidden"
-          whileInView="visible" viewport={{ once: true }}
-          style={{
-            maxWidth: 840, margin: "0 auto",
-            background: `linear-gradient(135deg, ${theme.color}08 0%, #fff 40%, ${theme.color}05 100%)`,
-            border: `1.5px solid ${theme.color}20`,
-            borderRadius: 32, padding: "64px 52px",
-            textAlign: "center", position: "relative", overflow: "hidden",
-          }}
-        >
-          {/* Decorative orbs */}
-          <div style={{ position: "absolute", top: -60, right: -60, width: 220, height: 220, borderRadius: "50%", background: `${theme.color}06`, pointerEvents: "none" }} />
-          <div style={{ position: "absolute", bottom: -50, left: -50, width: 160, height: 160, borderRadius: "50%", background: `${theme.color}05`, pointerEvents: "none" }} />
-
-          {/* Dot grid accent */}
-          <div style={{
-            position: "absolute", top: 0, right: 0, width: 200, height: 200, pointerEvents: "none", opacity: 0.3,
-            backgroundImage: `radial-gradient(${theme.color}20 1px, transparent 1px)`,
-            backgroundSize: "16px 16px",
-          }} />
-
-          <motion.div variants={fadeInUp} style={{
-            width: 72, height: 72, borderRadius: "50%",
-            background: theme.light, border: `2.5px solid ${theme.color}30`,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            margin: "0 auto 24px",
-            boxShadow: `0 8px 32px ${theme.color}20`,
-          }}>
-            <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2.5, repeat: Infinity }}>
-              <Icon size={32} color={theme.color} />
-            </motion.div>
-          </motion.div>
-
-          <motion.h2 variants={fadeInUp}
-            className="text-3xl font-bold text-foreground sm:text-4xl"
-            style={{ letterSpacing: "-0.03em", marginBottom: 14 }}
-          >
-            Start Automating Your{" "}
-            <span style={{
-              background: `linear-gradient(135deg, ${theme.color}, ${theme.color}80)`,
-              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+          Outer: full-bleed white
+          Inner: max-w-7xl centered, CTA card is max-w-[840px] centred within
+      ══════════════════════════════════════════════════════ */}
+      <section className="relative" style={{ background: "#fff" }}>
+        <div className={`${SECTION_MAX} ${SECTION_PX} py-16 lg:py-20`}>
+          <FadeIn>
+            <div style={{
+              maxWidth: 840, margin: "0 auto",
+              background: `linear-gradient(135deg, ${theme.color}08 0%, #fff 40%, ${theme.color}05 100%)`,
+              border: `1.5px solid ${theme.color}20`,
+              borderRadius: 32, padding: "64px 40px",
+              textAlign: "center", position: "relative", overflow: "hidden",
             }}>
-              {industry.title}
-            </span>{" "}Business
-          </motion.h2>
+              {/* Decorative orbs */}
+              <div style={{ position: "absolute", top: -60, right: -60, width: 220, height: 220, borderRadius: "50%", background: `${theme.color}06`, pointerEvents: "none" }} />
+              <div style={{ position: "absolute", bottom: -50, left: -50, width: 160, height: 160, borderRadius: "50%", background: `${theme.color}05`, pointerEvents: "none" }} />
 
-          <motion.p variants={fadeInUp}
-            className="text-muted-foreground"
-            style={{ maxWidth: 520, margin: "0 auto 36px", lineHeight: 1.8, fontSize: 15 }}
-          >
-            See how PixoraNest AI can transform your {industry.title.toLowerCase()} operations.
-            Custom solutions, live in 24 hours.
-          </motion.p>
+              <div style={{
+                width: 72, height: 72, borderRadius: "50%",
+                background: theme.light, border: `2.5px solid ${theme.color}30`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                margin: "0 auto 24px",
+                boxShadow: `0 8px 32px ${theme.color}20`,
+              }}>
+                <div style={{ animation: "scaleBreath 2.5s ease-in-out infinite" }}>
+                  <Icon size={32} color={theme.color} />
+                </div>
+              </div>
 
-          <motion.div variants={fadeInUp} style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 14, marginBottom: 30 }}>
-            <Link href="/contact" style={{
-              background: theme.color, color: "#fff",
-              padding: "15px 36px", borderRadius: 14,
-              fontSize: 14, fontWeight: 700,
-              display: "inline-flex", alignItems: "center", gap: 9,
-              boxShadow: `0 4px 24px ${theme.color}45`, textDecoration: "none",
-            }}>
-              Book a Free Demo <ArrowRight size={16} />
-            </Link>
-            <Link href="/solutions" style={{
-              background: "#fff", border: "1.5px solid #e2e8f0",
-              color: "#0f172a", padding: "15px 30px", borderRadius: 14,
-              fontSize: 14, fontWeight: 600, textDecoration: "none",
-              boxShadow: "0 2px 10px rgba(0,0,0,0.06)",
-            }}>
-              Explore All Solutions
-            </Link>
-          </motion.div>
+              <h2 className="text-3xl font-bold text-foreground sm:text-4xl" style={{ letterSpacing: "-0.03em", marginBottom: 14 }}>
+                Start Automating Your{" "}
+                <span style={{
+                  background: `linear-gradient(135deg, ${theme.color}, ${theme.color}80)`,
+                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                }}>
+                  {industry.title}
+                </span>{" "}Business
+              </h2>
 
-          <motion.div variants={fadeInUp} style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 28, fontSize: 13, color: "#64748b" }}>
-            {["No setup fees", "Live in 24 hours", "Cancel anytime"].map((t, i) => (
-              <span key={i} style={{ display: "flex", alignItems: "center", gap: 7, fontWeight: 600 }}>
-                <CheckCircle2 size={15} color={theme.color} /> {t}
-              </span>
-            ))}
-          </motion.div>
-        </motion.div>
+              <p className="text-muted-foreground" style={{ maxWidth: 520, margin: "0 auto 36px", lineHeight: 1.8, fontSize: 15 }}>
+                See how PixoraNest AI can transform your {industry.title.toLowerCase()} operations. Custom solutions, live in 24 hours.
+              </p>
+
+              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 14, marginBottom: 30 }}>
+                <Link href="/contact" style={{
+                  background: theme.color, color: "#fff",
+                  padding: "15px 36px", borderRadius: 14,
+                  fontSize: 14, fontWeight: 700,
+                  display: "inline-flex", alignItems: "center", gap: 9,
+                  boxShadow: `0 4px 24px ${theme.color}45`, textDecoration: "none",
+                }}>
+                  Book a Free Demo <ArrowRight size={16} />
+                </Link>
+                <Link href="/solutions" style={{
+                  background: "#fff", border: "1.5px solid #e2e8f0",
+                  color: "#0f172a", padding: "15px 30px", borderRadius: 14,
+                  fontSize: 14, fontWeight: 600, textDecoration: "none",
+                  boxShadow: "0 2px 10px rgba(0,0,0,0.06)",
+                }}>
+                  Explore All Solutions
+                </Link>
+              </div>
+
+              {/* Trust badges */}
+              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 16, fontSize: 13, color: "#64748b" }}>
+                {["No setup fees", "Live in 24 hours", "Cancel anytime"].map((t, i) => (
+                  <span key={i} style={{ display: "flex", alignItems: "center", gap: 7, fontWeight: 600 }}>
+                    <CheckCircle2 size={15} color={theme.color} /> {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </FadeIn>
+        </div>
       </section>
-
     </div>
   )
 }

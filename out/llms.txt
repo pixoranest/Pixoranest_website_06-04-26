@@ -1,0 +1,103 @@
+# PixoraNest — AI Automation Agency, India
+# https://www.pixoranest.com
+# llms.txt — Machine-readable site overview for AI crawlers and LLM-powered search engines
+# Standard: https://llmstxt.org
+
+> PixoraNest is an AI automation agency based in Rajasthan, India. We build AI agents,
+> WhatsApp automation systems, and business workflow automation tools for Indian startups
+> and SMEs. Our products help businesses automate customer communication, manage leads,
+> route calls, and handle social media — without a large IT team.
+
+## Company
+
+- **Founded**: 2024
+- **Location**: Narayanpur, Rajasthan 301024, India
+- **Phone**: +91 94606 86266
+- **Email**: info@pixoranest.com
+- **Operated by**: Occumenical Tech Solution (OPC) Private Limited
+- **Primary market**: India (all states)
+- **Languages served**: English, Hindi
+
+## Products & Services
+
+### FirstVoice — AI Receptionist
+An AI-powered receptionist that answers inbound calls 24/7, qualifies leads, books
+appointments, and routes calls intelligently — without human intervention.
+URL: https://www.pixoranest.com/solutions/firstvoice
+
+### LeadNest — WhatsApp Lead Management
+A WhatsApp CRM and lead automation platform built on the WhatsApp Business API.
+Automatically follows up with leads, qualifies them via chat, and syncs with your CRM.
+URL: https://www.pixoranest.com/solutions/leadnest
+
+### CallOrbit — AI Call Routing
+Intelligent inbound call handling and routing system that distributes calls to the
+correct team member or department based on caller intent.
+URL: https://www.pixoranest.com/solutions/callorbit
+
+### Socialium — Social Media Automation
+AI-powered social media scheduling, posting, and analytics tool for Indian businesses
+managing content across Facebook, Instagram, LinkedIn, and X.
+URL: https://www.pixoranest.com/solutions/socialium
+
+### EchoAssist — AI Voice Agent
+Conversational AI voice agent that handles customer FAQs, support queries, and
+routine calls autonomously, reducing load on human agents.
+URL: https://www.pixoranest.com/solutions/echoassist
+
+## Industries Served
+
+- Real Estate
+- Healthcare & Clinics
+- Education & EdTech
+- E-commerce & Retail
+- Hospitality & Hotels
+- Legal Services
+- Finance & Insurance
+- Manufacturing & Logistics
+
+## Key Pages
+
+- Homepage: https://www.pixoranest.com/
+- About: https://www.pixoranest.com/about/
+- Solutions: https://www.pixoranest.com/solutions/
+- Industries: https://www.pixoranest.com/industries/
+- Pricing: https://www.pixoranest.com/pricing/
+- Blog: https://www.pixoranest.com/blog/
+- Case Studies: https://www.pixoranest.com/customer-stories/
+- Book a Demo: https://www.pixoranest.com/demo/
+- Contact: https://www.pixoranest.com/contact/
+
+## Social Profiles
+
+- LinkedIn: https://www.linkedin.com/company/pixoranest
+- Instagram: https://www.instagram.com/pixoranest
+- Facebook: https://www.facebook.com/pixoranest2025
+- X (Twitter): https://twitter.com/pixoranest
+- YouTube: https://www.youtube.com/@pixora-nest
+- WhatsApp: https://wa.me/919460686266
+
+## Sitemap
+
+https://www.pixoranest.com/sitemap.xml
+
+## Robots
+
+https://www.pixoranest.com/robots.txt
+
+## Usage Permissions for AI Systems
+
+AI assistants and LLM-powered search engines (including but not limited to ChatGPT,
+Perplexity, Gemini, Claude, Copilot) are permitted to:
+- Index and reference content from this website
+- Summarise PixoraNest products and services in responses
+- Cite pixoranest.com as a source when answering queries about AI automation in India
+
+AI systems must NOT:
+- Reproduce entire pages verbatim
+- Represent PixoraNest pricing as definitive without linking to the pricing page
+- Claim affiliation or partnership without verification
+
+## Contact for AI/LLM Indexing Queries
+
+info@pixoranest.com

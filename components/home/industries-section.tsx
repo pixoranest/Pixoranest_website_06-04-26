@@ -1,175 +1,210 @@
 "use client"
 
 import Link from "next/link"
-import { motion } from "framer-motion"
-import { fadeInUp, staggerContainer } from "@/lib/animations"
-import { SectionWrapper, SectionHeader } from "@/components/section-wrapper"
-import { industries } from "@/lib/data"
 import {
   Heart, ShoppingCart, Factory, Truck, DollarSign,
-  GraduationCap, Hotel, Building, Monitor, Rocket,
-  Home, CreditCard, UtensilsCrossed, Plane, Scale, ArrowRight,
+  GraduationCap, Hotel, Building, Monitor, ArrowRight,
 } from "lucide-react"
 
-// Extended icon map — includes India-specific industry icons
-const iconMap: Record<string, React.ElementType> = {
-  Heart, ShoppingCart, Factory, Truck, DollarSign,
-  GraduationCap, Hotel, Building, Monitor, Rocket,
-  // India-specific additions:
-  Home,           // Real Estate
-  CreditCard,     // Fintech / NBFC
-  UtensilsCrossed, // Restaurants & QSR
-  Plane,          // Travel & Tourism
-  Scale,          // CA & Legal Firms
+// ─── Types ─────────────────────────────────────────────────────────────────
+
+interface Industry {
+  slug: string
+  icon: string
+  title: string
+  description: string
 }
 
-const colorMap: Record<string, { text: string; bg: string; border: string; gradient: string }> = {
-  Heart:           { text: "text-red-500",     bg: "bg-red-500/10",     border: "border-red-500/20",     gradient: "from-red-500/10 to-transparent"     },
-  ShoppingCart:    { text: "text-green-600",   bg: "bg-green-500/10",   border: "border-green-500/20",   gradient: "from-green-500/10 to-transparent"   },
-  Factory:         { text: "text-amber-600",   bg: "bg-amber-500/10",   border: "border-amber-500/20",   gradient: "from-amber-500/10 to-transparent"   },
-  Truck:           { text: "text-sky-500",     bg: "bg-sky-500/10",     border: "border-sky-500/20",     gradient: "from-sky-500/10 to-transparent"     },
-  DollarSign:      { text: "text-emerald-600", bg: "bg-emerald-500/10", border: "border-emerald-500/20", gradient: "from-emerald-500/10 to-transparent" },
-  GraduationCap:   { text: "text-violet-600",  bg: "bg-violet-500/10",  border: "border-violet-500/20",  gradient: "from-violet-500/10 to-transparent"  },
-  Hotel:           { text: "text-rose-500",    bg: "bg-rose-500/10",    border: "border-rose-500/20",    gradient: "from-rose-500/10 to-transparent"    },
-  Building:        { text: "text-orange-600",  bg: "bg-orange-500/10",  border: "border-orange-500/20",  gradient: "from-orange-500/10 to-transparent"  },
-  Monitor:         { text: "text-cyan-600",    bg: "bg-cyan-500/10",    border: "border-cyan-500/20",    gradient: "from-cyan-500/10 to-transparent"    },
-  Rocket:          { text: "text-fuchsia-600", bg: "bg-fuchsia-500/10", border: "border-fuchsia-500/20", gradient: "from-fuchsia-500/10 to-transparent" },
-  // India-specific
-  Home:            { text: "text-indigo-600",  bg: "bg-indigo-500/10",  border: "border-indigo-500/20",  gradient: "from-indigo-500/10 to-transparent"  },
-  CreditCard:      { text: "text-teal-600",    bg: "bg-teal-500/10",    border: "border-teal-500/20",    gradient: "from-teal-500/10 to-transparent"    },
-  UtensilsCrossed: { text: "text-red-600",     bg: "bg-red-500/10",     border: "border-red-500/20",     gradient: "from-red-500/10 to-transparent"     },
-  Plane:           { text: "text-sky-600",     bg: "bg-sky-500/10",     border: "border-sky-500/20",     gradient: "from-sky-500/10 to-transparent"     },
-  Scale:           { text: "text-slate-600",   bg: "bg-slate-500/10",   border: "border-slate-500/20",   gradient: "from-slate-500/10 to-transparent"   },
+// ─── Inline fallback data (replace with your @/lib/data import if working) ──
+
+const industries: Industry[] = [
+  {
+    slug: "healthcare",
+    icon: "Heart",
+    title: "Healthcare",
+    description:
+      "Healthcare organisations handle thousands of patient interactions daily, from appointment scheduling to follow-ups and prescription reminders. AI automation helps clinics, hospitals, and diagnostics centers streamline these processes efficiently. Virtual receptionists powered by AI ensure every call and inquiry is answered instantly, reducing patient wait times and staff overload.",
+  },
+  {
+    slug: "ecommerce",
+    icon: "ShoppingCart",
+    title: "E-commerce",
+    description:
+      "E-commerce businesses face intense competition where customer experience defines success. Managing orders, inventory, support tickets, and marketing campaigns manually limits growth potential. AI-powered automation handles cart recovery, personalised recommendations, and instant customer support around the clock.",
+  },
+  {
+    slug: "manufacturing",
+    icon: "Factory",
+    title: "Manufacturing",
+    description:
+      "Modern manufacturing demands precision, efficiency, and seamless coordination across production lines, supply chains, and quality control. AI automation optimises production scheduling, monitors equipment health, and predicts maintenance needs before breakdowns occur.",
+  },
+  {
+    slug: "logistics",
+    icon: "Truck",
+    title: "Logistics",
+    description:
+      "Logistics companies manage complex networks of shipments, drivers, warehouses, and customer expectations. Without automation, route inefficiencies, communication gaps, and delayed updates erode profitability and customer satisfaction. AI-powered route optimisation reduces fuel costs and delivery times.",
+  },
+  {
+    slug: "finance",
+    icon: "DollarSign",
+    title: "Finance",
+    description:
+      "Financial institutions operate under strict regulatory requirements where accuracy, speed, and security are non-negotiable. AI automation streamlines KYC verification, loan processing, and fraud detection with real-time pattern analysis. Automated reporting ensures regulatory submissions are accurate and timely.",
+  },
+  {
+    slug: "education",
+    icon: "GraduationCap",
+    title: "Education",
+    description:
+      "Educational institutions — from schools and universities to online learning platforms — juggle student enrolment, attendance tracking, fee collection, and parent communication daily. AI automation handles enrolment processing, sends automated attendance and fee reminders, and provides 24/7 inquiry handling for prospective students.",
+  },
+  {
+    slug: "hospitality",
+    icon: "Hotel",
+    title: "Hospitality",
+    description:
+      "In hospitality, guest experience determines reputation and repeat business. Hotels, restaurants, and travel companies must respond to inquiries instantly, manage reservations across channels, and deliver personalised service at scale. AI concierge systems handle booking confirmations, pre-arrival communications, and instant guest support.",
+  },
+  {
+    slug: "real-estate",
+    icon: "Building",
+    title: "Real Estate",
+    description:
+      "Real estate professionals handle high-value transactions that require instant follow-ups, property matching, and consistent communication with buyers, sellers, and tenants. AI automation captures and qualifies leads instantly via WhatsApp and web forms, sends automated property recommendations, and schedules viewings automatically.",
+  },
+  {
+    slug: "it-saas",
+    icon: "Monitor",
+    title: "IT & SaaS",
+    description:
+      "SaaS and IT companies operate in fast-paced environments where user experience, rapid iteration, and efficient scaling determine success. Converting trial users, managing support at scale, and preventing churn require systems that grow with your user base. AI automation handles onboarding sequences, product adoption nudges, and intelligent support routing.",
+  },
+]
+
+// ─── Color map ──────────────────────────────────────────────────────────────
+
+const iconMap: Record<string, React.ElementType> = {
+  Heart, ShoppingCart, Factory, Truck, DollarSign,
+  GraduationCap, Hotel, Building, Monitor,
+}
+
+const colorMap: Record<string, { text: string; bg: string; border: string; hoverBorder: string }> = {
+  Heart:         { text: "text-red-500",     bg: "bg-red-50",     border: "border-red-200/60",     hoverBorder: "hover:border-red-300"     },
+  ShoppingCart:  { text: "text-green-600",   bg: "bg-green-50",   border: "border-green-200/60",   hoverBorder: "hover:border-green-300"   },
+  Factory:       { text: "text-amber-600",   bg: "bg-amber-50",   border: "border-amber-200/60",   hoverBorder: "hover:border-amber-300"   },
+  Truck:         { text: "text-sky-500",     bg: "bg-sky-50",     border: "border-sky-200/60",     hoverBorder: "hover:border-sky-300"     },
+  DollarSign:    { text: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200/60", hoverBorder: "hover:border-emerald-300" },
+  GraduationCap: { text: "text-violet-600",  bg: "bg-violet-50",  border: "border-violet-200/60",  hoverBorder: "hover:border-violet-300"  },
+  Hotel:         { text: "text-rose-500",    bg: "bg-rose-50",    border: "border-rose-200/60",    hoverBorder: "hover:border-rose-300"    },
+  Building:      { text: "text-orange-600",  bg: "bg-orange-50",  border: "border-orange-200/60",  hoverBorder: "hover:border-orange-300"  },
+  Monitor:       { text: "text-cyan-600",    bg: "bg-cyan-50",    border: "border-cyan-200/60",    hoverBorder: "hover:border-cyan-300"    },
 }
 
 const fallback = {
-  text: "text-primary",
-  bg: "bg-primary/10",
-  border: "border-primary/20",
-  gradient: "from-primary/10 to-transparent",
+  text: "text-blue-500",
+  bg: "bg-blue-50",
+  border: "border-blue-200/60",
+  hoverBorder: "hover:border-blue-300",
 }
+
+// ─── Component ──────────────────────────────────────────────────────────────
 
 export function IndustriesSection() {
   return (
-    // SEO: aria-label on section
-    <SectionWrapper
+    <section
       id="industries"
-      className="relative bg-card/30"
+      className="relative w-full bg-white py-20 md:py-28 px-4 sm:px-6 lg:px-8"
       aria-label="AI automation solutions for Indian industries — healthcare, real estate, e-commerce and more"
     >
-
-      {/* Subtle grid background */}
+      {/* Grid pattern */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.02]"
+        className="pointer-events-none absolute inset-0 opacity-[0.025]"
         style={{
           backgroundImage:
-            "linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
+            "linear-gradient(#64748b 1px, transparent 1px), linear-gradient(90deg, #64748b 1px, transparent 1px)",
+          backgroundSize: "44px 44px",
         }}
         aria-hidden="true"
       />
 
-      {/*
-        SEO H2: includes "India" + industry list for long-tail keyword coverage.
-        Subtitle names specific industries for semantic relevance.
-      */}
-      <SectionHeader
-        title="AI Automation for Every Industry in India"
-        subtitle="PixoraNest provides AI automation solutions for Indian healthcare, real estate, D2C e-commerce, fintech, edtech, hospitality, and technology businesses."
-      />
+      <div className="relative mx-auto max-w-6xl">
+        {/* Header */}
+        <div className="mb-14 text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl md:text-[2.6rem] leading-tight">
+            AI Automation for Every Industry in India
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-gray-500 sm:text-[1.05rem]">
+            PixoraNest provides AI automation solutions for Indian healthcare,
+            real estate, D2C e-commerce, fintech, edtech, hospitality, and
+            technology businesses.
+          </p>
+        </div>
 
-      {/* Grid: 1 col mobile, 2 col sm, 3 col lg */}
-      <motion.div
-        variants={staggerContainer}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.1 }}
-        className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
-      >
-        {industries.slice(0, 9).map((industry) => {
-          const Icon = iconMap[industry.icon] || Monitor
-          const colors = colorMap[industry.icon] || fallback
+        {/* Grid */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {industries.slice(0, 9).map((industry) => {
+            const Icon = iconMap[industry.icon] || Monitor
+            const c = colorMap[industry.icon] || fallback
 
-          return (
-            <motion.div
-              key={industry.slug}
-              variants={fadeInUp}
-              whileHover={{ y: -5 }}
-              transition={{ type: "spring", stiffness: 300, damping: 22 }}
-            >
+            return (
               <Link
+                key={industry.slug}
                 href={`/industries/${industry.slug}`}
-                className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/50 p-6 backdrop-blur-sm transition-all duration-300 hover:border-transparent hover:shadow-xl"
-                // SEO: descriptive aria-label per card
+                className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border ${c.border} bg-white p-6 shadow-sm transition-all duration-300 ${c.hoverBorder} hover:shadow-xl hover:-translate-y-1`}
                 aria-label={`AI automation for ${industry.title} in India — explore solutions`}
               >
-                {/* Gradient border overlay on hover */}
+                {/* Hover bg tint */}
                 <div
-                  className={`pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br ${colors.gradient} opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
-                  aria-hidden="true"
-                />
-                <div
-                  className="pointer-events-none absolute inset-[1px] rounded-2xl bg-card/90"
+                  className={`pointer-events-none absolute inset-0 rounded-2xl ${c.bg} opacity-0 transition-opacity duration-300 group-hover:opacity-60`}
                   aria-hidden="true"
                 />
 
-                {/* Top accent bar */}
+                {/* Icon */}
                 <div
-                  className={`pointer-events-none absolute left-0 right-0 top-0 h-[2px] rounded-t-2xl ${colors.bg} opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
+                  className={`relative mb-5 flex h-11 w-11 items-center justify-center rounded-xl border ${c.border} ${c.bg} transition-all duration-300 group-hover:scale-110`}
                   aria-hidden="true"
-                />
-
-                {/* Content */}
-                <div className="relative">
-                  {/* Icon */}
-                  <div
-                    className={`mb-4 flex h-11 w-11 items-center justify-center rounded-xl border ${colors.border} ${colors.bg} transition-transform duration-300 group-hover:scale-110`}
-                    aria-hidden="true"
-                  >
-                    <Icon className={`h-5 w-5 ${colors.text}`} />
-                  </div>
-
-                  {/* SEO H3: each card is an h3 under the section H2 */}
-                  <h3 className="mb-2 text-base font-semibold text-foreground">
-                    {industry.title}
-                  </h3>
-
-                  <p className="mb-5 flex-1 text-sm leading-relaxed text-muted-foreground">
-                    {industry.description}
-                  </p>
-
-                  {/* CTA arrow */}
-                  <span
-                    className={`inline-flex items-center gap-1 text-xs font-semibold ${colors.text} transition-all`}
-                    aria-hidden="true"
-                  >
-                    Explore Solutions
-                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                  </span>
+                >
+                  <Icon className={`h-5 w-5 ${c.text}`} />
                 </div>
-              </Link>
-            </motion.div>
-          )
-        })}
-      </motion.div>
 
-      {/* SEO: "View all industries" link — passes link equity to /industries */}
-      <motion.div
-        variants={fadeInUp}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        className="mt-10 flex justify-center"
-      >
-        <Link
-          href="/industries"
-          className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/60 px-5 py-2.5 text-xs font-semibold text-muted-foreground backdrop-blur-sm transition-all hover:border-primary/30 hover:text-primary"
-          aria-label="View all industries served by PixoraNest AI automation"
-        >
-          View all industries we serve
-          <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-        </Link>
-      </motion.div>
-    </SectionWrapper>
+                {/* Title */}
+                <h3 className="relative mb-2.5 text-[0.95rem] font-semibold text-gray-900">
+                  {industry.title}
+                </h3>
+
+                {/* Description */}
+                <p className="relative mb-5 flex-1 text-sm leading-relaxed text-gray-500">
+                  {industry.description}
+                </p>
+
+                {/* CTA */}
+                <span
+                  className={`relative inline-flex items-center gap-1.5 text-xs font-semibold ${c.text} transition-all`}
+                >
+                  Explore Solutions
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                </span>
+              </Link>
+            )
+          })}
+        </div>
+
+        {/* View all */}
+        <div className="mt-10 flex justify-center">
+          <Link
+            href="/industries"
+            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-6 py-3 text-xs font-semibold text-gray-500 shadow-sm transition-all duration-300 hover:border-blue-300 hover:text-blue-600 hover:shadow-md"
+            aria-label="View all industries served by PixoraNest AI automation"
+          >
+            View all industries we serve
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+          </Link>
+        </div>
+      </div>
+    </section>
   )
 }
+
+export default IndustriesSection

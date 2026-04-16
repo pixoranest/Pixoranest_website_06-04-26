@@ -2,7 +2,6 @@ import Link from "next/link"
 import { footerLinks, socialLinks } from "@/lib/data"
 import { Mail, Phone, MapPin } from "lucide-react"
 
-/* ─── Local type override until lib/data.ts is updated ─── */
 interface FooterLink {
   label: string
   href: string
@@ -50,22 +49,22 @@ function YouTubeIcon({ className }: { className?: string }) {
 }
 
 const footerSocialIcons: Record<string, React.FC<{ className?: string }>> = {
-  WhatsApp: WhatsAppIcon,
-  LinkedIn: LinkedInIcon,
-  Facebook: FacebookIcon,
+  WhatsApp:  WhatsAppIcon,
+  LinkedIn:  LinkedInIcon,
+  Facebook:  FacebookIcon,
   Instagram: InstagramIcon,
-  YouTube: YouTubeIcon,
+  YouTube:   YouTubeIcon,
 }
 
+// Filter out any existing YouTube entry from socialLinks to avoid duplicate keys,
+// then prepend WhatsApp and append YouTube with the correct channel URL.
 const allFooterSocials = [
-  { label: "WhatsApp", href: "https://wa.me/919460686266", icon: "WhatsApp" },
-  ...socialLinks,
+  { label: "WhatsApp", href: "https://wa.me/919460686266",           icon: "WhatsApp" },
+  ...socialLinks.filter((s) => s.label !== "YouTube"),
+  { label: "YouTube",  href: "https://www.youtube.com/@pixora-nest",  icon: "YouTube"  },
 ]
 
 export function Footer() {
-  /* Cast company links to FooterLink so `external` is recognised by TS.
-     The real fix is to add `external?: boolean` to the type in lib/data.ts —
-     share that file and I will update it too. */
   const companyLinks = footerLinks.company as FooterLink[]
 
   return (
@@ -77,17 +76,16 @@ export function Footer() {
           <div className="space-y-4">
             <img
               src="/images/logo-pixoranest.png"
-              alt="PixoraNest Logo"
+              alt="PixoraNest — AI Automation Agency India"
               className="h-8 w-auto"
             />
             <p className="text-sm leading-relaxed text-muted-foreground">
               We design AI-powered automation systems that streamline operations,
               qualify leads, and help businesses scale faster with less manual
               effort. Trusted by growing businesses to automate workflows and
-              increase efficiency. From lead capture to conversion, our AI
-              handles the heavy lifting — so you can focus on growth.
+              increase efficiency.
             </p>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               {allFooterSocials.map((social) => {
                 const Icon = footerSocialIcons[social.icon]
                 return Icon ? (
@@ -96,7 +94,7 @@ export function Footer() {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={social.label}
+                    aria-label={`PixoraNest on ${social.label}`}
                     className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
                   >
                     <Icon className="h-4 w-4" />
@@ -108,9 +106,7 @@ export function Footer() {
 
           {/* Company */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold text-foreground">
-              Company
-            </h3>
+            <h3 className="mb-4 text-sm font-semibold text-foreground">Company</h3>
             <ul className="space-y-3">
               {companyLinks.map((link) => (
                 <li key={link.label} className="flex items-center gap-2">
@@ -139,9 +135,7 @@ export function Footer() {
 
           {/* Legal */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold text-foreground">
-              Legal
-            </h3>
+            <h3 className="mb-4 text-sm font-semibold text-foreground">Legal</h3>
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
                 <li key={link.href}>
@@ -158,19 +152,20 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold text-foreground">
-              Contact
-            </h3>
+            <h3 className="mb-4 text-sm font-semibold text-foreground">Contact</h3>
             <div className="space-y-3">
+
               <div className="flex items-start gap-2.5">
                 <Mail className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                 <a
                   href="mailto:info@pixoranest.com"
                   className="text-sm text-muted-foreground transition-colors hover:text-primary"
+                  aria-label="Email PixoraNest"
                 >
-                  info@pixoranest.com
+                  info&#64;pixoranest&#46;com
                 </a>
               </div>
+
               <div className="flex items-start gap-2.5">
                 <Phone className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                 <a
@@ -180,13 +175,15 @@ export function Footer() {
                   +91 94606 86266
                 </a>
               </div>
+
               <div className="flex items-start gap-2.5">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  PixoraNest, 1st Floor, near Tehsil Bhawan, Narayanpur,
-                  Rajasthan 301024, India
-                </p>
+                <address className="not-italic text-sm leading-relaxed text-muted-foreground">
+                  PixoraNest, 1st Floor, near Tehsil Bhawan,<br />
+                  Narayanpur, Rajasthan 301024, India
+                </address>
               </div>
+
             </div>
           </div>
         </div>
@@ -195,7 +192,7 @@ export function Footer() {
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 sm:flex-row">
           <div className="text-center sm:text-left">
             <p className="text-sm text-muted-foreground">
-              {"© 2026 PixoraNest. All rights reserved."}
+              © 2026 PixoraNest. All rights reserved.
             </p>
             <p className="mt-1 text-xs text-muted-foreground/70">
               Powered by Occumenical Tech Solution (OPC) Private Limited

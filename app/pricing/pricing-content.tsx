@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef } from "react"
 import Link from "next/link"
-import { motion, AnimatePresence } from "framer-motion"
 import {
   CheckCircle2, X, ArrowRight, Zap, Shield,
   MessageCircle, BarChart3, Users, Bot, Star,
@@ -53,7 +52,7 @@ function Counter({ to, suffix = "" }: { to: number; suffix?: string }) {
   return <span ref={ref}>{n.toLocaleString()}{suffix}</span>
 }
 
-/* ─── Live Chat Widget ──────────────────────────────────────────── */
+/* ─── Live Chat Widget (pure CSS, no framer-motion) ─────────────── */
 const MSGS = [
   { id: 1, from: "user",   text: "Hi, what plans do you offer?" },
   { id: 2, from: "ai",     text: "We have Pro Plus & Foundation! Which fits you best?" },
@@ -123,36 +122,36 @@ function ChatWidget() {
           </div>
         </div>
       </div>
+
       {/* messages */}
       <div ref={bottom} style={{ padding: 14, minHeight: 220, maxHeight: 240, overflowY: "auto", display: "flex", flexDirection: "column", gap: 8 }}>
-        <AnimatePresence>
-          {MSGS.filter(m => visible.includes(m.id)).map(msg => (
-            <motion.div key={msg.id}
-              initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.28, type: "spring", stiffness: 240 }}
-              style={{ display: "flex", justifyContent: msg.from === "user" ? "flex-start" : msg.from === "system" ? "center" : "flex-end" }}
-            >
-              {msg.from === "system" ? (
-                <div style={{ background: "rgba(74,222,128,0.15)", border: "1px solid rgba(74,222,128,0.3)", borderRadius: 20, padding: "4px 12px", fontSize: 10.5, fontWeight: 600, color: "#4ade80" }}>{msg.text}</div>
-              ) : (
-                <div style={{ background: msg.from === "user" ? "rgba(37,99,235,0.15)" : C.blue, color: msg.from === "user" ? "#1e293b" : "#fff", borderRadius: msg.from === "user" ? "4px 14px 14px 14px" : "14px 4px 14px 14px", padding: "8px 12px", fontSize: 12, lineHeight: 1.5, maxWidth: "76%", fontWeight: 500 }}>
-                  {msg.text}
-                </div>
-              )}
-            </motion.div>
-          ))}
-        </AnimatePresence>
+        {MSGS.filter(m => visible.includes(m.id)).map(msg => (
+          <div
+            key={msg.id}
+            className="chat-msg-enter"
+            style={{ display: "flex", justifyContent: msg.from === "user" ? "flex-start" : msg.from === "system" ? "center" : "flex-end" }}
+          >
+            {msg.from === "system" ? (
+              <div style={{ background: "rgba(74,222,128,0.15)", border: "1px solid rgba(74,222,128,0.3)", borderRadius: 20, padding: "4px 12px", fontSize: 10.5, fontWeight: 600, color: "#4ade80" }}>{msg.text}</div>
+            ) : (
+              <div style={{ background: msg.from === "user" ? "rgba(37,99,235,0.15)" : C.blue, color: msg.from === "user" ? "#1e293b" : "#fff", borderRadius: msg.from === "user" ? "4px 14px 14px 14px" : "14px 4px 14px 14px", padding: "8px 12px", fontSize: 12, lineHeight: 1.5, maxWidth: "76%", fontWeight: 500 }}>
+                {msg.text}
+              </div>
+            )}
+          </div>
+        ))}
+
         {typing && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: "flex", justifyContent: "flex-end" }}>
+          <div style={{ display: "flex", justifyContent: "flex-end" }} className="chat-msg-enter">
             <div style={{ background: C.blue, borderRadius: "14px 4px 14px 14px", padding: "8px 12px", display: "flex", gap: 3, alignItems: "center" }}>
               {[0,1,2].map(i => (
-                <motion.div key={i} style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(255,255,255,0.8)" }}
-                  animate={{ y: [0, -4, 0] }} transition={{ duration: 0.55, repeat: Infinity, delay: i * 0.15 }} />
+                <span key={i} className="typing-dot" style={{ animationDelay: `${i * 0.15}s` }} />
               ))}
             </div>
-          </motion.div>
+          </div>
         )}
       </div>
+
       {/* input bar */}
       <div style={{ borderTop: "1px solid rgba(255,255,255,0.15)", padding: "10px 14px", display: "flex", alignItems: "center", gap: 8 }}>
         <div style={{ flex: 1, background: "rgba(37,99,235,0.08)", borderRadius: 18, padding: "7px 12px", fontSize: 11.5, color: "rgba(30,41,59,0.5)" }}>Type a message...</div>
@@ -248,6 +247,29 @@ export function PricingPageContent() {
         .pricing-page h1,.pricing-page h2,.pricing-page h3,.pricing-page p,.pricing-page span { margin: 0; padding: 0; }
         .pricing-page { font-family: 'Plus Jakarta Sans', sans-serif; background: transparent; color: #1e293b; overflow-x: hidden; }
         .pricing-page a { text-decoration: none; }
+
+        /* ── Replaced framer-motion animations with CSS ── */
+        @keyframes chatMsgIn {
+          from { opacity: 0; transform: translateY(10px) scale(0.95); }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .chat-msg-enter {
+          animation: chatMsgIn 0.28s cubic-bezier(0.34,1.56,0.64,1) both;
+        }
+
+        @keyframes typingBounce {
+          0%, 100% { transform: translateY(0); }
+          50%       { transform: translateY(-4px); }
+        }
+        .typing-dot {
+          display: inline-block;
+          width: 4px; height: 4px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.8);
+          animation: typingBounce 0.55s ease-in-out infinite;
+        }
+
+        /* ── Other animations ── */
         .badge-pulse { animation: badgePulse 2s ease-in-out infinite; }
         @keyframes badgePulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
         .fade-up { animation: fadeUp 0.6s ease both; }
@@ -258,6 +280,8 @@ export function PricingPageContent() {
         .stagger-4 { animation-delay: 0.46s; }
         .float { animation: float 3.5s ease-in-out infinite; }
         @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+        /* ── Layout ── */
         .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
         @media(max-width:900px){
           .hero-grid { grid-template-columns: 1fr; gap: 40px; }
@@ -462,9 +486,9 @@ export function PricingPageContent() {
                           Get Started <ArrowRight size={15} />
                         </Link>
                         <p style={{ textAlign: "center", fontSize: 11, color: plan.dark ? "rgba(255,255,255,0.3)" : "#94a3b8", marginTop: 11 }}>
-                        {plan.dark 
-  ? "₹65K setup + ₹20K/month · Cancel anytime" 
-  : "Annual billing · Cancel anytime"}
+                          {plan.dark
+                            ? "₹65K setup + ₹20K/month · Cancel anytime"
+                            : "Annual billing · Cancel anytime"}
                         </p>
                       </div>
                     </div>

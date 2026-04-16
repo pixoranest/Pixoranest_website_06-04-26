@@ -1,7 +1,7 @@
 "use client"
 
+import { useEffect, useRef } from "react"
 import Link from "next/link"
-import { motion } from "framer-motion"
 import {
   Database, Filter, Bell, BarChart2, Zap, Users,
   GitBranch, PieChart, ArrowRight, CheckCircle2,
@@ -11,11 +11,53 @@ import {
 const WA_LINK =
   "https://wa.me/919460686266?text=Hi%2C%20I%27m%20interested%20in%20CRM%20Automation%20by%20PixoraNest"
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 32 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } },
+// ── Scroll-reveal hook (same pattern as BlogArticleContent) ────────────────
+function useReveal() {
+  const ref = useRef<HTMLElement>(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      el.classList.add("crm-revealed")
+      return
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add("crm-revealed")
+          io.disconnect()
+        }
+      },
+      { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+  return ref
 }
-const stagger = { visible: { transition: { staggerChildren: 0.1 } } }
+
+// ── Reveal wrapper component ───────────────────────────────────────────────
+function Reveal({
+  children,
+  className = "",
+  tag: Tag = "div",
+  style,
+}: {
+  children: React.ReactNode
+  className?: string
+  tag?: keyof React.JSX.IntrinsicElements
+  style?: React.CSSProperties
+}) {
+  const ref = useReveal()
+  const El = Tag as React.ElementType
+  return (
+    <El ref={ref} className={`crm-reveal ${className}`} style={style}>
+      {children}
+    </El>
+  )
+}
+
+// ── Data ───────────────────────────────────────────────────────────────────
 
 const features = [
   {
@@ -84,10 +126,10 @@ const steps = [
 ]
 
 const benefits = [
-  { stat: "3x",   label: "More Conversions",   desc: "With automated follow-ups and lead scoring" },
-  { stat: "80%",  label: "Less Manual Entry",   desc: "All lead data captured and synced automatically" },
-  { stat: "5 hrs", label: "Saved Per Week",     desc: "Per sales rep on admin and data entry tasks" },
-  { stat: "100%", label: "Leads Tracked",       desc: "Full pipeline visibility from capture to close" },
+  { stat: "3x",    label: "More Conversions", desc: "With automated follow-ups and lead scoring" },
+  { stat: "80%",   label: "Less Manual Entry", desc: "All lead data captured and synced automatically" },
+  { stat: "5 hrs", label: "Saved Per Week",    desc: "Per sales rep on admin and data entry tasks" },
+  { stat: "100%",  label: "Leads Tracked",     desc: "Full pipeline visibility from capture to close" },
 ]
 
 const useCases = [
@@ -118,11 +160,13 @@ const whyPoints = [
   "Dedicated onboarding manager for every account",
 ]
 
+// ── Page ───────────────────────────────────────────────────────────────────
+
 export function CRMAutomationPageContent() {
   return (
     <main className="overflow-hidden">
 
-      {/* ── HERO ────────────────────────────────────────────────────── */}
+      {/* ── HERO ──────────────────────────────────────────────────── */}
       <section className="relative px-4 pt-20 pb-24 sm:px-6 lg:px-8 lg:pt-28 lg:pb-32">
         {/* background blobs */}
         <div className="pointer-events-none absolute inset-0 -z-10">
@@ -130,17 +174,11 @@ export function CRMAutomationPageContent() {
           <div className="absolute left-[-10%] top-[30%] h-72 w-72 rounded-full bg-primary/6 blur-3xl" />
         </div>
 
-        <motion.div
-          variants={stagger}
-          initial="hidden"
-          animate="visible"
-          className="mx-auto max-w-4xl text-center"
-        >
+        {/* stagger-container fires on mount — no scroll needed for hero */}
+        <div className="stagger-container mx-auto max-w-4xl text-center">
+
           {/* badge */}
-          <motion.div
-            variants={fadeUp}
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-4 py-1.5"
-          >
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-4 py-1.5">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-500 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-orange-500" />
@@ -149,32 +187,23 @@ export function CRMAutomationPageContent() {
             <span className="text-xs font-semibold tracking-wide text-orange-600">
               CRM Automation · Sales Pipeline Intelligence
             </span>
-          </motion.div>
+          </div>
 
-          <motion.h1
-            variants={fadeUp}
-            className="text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl text-balance"
-          >
+          <h1 className="text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl text-balance">
             Automate Your Entire{" "}
             <span className="bg-gradient-to-r from-orange-500 via-primary to-violet-500 bg-clip-text text-transparent">
               Sales Pipeline
             </span>{" "}
             With AI
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            variants={fadeUp}
-            className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg"
-          >
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
             Automate your entire sales pipeline with smart CRM workflows, lead tracking,
             and performance analytics. Capture every lead, score them instantly, and
             close deals faster — without any manual data entry.
-          </motion.p>
+          </p>
 
-          <motion.div
-            variants={fadeUp}
-            className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center"
-          >
+          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link
               href="/contact"
               className="group inline-flex items-center gap-2 rounded-xl bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:scale-[1.03]"
@@ -191,55 +220,42 @@ export function CRMAutomationPageContent() {
               <MessageSquare className="h-4 w-4" />
               Chat on WhatsApp
             </Link>
-          </motion.div>
+          </div>
 
-          <motion.div
-            variants={fadeUp}
-            className="mt-8 flex flex-wrap items-center justify-center gap-4"
-          >
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             {["No manual data entry", "Works with any CRM", "GDPR compliant"].map((t) => (
               <span key={t} className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <CheckCircle2 className="h-3.5 w-3.5 text-orange-500" />
                 {t}
               </span>
             ))}
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </section>
 
-      {/* ── BENEFITS ───────────────────────────────────────────────── */}
+      {/* ── BENEFITS ──────────────────────────────────────────────── */}
       <section className="bg-card/40 px-4 py-16 sm:px-6 lg:px-8">
-        <motion.div
-          variants={stagger}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="mx-auto grid max-w-5xl grid-cols-2 gap-6 lg:grid-cols-4"
-        >
-          {benefits.map((b) => (
-            <motion.div
-              key={b.label}
-              variants={fadeUp}
-              className="rounded-2xl border border-border/60 bg-card p-6 text-center shadow-sm"
-            >
-              <div className="text-3xl font-bold text-orange-500 sm:text-4xl">{b.stat}</div>
-              <div className="mt-1 text-sm font-semibold text-foreground">{b.label}</div>
-              <div className="mt-1 text-xs text-muted-foreground">{b.desc}</div>
-            </motion.div>
-          ))}
-        </motion.div>
+        <Reveal className="mx-auto grid max-w-5xl grid-cols-2 gap-6 lg:grid-cols-4">
+          {/* stagger-container on the inner grid for child delay */}
+          <div className="stagger-container contents">
+            {benefits.map((b) => (
+              <div
+                key={b.label}
+                className="rounded-2xl border border-border/60 bg-card p-6 text-center shadow-sm"
+              >
+                <div className="text-3xl font-bold text-orange-500 sm:text-4xl">{b.stat}</div>
+                <div className="mt-1 text-sm font-semibold text-foreground">{b.label}</div>
+                <div className="mt-1 text-xs text-muted-foreground">{b.desc}</div>
+              </div>
+            ))}
+          </div>
+        </Reveal>
       </section>
 
-      {/* ── FEATURES ───────────────────────────────────────────────── */}
+      {/* ── FEATURES ──────────────────────────────────────────────── */}
       <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <motion.div
-          variants={stagger}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="mx-auto max-w-6xl"
-        >
-          <motion.div variants={fadeUp} className="mb-12 text-center">
+        <div className="mx-auto max-w-6xl">
+          <Reveal className="mb-12 text-center">
             <p className="text-xs font-semibold uppercase tracking-widest text-orange-500 mb-2">
               Features
             </p>
@@ -251,40 +267,32 @@ export function CRMAutomationPageContent() {
               Everything you need to manage leads, automate workflows, and track
               conversions — in one connected platform.
             </p>
-          </motion.div>
+          </Reveal>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="stagger-container grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {features.map((f) => {
               const Icon = f.icon
               return (
-                <motion.div
+                <div
                   key={f.title}
-                  variants={fadeUp}
-                  whileHover={{ y: -4 }}
-                  className="group rounded-2xl border border-border/60 bg-card/50 p-5 backdrop-blur-sm transition-all hover:border-orange-500/30 hover:shadow-lg"
+                  className="group rounded-2xl border border-border/60 bg-card/50 p-5 backdrop-blur-sm transition-all hover:border-orange-500/30 hover:shadow-lg hover:-translate-y-1"
                 >
                   <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500 transition-colors group-hover:bg-orange-500/20">
                     <Icon className="h-5 w-5" />
                   </div>
                   <h3 className="mb-1.5 text-sm font-semibold text-foreground">{f.title}</h3>
                   <p className="text-xs leading-relaxed text-muted-foreground">{f.desc}</p>
-                </motion.div>
+                </div>
               )
             })}
           </div>
-        </motion.div>
+        </div>
       </section>
 
-      {/* ── HOW IT WORKS ───────────────────────────────────────────── */}
+      {/* ── HOW IT WORKS ──────────────────────────────────────────── */}
       <section className="bg-card/30 px-4 py-20 sm:px-6 lg:px-8">
-        <motion.div
-          variants={stagger}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="mx-auto max-w-5xl"
-        >
-          <motion.div variants={fadeUp} className="mb-12 text-center">
+        <div className="mx-auto max-w-5xl">
+          <Reveal className="mb-12 text-center">
             <p className="text-xs font-semibold uppercase tracking-widest text-orange-500 mb-2">
               Process
             </p>
@@ -292,11 +300,11 @@ export function CRMAutomationPageContent() {
               Live in{" "}
               <span className="text-primary">Under 30 Minutes</span>
             </h2>
-          </motion.div>
+          </Reveal>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="stagger-container grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {steps.map((s, i) => (
-              <motion.div key={s.num} variants={fadeUp} className="relative flex flex-col">
+              <div key={s.num} className="relative flex flex-col">
                 <div className="mb-4 flex items-center gap-3">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-orange-500/30 bg-orange-500/10 text-xs font-bold text-orange-600">
                     {s.num}
@@ -307,32 +315,25 @@ export function CRMAutomationPageContent() {
                 </div>
                 <h3 className="mb-2 text-sm font-semibold text-foreground">{s.title}</h3>
                 <p className="text-xs leading-relaxed text-muted-foreground">{s.desc}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
       </section>
 
-      {/* ── USE CASES ──────────────────────────────────────────────── */}
+      {/* ── USE CASES ─────────────────────────────────────────────── */}
       <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <motion.div
-          variants={stagger}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="mx-auto max-w-5xl"
-        >
-          <motion.div variants={fadeUp} className="mb-10 text-center">
+        <div className="mx-auto max-w-5xl">
+          <Reveal className="mb-10 text-center">
             <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
               CRM Automation Across Indian Industries
             </h2>
-          </motion.div>
+          </Reveal>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="stagger-container grid gap-4 sm:grid-cols-2">
             {useCases.map((u) => (
-              <motion.div
+              <div
                 key={u.industry}
-                variants={fadeUp}
                 className="flex gap-4 rounded-2xl border border-border/60 bg-card/50 p-5"
               >
                 <ChevronRight className="mt-0.5 h-5 w-5 shrink-0 text-orange-500" />
@@ -340,63 +341,50 @@ export function CRMAutomationPageContent() {
                   <h3 className="mb-1 text-sm font-semibold text-foreground">{u.industry}</h3>
                   <p className="text-xs leading-relaxed text-muted-foreground">{u.desc}</p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
       </section>
 
-      {/* ── WHY PIXORANEST ─────────────────────────────────────────── */}
+      {/* ── WHY PIXORANEST ────────────────────────────────────────── */}
       <section className="bg-card/30 px-4 py-20 sm:px-6 lg:px-8">
-        <motion.div
-          variants={stagger}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="mx-auto max-w-5xl"
-        >
-          <motion.div variants={fadeUp} className="mb-10 text-center">
+        <div className="mx-auto max-w-5xl">
+          <Reveal className="mb-10 text-center">
             <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
               Why 500+ Indian Businesses Choose{" "}
               <span className="text-primary">PixoraNest CRM Automation</span>
             </h2>
-          </motion.div>
+          </Reveal>
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="stagger-container grid gap-3 sm:grid-cols-2">
             {whyPoints.map((point) => (
-              <motion.div
+              <div
                 key={point}
-                variants={fadeUp}
                 className="flex items-start gap-3 rounded-xl border border-border/60 bg-card/50 px-5 py-4"
               >
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-orange-500" />
                 <p className="text-sm text-muted-foreground">{point}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
       </section>
 
-      {/* ── INTERNAL LINKS ─────────────────────────────────────────── */}
+      {/* ── INTERNAL LINKS ────────────────────────────────────────── */}
       <section className="px-4 py-12 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mx-auto max-w-5xl"
-        >
+        <Reveal className="mx-auto max-w-5xl">
           <p className="mb-6 text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             Explore the Full PixoraNest Suite
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             {[
-              { label: "AI Receptionist",     href: "/solutions/firstvoice"  },
-              { label: "WhatsApp Automation", href: "/solutions/leadnest"    },
-              { label: "Call Automation",     href: "/solutions/callorbit"   },
-              { label: "AI Voice Agent",      href: "/solutions/echoassist"  },
-              { label: "Social Automation",   href: "/solutions/socialium"   },
-              { label: "View All Solutions",  href: "/solutions"             },
+              { label: "AI Receptionist",     href: "/solutions/firstvoice" },
+              { label: "WhatsApp Automation", href: "/solutions/leadnest"   },
+              { label: "Call Automation",     href: "/solutions/callorbit"  },
+              { label: "AI Voice Agent",      href: "/solutions/echoassist" },
+              { label: "Social Automation",   href: "/solutions/socialium"  },
+              { label: "View All Solutions",  href: "/solutions"            },
             ].map((link) => (
               <Link
                 key={link.label}
@@ -407,16 +395,12 @@ export function CRMAutomationPageContent() {
               </Link>
             ))}
           </div>
-        </motion.div>
+        </Reveal>
       </section>
 
-      {/* ── BOTTOM CTA ─────────────────────────────────────────────── */}
+      {/* ── BOTTOM CTA ────────────────────────────────────────────── */}
       <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+        <Reveal
           className="mx-auto max-w-3xl overflow-hidden rounded-3xl border border-orange-500/20 px-8 py-14 text-center"
           style={{
             background:
@@ -451,8 +435,24 @@ export function CRMAutomationPageContent() {
           <p className="mt-5 text-xs text-muted-foreground">
             No setup fees · No long-term contracts · Indian support team
           </p>
-        </motion.div>
+        </Reveal>
       </section>
+
+      {/* ── STYLES ────────────────────────────────────────────────── */}
+      <style>{`
+        .crm-reveal {
+          opacity: 0;
+          transform: translateY(24px);
+          transition: opacity 0.55s ease, transform 0.55s ease;
+        }
+        .crm-reveal.crm-revealed {
+          opacity: 1;
+          transform: none;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .crm-reveal { animation: none; opacity: 1; transform: none; }
+        }
+      `}</style>
 
     </main>
   )

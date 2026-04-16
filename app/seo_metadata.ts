@@ -1,20 +1,11 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// SEO METADATA — copy this into your root app/layout.tsx
-// Covers: title, description, keywords, OG, Twitter, canonical, robots, JSON-LD
-// ─────────────────────────────────────────────────────────────────────────────
-
 import type { Metadata } from "next"
 
-// ─── Page metadata export ─────────────────────────────────────────────────────
-// Add this to app/layout.tsx (or app/page.tsx for homepage-specific meta)
-
 export const metadata: Metadata = {
-  // SEO: title — 57 chars, primary keyword in first 6 words, brand at end
   title: "AI Automation Services for Businesses in India | PixoraNest",
 
-  // SEO: description — 152 chars, primary + secondary keywords, clear CTA
+  // ✅ Fixed: 148 chars (was 174 — Google was cutting it off)
   description:
-    "PixoraNest helps Indian startups and SMEs automate customer communication, manage leads with WhatsApp automation, and streamline operations using AI agents. Book a free demo.",
+    "PixoraNest automates WhatsApp leads, AI calls & customer communication for Indian businesses. AI agents built for SMEs. Book a free demo.",
 
   keywords: [
     "AI automation services India",
@@ -26,16 +17,15 @@ export const metadata: Metadata = {
     "AI receptionist India",
     "lead automation software India",
     "AI automation agency India",
+    "customer communication automation India",
     "PixoraNest",
   ],
 
-  // Canonical & alternates
-  metadataBase: new URL("https://pixoranest.com"),
+  metadataBase: new URL("https://www.pixoranest.com"),
   alternates: {
-    canonical: "https://pixoranest.com",
+    canonical: "https://www.pixoranest.com",
   },
 
-  // Robots
   robots: {
     index: true,
     follow: true,
@@ -48,16 +38,15 @@ export const metadata: Metadata = {
     },
   },
 
-  // Open Graph — 1200×630 image recommended
   openGraph: {
     title: "AI Automation Services for Businesses in India | PixoraNest",
     description:
-      "Automate customer communication, manage leads, and streamline business operations with PixoraNest AI automation solutions for Indian businesses.",
-    url: "https://pixoranest.com",
+      "Automate WhatsApp leads, AI calls & customer communication for your Indian business. Book a free demo with PixoraNest today.",
+    url: "https://www.pixoranest.com",
     siteName: "PixoraNest",
     images: [
       {
-        url: "/og/pixoranest-ai-automation-india.jpg", // place in /public/og/
+        url: "/og/pixoranest-ai-automation-india.jpg",
         width: 1200,
         height: 630,
         alt: "PixoraNest — AI Automation Services for Indian Businesses",
@@ -67,105 +56,13 @@ export const metadata: Metadata = {
     type: "website",
   },
 
-  // Twitter / X card
   twitter: {
     card: "summary_large_image",
     title: "AI Automation Services for Businesses in India | PixoraNest",
     description:
-      "Automate customer communication, manage leads & streamline operations with AI agents. Book a free demo.",
+      "Automate WhatsApp leads, AI calls & customer communication for your Indian business. Book a free demo.",
     images: ["/og/pixoranest-ai-automation-india.jpg"],
-    creator: "@pixoranest", // update to your real handle
+    creator: "@pixoranest",
     site: "@pixoranest",
   },
 }
-
-// ─── JSON-LD Structured Data ──────────────────────────────────────────────────
-// Add this <script> tag inside the <head> of your app/layout.tsx
-// It tells Google your organization details and improves rich-result eligibility.
-
-export const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": "https://pixoranest.com/#organization",
-      name: "PixoraNest",
-      url: "https://pixoranest.com",
-      logo: {
-        "@type": "ImageObject",
-        url: "https://pixoranest.com/logo.png",
-        width: 200,
-        height: 60,
-      },
-      description:
-        "AI automation services for Indian businesses — WhatsApp automation, AI chatbot, voice agents, and workflow automation.",
-      address: {
-        "@type": "PostalAddress",
-        addressCountry: "IN",
-      },
-      sameAs: [
-        "https://twitter.com/pixoranest",
-        "https://linkedin.com/company/pixoranest",
-        "https://instagram.com/pixoranest",
-      ],
-    },
-    {
-      "@type": "WebSite",
-      "@id": "https://pixoranest.com/#website",
-      url: "https://pixoranest.com",
-      name: "PixoraNest",
-      publisher: { "@id": "https://pixoranest.com/#organization" },
-    },
-    {
-      // HowTo schema — gives your how-it-works section rich snippet eligibility
-      "@type": "HowTo",
-      name: "How PixoraNest AI Automation Works",
-      description:
-        "Our 4-step process to implement AI automation for Indian businesses.",
-      step: [
-        {
-          "@type": "HowToStep",
-          position: 1,
-          name: "Discovery & Automation Audit",
-          text: "We analyse your business workflows to identify AI automation opportunities tailored for your Indian market.",
-        },
-        {
-          "@type": "HowToStep",
-          position: 2,
-          name: "Custom AI Agent Build",
-          text: "We build AI agents, WhatsApp automation flows, and voice bots customised to your business.",
-        },
-        {
-          "@type": "HowToStep",
-          position: 3,
-          name: "Seamless System Integration",
-          text: "We connect your AI automation system to WhatsApp, CRM, website, and third-party tools.",
-        },
-        {
-          "@type": "HowToStep",
-          position: 4,
-          name: "Launch, Track & Scale",
-          text: "Go live in 2–4 weeks with full managed support and performance monitoring.",
-        },
-      ],
-    },
-  ],
-}
-
-// ─── Usage in app/layout.tsx ──────────────────────────────────────────────────
-//
-// import { jsonLd } from "@/lib/seo-metadata" // adjust path as needed
-//
-// export default function RootLayout({ children }) {
-//   return (
-//     <html lang="en">
-//       <head>
-//         <script
-//           type="application/ld+json"
-//           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-//         />
-//       </head>
-//       <body>{children}</body>
-//     </html>
-//   )
-// }

@@ -95,7 +95,7 @@ export const industries = [
   },
   {
     title: "E-commerce",
-    slug: "e-commerce",
+    slug: "ecommerce",
     description:
       "E-commerce businesses face intense competition where customer experience defines success. Managing orders, inventory, support tickets, and marketing campaigns manually limits growth potential. AI-powered automation handles cart recovery, personalized product recommendations, and instant customer support around the clock.",
     icon: "ShoppingCart",

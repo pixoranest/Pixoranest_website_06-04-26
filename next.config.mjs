@@ -1,17 +1,28 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ❌ IMPORTANT: Static export REMOVE chesam
-  // output: "export",
+  // ─── CRITICAL: Static export for Hostinger ─────────────────────────────────
+  output: "export",
 
+  // ─── CRITICAL: Trailing slash ensures index.html per route ─────────────────
   trailingSlash: true,
 
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-
+  // ─── CRITICAL: Disable Next.js image optimization ──────────────────────────
   images: {
     unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.unsplash.com",
+      },
+    ],
   },
-}
 
-export default nextConfig
+  // ─── Security (optional) ───────────────────────────────────────────────────
+  poweredByHeader: false,
+};
+
+export default nextConfig; // ✅ FIXED

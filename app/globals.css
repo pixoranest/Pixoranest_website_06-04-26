@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -77,7 +76,7 @@
 }
 
 /* =========================
-   BASE STYLES (GLOBAL FIX 🔥)
+   BASE STYLES
 ========================= */
 
 @layer base {
@@ -98,12 +97,78 @@
       #f8fbff 100%
     );
     color: var(--foreground);
-    overflow-x: hidden; /* 🔥 prevent unwanted scroll */
+    overflow-x: hidden;
   }
 
-  /* 🔥 Prevent sections overriding background */
   section {
     background: transparent;
+  }
+}
+
+/* =========================
+   ANIMATION KEYFRAMES
+   (replaces tw-animate-css import)
+========================= */
+
+/* Fade up — used by .animate-fade-up and section components */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fade-up 0.5s ease-out both;
+}
+
+/* Stagger container — children animate in sequence */
+.stagger-container > * {
+  animation: fade-up 0.5s ease-out both;
+}
+.stagger-container > *:nth-child(1)  { animation-delay:   0ms; }
+.stagger-container > *:nth-child(2)  { animation-delay:  80ms; }
+.stagger-container > *:nth-child(3)  { animation-delay: 160ms; }
+.stagger-container > *:nth-child(4)  { animation-delay: 240ms; }
+.stagger-container > *:nth-child(5)  { animation-delay: 320ms; }
+.stagger-container > *:nth-child(6)  { animation-delay: 400ms; }
+.stagger-container > *:nth-child(7)  { animation-delay: 480ms; }
+.stagger-container > *:nth-child(8)  { animation-delay: 560ms; }
+
+/* Fade in (opacity only) */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out both;
+}
+
+/* Slide in from left */
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-left {
+  animation: slide-in-left 0.5s ease-out both;
+}
+
+/* Popup (used by .animate-popup) */
+@keyframes popup {
+  from { opacity: 0; transform: translateY(40px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-popup {
+  animation: popup 0.3s ease-out;
+}
+
+/* Reduced motion — turn off all animations */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-fade-in,
+  .animate-slide-left,
+  .animate-popup,
+  .stagger-container > * {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -151,8 +216,8 @@
 }
 
 .form-input {
-  @apply w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 
-  text-white placeholder:text-white/40 outline-none 
+  @apply w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10
+  text-white placeholder:text-white/40 outline-none
   focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30;
 }
 
@@ -161,8 +226,8 @@
 ========================= */
 
 .select-input {
-  @apply w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 
-  text-white outline-none 
+  @apply w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10
+  text-white outline-none
   focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30;
 
   appearance: none;
@@ -170,30 +235,33 @@
   -moz-appearance: none;
 }
 
-/* dropdown fix */
 select option {
   color: black !important;
   background: white !important;
 }
 
-/* =========================
-   POPUP ANIMATION
-========================= */
-
-@keyframes popup {
-  from {
-    opacity: 0;
-    transform: translateY(40px) scale(0.95);
-  }
-  to {
+ 
+.sol-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.sol-reveal.sol-revealed {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sol-reveal {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: none;
+    transition: none;
   }
 }
 
-.animate-popup {
-  animation: popup 0.3s ease-out;
-}
+/* Scroll reveal */
+.sol-reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
+.sol-reveal.sol-revealed { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .sol-reveal { opacity: 1; transform: none; } }
 
 /* =========================
    SMOOTH SCROLL
