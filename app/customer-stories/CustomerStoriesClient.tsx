@@ -20,6 +20,12 @@
 //    next/image requires unoptimized:true in next.config.js for static export.
 //    Plain <img> with onLoad/onError works correctly with zero configuration.
 //
+// 5. ALL microdata attributes (itemScope, itemType, itemProp) removed.
+//    They were triggering Google Search Console "Review snippet" errors because
+//    the testimonial blockquotes had itemType="https://schema.org/Review" which
+//    Google parsed as an incomplete Review schema (missing author, itemReviewed,
+//    ratingValue in the expected shape). No structured data = no false errors.
+//
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useCallback } from "react";
@@ -253,12 +259,13 @@ export default function CustomerStoriesClient() {
   const featuredImage = getContextualImage(featuredStory.category, featuredStory.id);
 
   return (
-    <main className="cs-page" itemScope itemType="https://schema.org/WebPage">
+    // REMOVED: itemScope itemType="https://schema.org/WebPage"
+    <main className="cs-page">
 
       {/* Hidden SEO block */}
       <div style={{ display: "none" }} aria-hidden="true">
-        <span itemProp="name">Customer Success Stories | PixoraNest AI Automation</span>
-        <span itemProp="description">
+        <span>Customer Success Stories | PixoraNest AI Automation</span>
+        <span>
           Discover how 500+ Indian businesses including NoBroker, Apollo Hospitals, Meesho, HDFC Bank,
           Zomato and Delhivery achieved 4X ROI using PixoraNest WhatsApp automation, AI call automation,
           CRM workflow automation, and AI voice agents.
@@ -268,20 +275,20 @@ export default function CustomerStoriesClient() {
       <CustomerStoriesHero />
 
       {/* ── Featured Story ───────────────────────────────────────── */}
+      {/* REMOVED: itemScope itemType="https://schema.org/Article" aria-label kept */}
       <section
         className="feat-sec"
         id="stories"
         aria-label="Featured customer success story"
-        itemScope itemType="https://schema.org/Article"
       >
         <div className="container">
           <p className="eyebrow">Featured Story</p>
 
           <h2 className="sr-only">NoBroker.com — Featured WhatsApp Automation Case Study</h2>
 
+          {/* REMOVED: itemScope itemType="https://schema.org/Article" from article */}
           <article className="feat-card">
-            <meta itemProp="author"    content="Rahul Sharma" />
-            <meta itemProp="publisher" content="PixoraNest" />
+            {/* REMOVED: <meta itemProp="author" .../> and <meta itemProp="publisher" .../> */}
 
             {/* Featured image */}
             <div className="feat-img-wrap">
@@ -305,14 +312,16 @@ export default function CustomerStoriesClient() {
                   {featuredStory.logo}
                 </div>
                 <div>
-                  <div className="feat-co-name" itemProp="about">{featuredStory.company}</div>
+                  {/* REMOVED: itemProp="about" */}
+                  <div className="feat-co-name">{featuredStory.company}</div>
                   <div className="feat-co-tag">{featuredStory.tag}</div>
                 </div>
                 <span className="feat-co-cat">{featuredStory.category}</span>
               </div>
 
-              <h2 className="feat-title" itemProp="headline">{featuredStory.title}</h2>
-              <p  className="feat-excerpt" itemProp="description">{featuredStory.excerpt}</p>
+              {/* REMOVED: itemProp="headline" and itemProp="description" */}
+              <h2 className="feat-title">{featuredStory.title}</h2>
+              <p  className="feat-excerpt">{featuredStory.excerpt}</p>
 
               <div className="feat-metrics" role="list" aria-label="Key results">
                 {featuredStory.metrics.map(m => (
@@ -324,13 +333,15 @@ export default function CustomerStoriesClient() {
               </div>
 
               <div className="feat-foot">
-                <div className="feat-author" itemScope itemType="https://schema.org/Person">
+                {/* REMOVED: itemScope itemType="https://schema.org/Person" from this div */}
+                <div className="feat-author">
                   <div className="feat-av" style={{ background: featuredStory.logoGradient }} aria-hidden="true">
                     {featuredStory.author[0]}
                   </div>
                   <div>
-                    <div className="feat-an" itemProp="name">{featuredStory.author}</div>
-                    <div className="feat-ar" itemProp="jobTitle">{featuredStory.role}</div>
+                    {/* REMOVED: itemProp="name" and itemProp="jobTitle" */}
+                    <div className="feat-an">{featuredStory.author}</div>
+                    <div className="feat-ar">{featuredStory.role}</div>
                   </div>
                 </div>
                 {/* prefetch={false} prevents /customer-stories/*.txt 404s */}
@@ -349,14 +360,13 @@ export default function CustomerStoriesClient() {
       </section>
 
       {/* ── All Stories Grid ─────────────────────────────────────── */}
+      {/* REMOVED: itemScope itemType="https://schema.org/ItemList" */}
       <section
         className="grid-sec"
         aria-label="All customer automation case studies by industry"
-        itemScope itemType="https://schema.org/ItemList"
       >
         <div className="container">
-          <meta itemProp="name"          content="PixoraNest Customer Case Studies — All Industries" />
-          <meta itemProp="numberOfItems" content={String(stories.length)} />
+          {/* REMOVED: <meta itemProp="name" .../> and <meta itemProp="numberOfItems" .../> */}
 
           <p className="eyebrow">All Stories</p>
           <h2 className="sec-title">Browse Success Stories by Industry</h2>
@@ -394,14 +404,12 @@ export default function CustomerStoriesClient() {
           ) : (
             <div className="sgrid" role="list" aria-label="Customer case study cards">
               {filtered.map((story, idx) => (
+                // REMOVED: itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem"
+                // REMOVED: <meta itemProp="position" .../> inside
                 <div
                   key={story.id}
                   role="listitem"
-                  itemProp="itemListElement"
-                  itemScope
-                  itemType="https://schema.org/ListItem"
                 >
-                  <meta itemProp="position" content={String(idx + 1)} />
                   <StoryCard story={story} />
                 </div>
               ))}
@@ -428,21 +436,26 @@ export default function CustomerStoriesClient() {
           </p>
           <div className="tgrid">
             {testimonials.map((t, i) => (
+              // REMOVED: itemScope itemType="https://schema.org/Review"
+              // REMOVED: cite="https://www.pixoranest.com/customer-stories"
+              // REMOVED: itemProp="reviewRating", itemProp="reviewBody"
+              // REMOVED: itemScope itemType="https://schema.org/Person" from footer
+              // REMOVED: itemProp="name", itemProp="jobTitle" from name/role elements
+              // All of the above were causing Google to parse an incomplete Review schema.
               <blockquote
                 key={i}
                 className="tcard"
-                itemScope itemType="https://schema.org/Review"
-                cite="https://www.pixoranest.com/customer-stories"
               >
-                <meta itemProp="reviewRating" content={String(t.stars)} />
+                {/* REMOVED: <meta itemProp="reviewRating" .../> */}
                 <div className="tcard-stars" aria-label={`${t.stars} out of 5 stars`}>{"★".repeat(t.stars)}</div>
                 <div className="tcard-q" aria-hidden="true">&ldquo;</div>
-                <p className="tcard-text" itemProp="reviewBody">{t.quote}</p>
-                <footer className="tcard-auth" itemScope itemType="https://schema.org/Person">
+                {/* REMOVED: itemProp="reviewBody" */}
+                <p className="tcard-text">{t.quote}</p>
+                <footer className="tcard-auth">
                   <div className="tcard-av" style={{ background: t.gradient }} aria-hidden="true">{t.avatar}</div>
                   <div>
-                    <cite className="tcard-name" itemProp="name">{t.author}</cite>
-                    <div  className="tcard-role" itemProp="jobTitle">{t.role}</div>
+                    <cite className="tcard-name">{t.author}</cite>
+                    <div  className="tcard-role">{t.role}</div>
                   </div>
                 </footer>
               </blockquote>

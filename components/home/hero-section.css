@@ -1,0 +1,121 @@
+/* =========================
+   HERO SECTION STYLES
+   (replaces ALL inline styles from hero-section.tsx)
+   Add these to the bottom of globals.css
+========================= */
+
+/* ── Animations ── */
+.hero-fade-left  { animation: heroFadeLeft  0.7s cubic-bezier(0.25,0.46,0.45,0.94) both; }
+.hero-fade-right { animation: heroFadeRight 0.7s 0.2s cubic-bezier(0.25,0.46,0.45,0.94) both; }
+
+@keyframes heroFadeLeft  {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes heroFadeRight {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.hero-orb-float { animation: heroOrbFloat 6s ease-in-out infinite; }
+@keyframes heroOrbFloat {
+  0%,100% { transform: translateY(0);    opacity: 0.5;  }
+  50%      { transform: translateY(-24px); opacity: 0.75; }
+}
+
+.hero-glow-pulse { animation: heroGlowPulse 3s ease-in-out infinite; }
+@keyframes heroGlowPulse {
+  0%,100% { opacity: 0.5; }
+  50%      { opacity: 0.9; }
+}
+
+.hero-float { animation: heroFloat 4s ease-in-out infinite; }
+@keyframes heroFloat {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
+/* ── Orb delay helpers ── */
+.hero-orb-delay-2 { animation-delay: 2s; }
+.hero-orb-delay-4 { animation-delay: 4s; }
+
+/* ── Orb positions & colors (replaces inline className + style props) ── */
+.hero-orb {
+  pointer-events: none;
+  border-radius: 9999px;
+  filter: blur(64px); /* blur-3xl */
+}
+.hero-orb-left {
+  left: -10%;
+  top: 10%;
+  width: 500px;
+  height: 500px;
+  background-color: hsl(var(--primary) / 0.08);
+}
+.hero-orb-right {
+  right: -5%;
+  top: 20%;
+  width: 400px;
+  height: 400px;
+  background-color: rgba(139, 92, 246, 0.06); /* violet-500/6 */
+}
+.hero-orb-bottom {
+  left: 40%;
+  bottom: 5%;
+  width: 300px;
+  height: 300px;
+  background-color: hsl(var(--primary) / 0.06);
+}
+
+/* ── Top glow (replaces inline h/w/bg-primary/blur) ── */
+.hero-top-glow {
+  height: 500px;
+  width: 900px;
+  background-color: hsl(var(--primary) / 0.06);
+  filter: blur(100px);
+}
+
+/* ── Radial background (replaces inline radial-gradient style) ── */
+.hero-radial-bg {
+  background: radial-gradient(
+    ellipse 80% 50% at 50% -10%,
+    hsl(var(--primary) / 0.08) 0%,
+    transparent 70%
+  );
+}
+
+/* ── Stats bar (replaces inline background + boxShadow) ── */
+.hero-stats-bar {
+  background: linear-gradient(135deg, hsl(var(--card) / 0.6), hsl(var(--card) / 0.3));
+  box-shadow:
+    0 1px 0 0 hsl(var(--primary) / 0.1) inset,
+    0 -1px 0 0 hsl(var(--border) / 0.5) inset;
+}
+
+/* ── CTA button shimmer (replaces inline bg-gradient + bg-[length:200%]) ── */
+.hero-btn-shimmer {
+  background: linear-gradient(
+    to right,
+    hsl(var(--primary)),
+    rgba(139, 92, 246, 1),
+    hsl(var(--primary))
+  );
+  background-size: 200% 100%;
+  transition: background-position 0.5s ease;
+}
+.group:hover .hero-btn-shimmer {
+  background-position: right center;
+}
+
+/* ── Reduced motion overrides ── */
+@media (prefers-reduced-motion: reduce) {
+  .hero-fade-left,
+  .hero-fade-right,
+  .hero-orb-float,
+  .hero-float,
+  .hero-glow-pulse {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

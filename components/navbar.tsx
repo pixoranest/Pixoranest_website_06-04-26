@@ -2,20 +2,17 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown, ArrowRight, Sparkles } from "lucide-react";
 import { navLinks, industries } from "@/lib/data";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [industriesOpen, setIndustriesOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const industriesTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => { setMounted(true); }, []);
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
@@ -34,20 +31,33 @@ export function Navbar() {
   };
 
   return (
-    <header className="fixed top-[40px] left-0 w-full h-[80px] z-50 bg-white/80 backdrop-blur-md border-b shadow-sm">
+    // FIX: Added role="banner" for semantic HTML (accessibility + SEO)
+    <header
+      role="banner"
+      className="fixed top-[40px] left-0 w-full h-[80px] z-50 bg-white/80 backdrop-blur-md border-b shadow-sm"
+    >
+      {/* FIX: aria-label on nav for accessibility */}
+      <nav
+        role="navigation"
+        aria-label="Main navigation"
+        className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8"
+      >
 
-      {/* NAV */}
-      <nav className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-
-        {/* LOGO */}
-        <Link href="/" className="flex items-center gap-2 shrink-0">
+        {/* LOGO — FIX: Added title attribute for SEO */}
+        <Link
+          href="/"
+          className="flex items-center gap-2 shrink-0"
+          aria-label="PixoraNest — AI Automation Agency India — Home"
+        >
           <Image
             src="/images/logo-pixoranest.png"
-            alt="PixoraNest"
+            alt="PixoraNest AI Automation Agency India"
             width={180}
             height={50}
             className="h-10 w-auto"
             priority
+            // FIX: fetchPriority ensures logo loads first (LCP improvement)
+            fetchPriority="high"
           />
         </Link>
 
@@ -63,8 +73,10 @@ export function Navbar() {
               >
                 <Link
                   href={link.href}
+                  aria-expanded={industriesOpen}
+                  aria-haspopup="true"
                   className={cn(
-                    "flex items-center gap-1 text-sm font-medium hover:text-primary",
+                    "flex items-center gap-1 text-sm font-medium hover:text-primary transition-colors",
                     pathname.startsWith("/industries") ? "text-primary" : "text-muted-foreground"
                   )}
                 >
@@ -74,11 +86,14 @@ export function Navbar() {
                       "h-3.5 w-3.5 transition-transform duration-200",
                       industriesOpen && "rotate-180"
                     )}
+                    aria-hidden="true"
                   />
                 </Link>
 
-                {/* Dropdown — CSS transition, no framer */}
+                {/* Dropdown */}
                 <div
+                  role="menu"
+                  aria-label="Industry solutions"
                   className={cn(
                     "absolute left-1/2 top-full z-50 mt-2 w-56 -translate-x-1/2 rounded-xl border bg-white p-2 shadow-xl",
                     "transition-all duration-200 origin-top",
@@ -91,7 +106,8 @@ export function Navbar() {
                     <Link
                       key={ind.slug}
                       href={`/industries/${ind.slug}`}
-                      className="block rounded-lg px-3 py-2 text-sm hover:bg-gray-100"
+                      role="menuitem"
+                      className="block rounded-lg px-3 py-2 text-sm hover:bg-gray-100 transition-colors"
                       onClick={() => setIndustriesOpen(false)}
                     >
                       {ind.title}
@@ -105,7 +121,7 @@ export function Navbar() {
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm font-medium hover:text-primary text-muted-foreground"
+                className="text-sm font-medium hover:text-primary text-muted-foreground transition-colors"
               >
                 {link.label}
               </a>
@@ -114,9 +130,11 @@ export function Navbar() {
                 key={link.label}
                 href={link.href}
                 className={cn(
-                  "text-sm font-medium hover:text-primary",
+                  "text-sm font-medium hover:text-primary transition-colors",
                   pathname === link.href ? "text-primary" : "text-muted-foreground"
                 )}
+                // FIX: aria-current for active page (accessibility + SEO)
+                aria-current={pathname === link.href ? "page" : undefined}
               >
                 {link.label}
               </Link>
@@ -124,11 +142,12 @@ export function Navbar() {
           )}
         </div>
 
-        {/* RIGHT SIDE BUTTON — desktop only */}
+        {/* RIGHT SIDE BUTTON */}
         <div className="hidden items-center gap-3 lg:flex">
           <Link
             href="/contact"
-            className="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white hover:bg-primary/90"
+            className="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+            aria-label="Book a free AI automation demo with PixoraNest"
           >
             Book a Demo
           </Link>
@@ -137,104 +156,61 @@ export function Navbar() {
         {/* MOBILE HAMBURGER */}
         <button
           onClick={() => setMobileOpen((prev) => !prev)}
-          aria-label="Toggle mobile menu"
+          aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-expanded={mobileOpen}
+          aria-controls="mobile-menu"
           className="lg:hidden flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700 transition-all hover:bg-slate-200 active:scale-95"
         >
-          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          {mobileOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
         </button>
       </nav>
 
-      {/* ── MOBILE MENU — pure CSS transitions, no framer-motion ── */}
-      {/* Backdrop */}
+      {/* ── MOBILE MENU ── */}
+      {/* Backdrop — FIX: replaced inline style object with Tailwind classes */}
       <div
         onClick={closeMobile}
-        style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 90,
-          backgroundColor: "rgba(0,0,0,0.45)",
-          backdropFilter: "blur(4px)",
-          WebkitBackdropFilter: "blur(4px)",
-          transition: "opacity 0.2s ease",
-          opacity: mobileOpen ? 1 : 0,
-          pointerEvents: mobileOpen ? "auto" : "none",
-        }}
+        aria-hidden="true"
+        className={cn(
+          "fixed inset-0 z-[90] bg-black/45 backdrop-blur-[4px] transition-opacity duration-200",
+          mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        )}
       />
 
-      {/* Panel */}
+      {/* Panel — FIX: replaced style object with Tailwind + CSS custom classes */}
       <div
-        style={{
-          position: "fixed",
-          top: 0,
-          right: 0,
-          zIndex: 100,
-          height: "100dvh",
-          width: "85vw",
-          maxWidth: 340,
-          backgroundColor: "#ffffff",
-          boxShadow: "0 25px 60px rgba(0,0,0,0.18)",
-          display: "flex",
-          flexDirection: "column",
-          transform: mobileOpen ? "translateX(0)" : "translateX(100%)",
-          transition: "transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)",
-          willChange: "transform",
-        }}
+        id="mobile-menu"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mobile navigation menu"
+        className={cn(
+          "fixed top-0 right-0 z-[100] flex h-dvh w-[85vw] max-w-[340px] flex-col bg-white shadow-2xl",
+          "transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          mobileOpen ? "translate-x-0" : "translate-x-full"
+        )}
       >
-        {/* ── HEADER ── */}
-        <div
-          style={{
-            flexShrink: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "16px 20px",
-            borderBottom: "1px solid #f1f5f9",
-          }}
-        >
-          <Link href="/" onClick={closeMobile}>
+        {/* HEADER */}
+        <div className="flex shrink-0 items-center justify-between border-b border-slate-100 px-5 py-4">
+          <Link href="/" onClick={closeMobile} aria-label="PixoraNest Home">
             <Image
               src="/images/logo-pixoranest.png"
               alt="PixoraNest"
               width={140}
               height={40}
-              style={{ height: 32, width: "auto" }}
+              className="h-8 w-auto"
             />
           </Link>
           <button
             onClick={closeMobile}
-            aria-label="Close menu"
-            style={{
-              flexShrink: 0,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: 36,
-              height: 36,
-              borderRadius: 10,
-              backgroundColor: "#f1f5f9",
-              color: "#475569",
-              border: "none",
-              cursor: "pointer",
-            }}
+            aria-label="Close navigation menu"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-slate-100 text-slate-600 transition-colors hover:bg-slate-200 border-0 cursor-pointer"
           >
-            <X size={18} />
+            <X size={18} aria-hidden="true" />
           </button>
         </div>
 
-        {/* ── NAV LINKS ── */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "16px 12px" }}>
-          <p
-            style={{
-              fontSize: 10,
-              fontWeight: 700,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              color: "#94a3b8",
-              padding: "0 8px 10px",
-              margin: 0,
-            }}
-          >
+        {/* NAV LINKS */}
+        <div className="flex-1 overflow-y-auto p-3">
+          <p className="mb-2.5 px-2 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
             Navigation
           </p>
 
@@ -244,34 +220,17 @@ export function Navbar() {
                 ? pathname.startsWith("/industries")
                 : pathname === link.href;
 
-            const baseItemStyle: React.CSSProperties = {
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "12px 16px",
-              borderRadius: 12,
-              marginBottom: 2,
-              fontSize: 15,
-              fontWeight: 500,
-              textDecoration: "none",
-              cursor: "pointer",
-              backgroundColor: isActive ? "#eff6ff" : "transparent",
-              color: isActive ? "#2563eb" : "#1e293b",
-              transition: "background-color 0.15s, color 0.15s",
-            };
+            const itemClass = cn(
+              "flex items-center justify-between rounded-xl px-4 py-3 text-[15px] font-medium no-underline mb-0.5",
+              "transition-colors duration-150",
+              isActive
+                ? "bg-blue-50 text-blue-600"
+                : "text-slate-800 hover:bg-blue-50 hover:text-blue-600"
+            );
 
-            const handleHoverIn = (e: React.MouseEvent<HTMLElement>) => {
-              e.currentTarget.style.backgroundColor = "#eff6ff";
-              e.currentTarget.style.color = "#2563eb";
-            };
-            const handleHoverOut = (e: React.MouseEvent<HTMLElement>) => {
-              e.currentTarget.style.backgroundColor = isActive ? "#eff6ff" : "transparent";
-              e.currentTarget.style.color = isActive ? "#2563eb" : "#1e293b";
-            };
-
-            const chevron = isActive
-              ? <span style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "#2563eb", display: "block" }} />
-              : <ArrowRight size={15} color="#cbd5e1" />;
+            const indicator = isActive
+              ? <span className="h-2 w-2 rounded-full bg-blue-600" aria-hidden="true" />
+              : <ArrowRight size={15} className="text-slate-300" aria-hidden="true" />;
 
             if (link.external) {
               return (
@@ -281,12 +240,10 @@ export function Navbar() {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={closeMobile}
-                  style={baseItemStyle}
-                  onMouseEnter={handleHoverIn}
-                  onMouseLeave={handleHoverOut}
+                  className={itemClass}
                 >
                   <span>{link.label}</span>
-                  {chevron}
+                  {indicator}
                 </a>
               );
             }
@@ -296,32 +253,21 @@ export function Navbar() {
                 key={link.label}
                 href={link.href}
                 onClick={closeMobile}
-                style={baseItemStyle}
-                onMouseEnter={handleHoverIn}
-                onMouseLeave={handleHoverOut}
+                className={itemClass}
+                aria-current={isActive ? "page" : undefined}
               >
                 <span>{link.label}</span>
-                {chevron}
+                {indicator}
               </Link>
             );
           })}
         </div>
 
-        {/* ── BOTTOM CTA ── */}
-        <div style={{ flexShrink: 0, padding: 16, borderTop: "1px solid #f1f5f9" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              backgroundColor: "#eff6ff",
-              borderRadius: 12,
-              padding: "10px 14px",
-              marginBottom: 12,
-            }}
-          >
-            <Sparkles size={13} color="#2563eb" />
-            <span style={{ fontSize: 12, fontWeight: 500, color: "#1d4ed8" }}>
+        {/* BOTTOM CTA */}
+        <div className="shrink-0 border-t border-slate-100 p-4">
+          <div className="mb-3 flex items-center gap-2 rounded-xl bg-blue-50 px-3.5 py-2.5">
+            <Sparkles size={13} className="text-blue-600 shrink-0" aria-hidden="true" />
+            <span className="text-xs font-medium text-blue-800">
               AI-powered automation for modern businesses
             </span>
           </div>
@@ -329,25 +275,11 @@ export function Navbar() {
           <Link
             href="/contact"
             onClick={closeMobile}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
-              width: "100%",
-              padding: "14px 20px",
-              borderRadius: 14,
-              background: "linear-gradient(to right, #2563eb, #4f46e5)",
-              color: "#ffffff",
-              fontSize: 15,
-              fontWeight: 600,
-              textDecoration: "none",
-              boxShadow: "0 4px 20px rgba(37,99,235,0.3)",
-              boxSizing: "border-box",
-            }}
+            className="flex w-full items-center justify-center gap-2 rounded-[14px] bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3.5 text-[15px] font-semibold text-white no-underline shadow-[0_4px_20px_rgba(37,99,235,0.3)] transition-transform hover:scale-[1.02] active:scale-[0.98]"
+            aria-label="Book a free AI automation demo"
           >
             Book a Demo
-            <ArrowRight size={16} color="#ffffff" />
+            <ArrowRight size={16} aria-hidden="true" />
           </Link>
         </div>
       </div>

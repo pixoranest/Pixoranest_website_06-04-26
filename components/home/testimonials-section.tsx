@@ -182,7 +182,7 @@ export function TestimonialsSection() {
         {/* Read case studies */}
         <div className="mt-8 flex justify-center">
           <Link
-            href="/case-studies"
+           href="/customer-stories"
             className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-6 py-3 text-xs font-semibold text-gray-500 shadow-sm transition-all duration-300 hover:border-blue-300 hover:text-blue-600 hover:shadow-md"
             aria-label="Read full AI automation case studies from PixoraNest clients"
           >

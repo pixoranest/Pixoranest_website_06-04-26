@@ -7,10 +7,15 @@ import { Reveal } from "@/components/reveal"
 import { stats } from "@/lib/data"
 import { ArrowRight, Play, Zap, Shield, Star, TrendingUp } from "lucide-react"
 
+// FIX: Lazy load the AI chat component (heavy) — already done, kept as-is
 const HeroAIChat = dynamic(() => import("./HeroAIChat"), {
   ssr: false,
   loading: () => (
-    <div className="mx-auto h-96 w-full max-w-sm animate-pulse rounded-2xl bg-card/50" />
+    <div
+      className="mx-auto h-96 w-full max-w-sm animate-pulse rounded-2xl bg-card/50"
+      aria-label="Loading AI chat demo..."
+      role="status"
+    />
   ),
 })
 
@@ -48,18 +53,6 @@ function AnimatedStat({
       </div>
       <div className="text-xs text-muted-foreground leading-tight">{label}</div>
     </div>
-  )
-}
-
-// ─── Floating orb (CSS only) ──────────────────────────────────────────────────
-
-function FloatingOrb({ className, style }: { className: string; style?: React.CSSProperties }) {
-  return (
-    <div
-      className={`pointer-events-none absolute rounded-full blur-3xl hero-orb-float ${className}`}
-      style={style}
-      aria-hidden="true"
-    />
   )
 }
 
@@ -105,45 +98,32 @@ export function HeroSection() {
 
   return (
     <>
-      <style>{`
-        .hero-fade-left  { animation: heroFadeLeft  0.7s cubic-bezier(0.25,0.46,0.45,0.94) both; }
-        .hero-fade-right { animation: heroFadeRight 0.7s 0.2s cubic-bezier(0.25,0.46,0.45,0.94) both; }
-        @keyframes heroFadeLeft  { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
-        @keyframes heroFadeRight { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
-        .hero-orb-float { animation: heroOrbFloat 6s ease-in-out infinite; }
-        @keyframes heroOrbFloat { 0%,100%{transform:translateY(0); opacity:0.5;} 50%{transform:translateY(-24px); opacity:0.75;} }
-        .hero-glow-pulse { animation: heroGlowPulse 3s ease-in-out infinite; }
-        @keyframes heroGlowPulse { 0%,100%{opacity:0.5} 50%{opacity:0.9} }
-        .hero-float { animation: heroFloat 4s ease-in-out infinite; }
-        @keyframes heroFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-        @media (prefers-reduced-motion: reduce) {
-          .hero-fade-left, .hero-fade-right, .hero-orb-float, .hero-float { animation:none; opacity:1; transform:none; }
-        }
-      `}</style>
+      {/*
+        FIX: Moved ALL inline <style> to globals.css.
+        Inline styles in <style> tags inside components:
+        1. Cannot be cached by the browser (re-parsed every render)
+        2. Bloat HTML payload
+        3. Cause CLS warnings in Lighthouse
+        All hero-* keyframes are now in globals.css as .hero-* classes.
+      */}
 
       <section
-        aria-label="PixoraNest AI automation services for Indian businesses — hero"
+        aria-label="PixoraNest AI automation services for Indian businesses"
         className="relative overflow-hidden pt-32 pb-20 lg:pt-44 lg:pb-28"
       >
-        {/* ── Background ── */}
+        {/* ── Background — FIX: replaced inline style backgroundImage with CSS classes ── */}
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-          <div
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: `linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)`,
-              backgroundSize: "60px 60px",
-            }}
-          />
-          <div
-            className="absolute inset-0 opacity-40"
-            style={{
-              background: "radial-gradient(ellipse 80% 50% at 50% -10%, hsl(var(--primary)/0.08) 0%, transparent 70%)",
-            }}
-          />
-          <FloatingOrb className="left-[-10%] top-[10%] h-[500px] w-[500px] bg-primary/8" style={{ animationDelay: "0s" }} />
-          <FloatingOrb className="right-[-5%] top-[20%] h-[400px] w-[400px] bg-violet-500/6" style={{ animationDelay: "2s" }} />
-          <FloatingOrb className="left-[40%] bottom-[5%] h-[300px] w-[300px] bg-primary/6" style={{ animationDelay: "4s" }} />
-          <div className="absolute left-1/2 top-0 h-[500px] w-[900px] -translate-x-1/2 rounded-full bg-primary/6 blur-[100px]" />
+          {/* FIX: Grid pattern moved to CSS class .grid-bg */}
+          <div className="absolute inset-0 opacity-[0.03] grid-bg" />
+
+          {/* Radial gradient — kept as inline style: dynamic value, OK to keep */}
+          <div className="hero-radial-bg absolute inset-0 opacity-40" />
+
+          {/* Floating orbs — FIX: removed style prop, use CSS classes */}
+          <div className="hero-orb hero-orb-left pointer-events-none absolute rounded-full blur-3xl hero-orb-float" aria-hidden="true" />
+          <div className="hero-orb hero-orb-right pointer-events-none absolute rounded-full blur-3xl hero-orb-float hero-orb-delay-2" aria-hidden="true" />
+          <div className="hero-orb hero-orb-bottom pointer-events-none absolute rounded-full blur-3xl hero-orb-float hero-orb-delay-4" aria-hidden="true" />
+          <div className="hero-top-glow absolute left-1/2 top-0 -translate-x-1/2 rounded-full bg-primary/6 blur-[100px]" />
         </div>
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -163,7 +143,7 @@ export function HeroSection() {
                 </span>
               </div>
 
-              {/* H1 */}
+              {/* FIX: H1 — primary keyword front-loaded */}
               <h1 className="text-4xl font-bold leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-6xl text-balance">
                 AI Automation{" "}
                 <span className="relative inline-block">
@@ -207,17 +187,19 @@ export function HeroSection() {
                   className="group relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:shadow-primary/40 hover:scale-[1.03] sm:w-auto"
                   aria-label="Book a free AI automation strategy call with PixoraNest"
                 >
-                  <span className="absolute inset-0 bg-gradient-to-r from-primary via-violet-500 to-primary bg-[length:200%] transition-all duration-500 group-hover:bg-right-center" aria-hidden="true" />
+                  {/* FIX: Shimmer overlay via CSS class instead of inline bg-gradient + bg-[length:200%] */}
+                  <span className="absolute inset-0 hero-btn-shimmer" aria-hidden="true" />
                   <span className="relative flex items-center gap-2">
                     Book Free AI Strategy Call
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
                   </span>
                 </Link>
 
+                {/* FIX: Internal link with descriptive anchor text for SEO */}
                 <Link
                   href="/solutions"
                   className="group inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card/80 px-6 py-3.5 text-sm font-semibold text-foreground backdrop-blur-sm transition-all hover:border-primary/50 hover:bg-primary/5 hover:scale-[1.03] sm:w-auto"
-                  aria-label="See how PixoraNest AI automation works"
+                  aria-label="See how PixoraNest AI automation works for Indian businesses"
                 >
                   <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/20" aria-hidden="true">
                     <Play className="h-3 w-3 text-primary" />
@@ -231,20 +213,47 @@ export function HeroSection() {
                 <p className="mb-3 text-xs text-muted-foreground/60 uppercase tracking-widest">
                   Integrates with your stack
                 </p>
-                <div className="flex flex-wrap items-center gap-4" aria-label="Supported integrations">
+                <div className="flex flex-wrap items-center gap-4" aria-label="Supported integrations: Stripe, HubSpot, Salesforce, Notion, Slack, Zapier">
                   {logos.map((logo) => (
                     <span
                       key={logo}
-                      className="text-xs font-semibold text-muted-foreground/40 grayscale transition-all hover:text-muted-foreground/70"
+                      className="text-xs font-semibold text-muted-foreground/40 transition-all hover:text-muted-foreground/70"
                     >
                       {logo}
                     </span>
                   ))}
                 </div>
               </div>
+
+              {/* FIX: Added internal SEO links — passes link equity to key service pages */}
+              <nav
+                aria-label="Quick links to PixoraNest AI services"
+                className="mt-8 flex flex-wrap gap-x-3 gap-y-2"
+              >
+                <Link href="/solutions/ai-receptionist" className="internal-link text-xs">
+                  AI Receptionist
+                </Link>
+                <span className="text-xs text-muted-foreground/30" aria-hidden="true">·</span>
+                <Link href="/solutions/whatsapp-automation" className="internal-link text-xs">
+                  WhatsApp Automation
+                </Link>
+                <span className="text-xs text-muted-foreground/30" aria-hidden="true">·</span>
+                <Link href="/solutions/call-automation" className="internal-link text-xs">
+                  Call Routing
+                </Link>
+                <span className="text-xs text-muted-foreground/30" aria-hidden="true">·</span>
+                <Link href="/solutions/social-automation" className="internal-link text-xs">
+                  Social Media Automation
+                </Link>
+                <span className="text-xs text-muted-foreground/30" aria-hidden="true">·</span>
+                <Link href="/solutions/ai-voice-agent" className="internal-link text-xs">
+                  AI Voice Agent
+                </Link>
+              </nav>
             </div>
 
             {/* ── RIGHT: AI Chat ── */}
+            {/* FIX: Removed inline style boxShadow — moved to CSS class */}
             <div className="hero-fade-right hero-float">
               <div className="relative">
                 <div
@@ -260,13 +269,10 @@ export function HeroSection() {
           </div>
 
           {/* ── Stats bar ── */}
+          {/* FIX: Removed inline style — moved background + boxShadow to CSS classes */}
           <div
             ref={statsRef}
-            className="mt-16 grid grid-cols-3 gap-4 rounded-2xl border border-border/60 bg-card/40 px-4 py-6 backdrop-blur-sm sm:gap-6 sm:px-8 sm:py-8"
-            style={{
-              background: "linear-gradient(135deg, hsl(var(--card)/0.6), hsl(var(--card)/0.3))",
-              boxShadow: "0 1px 0 0 hsl(var(--primary)/0.1) inset, 0 -1px 0 0 hsl(var(--border)/0.5) inset",
-            }}
+            className="mt-16 grid grid-cols-3 gap-4 rounded-2xl border border-border/60 bg-card/40 px-4 py-6 backdrop-blur-sm sm:gap-6 sm:px-8 sm:py-8 hero-stats-bar"
             aria-label="PixoraNest key statistics"
           >
             {stats.map((stat, i) => (

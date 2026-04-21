@@ -82,13 +82,20 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    box-sizing: border-box;
   }
 
-  html, body {
+  html {
     height: 100%;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   body {
+    height: 100%;
     background: linear-gradient(
       180deg,
       #dbeafe 0%,
@@ -96,21 +103,51 @@
       #f4f8ff 70%,
       #f8fbff 100%
     );
+    background-attachment: fixed;
     color: var(--foreground);
     overflow-x: hidden;
+    /* ─── REMOVED: contain: paint ──────────────────────────────────────────
+       contain:paint creates a new CSS containing block.
+       Any position:fixed child becomes fixed relative to body (not viewport),
+       causing it to scroll with the page like position:absolute.
+       This broke: WhatsApp button, Navbar, LeadPopup, and any future modals.
+       DO NOT add contain:paint or contain:layout to body or html ever.
+    ──────────────────────────────────────────────────────────────────────── */
   }
 
   section {
     background: transparent;
+    content-visibility: auto;
+    contain-intrinsic-size: 0 500px;
+    /* NOTE: contain:paint is safe on <section> elements because no
+       position:fixed elements are direct children of sections */
+  }
+
+  img:not([loading]) {
+    loading: lazy;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
 /* =========================
    ANIMATION KEYFRAMES
-   (replaces tw-animate-css import)
 ========================= */
 
-/* Fade up — used by .animate-fade-up and section components */
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -119,7 +156,6 @@
   animation: fade-up 0.5s ease-out both;
 }
 
-/* Stagger container — children animate in sequence */
 .stagger-container > * {
   animation: fade-up 0.5s ease-out both;
 }
@@ -132,7 +168,6 @@
 .stagger-container > *:nth-child(7)  { animation-delay: 480ms; }
 .stagger-container > *:nth-child(8)  { animation-delay: 560ms; }
 
-/* Fade in (opacity only) */
 @keyframes fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -141,7 +176,6 @@
   animation: fade-in 0.4s ease-out both;
 }
 
-/* Slide in from left */
 @keyframes slide-in-left {
   from { opacity: 0; transform: translateX(-20px); }
   to   { opacity: 1; transform: translateX(0); }
@@ -150,26 +184,12 @@
   animation: slide-in-left 0.5s ease-out both;
 }
 
-/* Popup (used by .animate-popup) */
 @keyframes popup {
   from { opacity: 0; transform: translateY(40px) scale(0.95); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 .animate-popup {
   animation: popup 0.3s ease-out;
-}
-
-/* Reduced motion — turn off all animations */
-@media (prefers-reduced-motion: reduce) {
-  .animate-fade-up,
-  .animate-fade-in,
-  .animate-slide-left,
-  .animate-popup,
-  .stagger-container > * {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
 }
 
 /* =========================
@@ -229,7 +249,6 @@
   @apply w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10
   text-white outline-none
   focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30;
-
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -240,33 +259,93 @@ select option {
   background: white !important;
 }
 
- 
+/* =========================
+   SCROLL REVEAL
+========================= */
+
 .sol-reveal {
   opacity: 0;
   transform: translateY(24px);
   transition: opacity 0.55s ease, transform 0.55s ease;
+  will-change: opacity, transform;
 }
 .sol-reveal.sol-revealed {
   opacity: 1;
   transform: none;
+  will-change: auto;
 }
-@media (prefers-reduced-motion: reduce) {
-  .sol-reveal {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-}
-
-/* Scroll reveal */
-.sol-reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
-.sol-reveal.sol-revealed { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) { .sol-reveal { opacity: 1; transform: none; } }
 
 /* =========================
-   SMOOTH SCROLL
+   PERFORMANCE UTILITIES
 ========================= */
 
-html {
-  scroll-behavior: smooth;
+.img-eager {
+  loading: eager;
+  fetchpriority: high;
+}
+
+.img-lazy {
+  loading: lazy;
+  decoding: async;
+}
+
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.section-offscreen {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 400px;
+}
+
+/* =========================
+   MOBILE RESPONSIVE FIXES
+========================= */
+
+.overflow-fix {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+a, button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.h-screen-mobile {
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* =========================
+   INTERNAL LINK STYLES
+========================= */
+
+.internal-link {
+  color: var(--primary);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s ease;
+}
+.internal-link:hover {
+  text-decoration-color: var(--primary);
+}
+
+/* =========================
+   PRINT STYLES
+========================= */
+
+@media print {
+  .no-print,
+  nav,
+  footer,
+  .whatsapp-button {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
 }

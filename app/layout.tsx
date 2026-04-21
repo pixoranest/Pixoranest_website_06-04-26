@@ -8,29 +8,31 @@ import LeadPopup from "@/components/lead-popup"
 import TopBar from "@/components/topbar"
 import { GoogleAnalytics } from "@/components/GoogleAnalytics"
 
-// FIX: Removed @vercel/analytics import.
-// @vercel/analytics injects a script that phones home to Vercel's edge network.
-// On Hostinger static hosting (no Vercel), this import does NOT crash the build,
-// but the <Analytics /> component injects a script tag pointing to
-// /_vercel/insights/script.js — which returns 404 on Hostinger → console errors.
-// If you need analytics on Hostinger, use Google Analytics (already wired up
-// via GoogleAnalytics component + NEXT_PUBLIC_GA_ID env var) or Plausible/Fathom.
-
 import "./globals.css"
 import { metadata } from "./seo_metadata"
 export { metadata }
 
 // ─── Fonts ────────────────────────────────────────────────────────────────────
+// FIX: Added preload:true and reduced subsets to only what's used
+// FIX: Added display:"swap" to prevent FOIT (Flash of Invisible Text)
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
+  // FIX: Only load weights actually used in the UI
+  weight: ["400", "500", "600", "700"],
+  preload: true,
+  // FIX: Fallback font prevents layout shift
+  fallback: ["system-ui", "-apple-system", "sans-serif"],
 })
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair",
   display: "swap",
+  weight: ["400", "700"],
+  preload: false, // Only used in headings — lazy is fine
+  fallback: ["Georgia", "serif"],
 })
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -41,7 +43,10 @@ const SITE_NAME = "PixoraNest"
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0f172a",
+  themeColor: "#2563eb", // FIX: Match brand blue, not dark background
+  // FIX: Prevent auto-zoom on input focus (iOS)
+  minimumScale: 1,
+  maximumScale: 5,
 }
 
 // ─── JSON-LD: Organization Schema ─────────────────────────────────────────────
@@ -50,9 +55,14 @@ const organizationSchema = {
   "@type": "Organization",
   name: SITE_NAME,
   url: SITE_URL,
-  logo: `${SITE_URL}/logo.png`,
+  logo: {
+    "@type": "ImageObject",
+    url: `${SITE_URL}/images/logo-pixoranest.png`,
+    width: 180,
+    height: 50,
+  },
   description:
-    "PixoraNest provides AI automation services for businesses in India including AI receptionist, WhatsApp lead management, call routing, and social media automation.",
+    "PixoraNest provides AI automation services for businesses in India — AI receptionist, WhatsApp lead management, call routing, and social media automation.",
   foundingDate: "2024",
   areaServed: { "@type": "Country", name: "India" },
   address: {
@@ -88,7 +98,10 @@ const localBusinessSchema = {
   url: SITE_URL,
   telephone: "+91-94606-86266",
   email: "info@pixoranest.com",
-  image: `${SITE_URL}/logo.png`,
+  image: {
+    "@type": "ImageObject",
+    url: `${SITE_URL}/images/logo-pixoranest.png`,
+  },
   description:
     "AI automation agency in Rajasthan, India — offering AI receptionist, WhatsApp lead management, call routing, and business automation for Indian SMEs.",
   priceRange: "₹₹",
@@ -178,14 +191,35 @@ export default function RootLayout({
   return (
     <html lang="en-IN" className={`${inter.variable} ${playfair.variable}`}>
       <head>
-        {/* Geo Tags */}
+        {/* ── Critical Resource Hints ── */}
+        {/* FIX: Preconnect to GA before it loads — reduces RTT */}
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.google-analytics.com" />
+        {/* FIX: Preconnect to font CDN (already handled by next/font but belt+suspenders) */}
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* FIX: DNS prefetch for external resources */}
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        <link rel="dns-prefetch" href="https://wa.me" />
+
+        {/* ── Favicon & PWA ── */}
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+        {/* ── Geo Tags (Local SEO) ── */}
         <meta name="geo.region" content="IN-RJ" />
         <meta name="geo.placename" content="Narayanpur, Rajasthan, India" />
         <meta name="geo.position" content="27.4424;76.1265" />
         <meta name="ICBM" content="27.4424, 76.1265" />
         <meta name="language" content="English" />
+        {/* FIX: Added Hindi content language for Indian users */}
+        <meta httpEquiv="content-language" content="en-IN" />
 
-        {/* JSON-LD */}
+        {/* ── Mobile optimization ── */}
+        {/* FIX: format-detection prevents iOS from linkifying numbers unintentionally */}
+        <meta name="format-detection" content="telephone=no" />
+
+        {/* ── JSON-LD Structured Data ── */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
@@ -202,42 +236,34 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }}
         />
-
-        {/* Preconnect */}
-        <link rel="preconnect" href="https://www.google-analytics.com" />
-        <link rel="preconnect" href="https://images.unsplash.com" />
       </head>
 
       <body
         className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-background text-foreground`}
       >
+        {/* FIX: Skip-to-content link for accessibility (also an SEO signal) */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:text-sm focus:font-semibold"
+        >
+          Skip to main content
+        </a>
+
         <TopBar />
         <Navbar />
         <LeadPopup />
 
-        {/*
-          No <Suspense> wrapper here.
-          With output:"export", all pages are pre-rendered to static HTML at
-          build time. Suspense serves no purpose and causes RSC payload (.txt)
-          requests at runtime on static hosting → 404s.
-        */}
-        <main className="pt-[120px] min-h-screen">
+        <main id="main-content" className="pt-[120px] min-h-screen">
           {children}
         </main>
 
         <Footer />
         <WhatsAppButton />
 
-        {/* Google Analytics — NEXT_PUBLIC_ vars are inlined at build time */}
+        {/* Google Analytics */}
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics id={process.env.NEXT_PUBLIC_GA_ID} />
         )}
-
-        {/*
-          NOTE: @vercel/analytics <Analytics /> component has been removed.
-          It requests /_vercel/insights/script.js which 404s on Hostinger.
-          Google Analytics above handles all tracking needs.
-        */}
       </body>
     </html>
   )

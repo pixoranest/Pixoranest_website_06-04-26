@@ -12,11 +12,15 @@
 //
 // 2. REMOVED crossOrigin attribute from <img> tags.
 //    crossOrigin="anonymous" was triggering CORS preflight requests that
-//    Unsplash CDN doesn't always handle for image requests, causing 
+//    Unsplash CDN doesn't always handle for image requests, causing
 //    additional failures in some browsers.
 //
 // 3. useReveal() hook is safe — IntersectionObserver is only accessed
 //    inside useEffect (client-only), never during SSR/pre-render.
+//
+// 4. ALL microdata attributes (itemScope, itemType, itemProp) removed.
+//    These were contributing to Google Search Console Review schema errors.
+//    No structured data = no invalid schema warnings.
 //
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -193,6 +197,7 @@ export default function StoryCard({ story }: { story: Story }) {
 
   return (
     <>
+      {/* REMOVED: itemScope itemType was not present here in original, kept clean */}
       <article
         ref={ref as React.RefObject<HTMLElement>}
         className="story-card"
