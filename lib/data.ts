@@ -386,6 +386,18 @@ export const blogPosts = [
   author: "PixoraNest Team",
   featured: false,
 },
+// In blogPosts array, add after the last entry:
+{
+  title: "How AI Can Automate Up to 70% of Your Daily Business Operations",
+  slug: "ai-automate-70-percent-business-operations",
+  excerpt:
+    "Your team is losing 3 hours a day to repetitive tasks. Discover how AI automation can reclaim that time, cut costs, and scale your operations without increasing headcount.",
+  date: "May 05, 2026",
+  category: "AI",
+  readTime: "9 min read",
+  author: "PixoraNest Team",
+  featured: false,
+},
 ]
 
 export const blogCategories = [

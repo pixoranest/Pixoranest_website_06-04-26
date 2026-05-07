@@ -12,7 +12,7 @@ import {
   Linkedin, Facebook, MessageCircle, ExternalLink,
   CheckCircle2, Lightbulb, BarChart3, Code2, Shield,
   Settings, GitBranch, FileText, Rocket, Filter,
-  CalendarDays, Package, Megaphone, BookOpen,
+  CalendarDays, Package, Megaphone, BookOpen, HelpCircle,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { BlogArticle, ArticleSection } from "@/lib/blog-articles"
@@ -40,25 +40,6 @@ const iconMap: Record<string, ReactNode> = {
   Calendar:  <CalendarDays className="h-5 w-5" />,
   Package:   <Package   className="h-5 w-5" />,
   Megaphone: <Megaphone className="h-5 w-5" />,
-}
-
-/* ─── Scroll-reveal hook (replaces whileInView) ─────────────────────────────── */
-function useReveal() {
-  const ref = useRef<HTMLElement>(null)
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      el.classList.add("blog-revealed"); return
-    }
-    const io = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { el.classList.add("blog-revealed"); io.disconnect() } },
-      { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [])
-  return ref
 }
 
 /* ─── Types ─────────────────────────────────────────────────────────────────── */
@@ -239,6 +220,25 @@ export function BlogArticleContent({ post, article, heroImage, slug }: BlogArtic
                   {article.sections.map((section) => (
                     <ArticleSectionBlock key={section.id} section={section} />
                   ))}
+
+                  {/* ── FAQ Section — rendered when article.faqs exist ── */}
+                  {article.faqs && article.faqs.length > 0 && (
+                    <RevealSection as="section" className="scroll-mt-24" id="faqs">
+                      <h2 className="mb-8 flex items-center gap-2 text-2xl font-bold text-foreground sm:text-3xl">
+                        <HelpCircle className="h-6 w-6 text-primary" aria-hidden="true" />
+                        Frequently Asked Questions
+                      </h2>
+                      <div className="flex flex-col gap-3">
+                        {article.faqs.map((faq, i) => (
+                          <FaqItem
+                            key={`faq-${i}`}
+                            question={faq.question}
+                            answer={faq.answer}
+                          />
+                        ))}
+                      </div>
+                    </RevealSection>
+                  )}
                 </div>
               ) : (
                 <FallbackArticle post={post} />
@@ -330,7 +330,7 @@ function RevealSection({
 }: {
   children: ReactNode
   className?: string
- as?: keyof React.JSX.IntrinsicElements
+  as?: keyof React.JSX.IntrinsicElements
   [key: string]: unknown
 }) {
   const ref = useRef<HTMLElement>(null)
@@ -355,10 +355,10 @@ function ShareButtons({ shareUrl, shareText, copyLink, copied }: { shareUrl: str
   return (
     <div className="flex items-center gap-2" role="group" aria-label="Share this article">
       {[
-        { href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`, label: "Share on LinkedIn", Icon: <Linkedin className="h-3.5 w-3.5" /> },
-        { href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${shareText}`, label: "Share on X (Twitter)", Icon: <XIcon className="h-3.5 w-3.5" /> },
-        { href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`, label: "Share on Facebook", Icon: <Facebook className="h-3.5 w-3.5" /> },
-        { href: `https://wa.me/?text=${shareText}%20${encodedUrl}`, label: "Share on WhatsApp", Icon: <MessageCircle className="h-3.5 w-3.5" /> },
+        { href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`, label: "Share on LinkedIn",   Icon: <Linkedin       className="h-3.5 w-3.5" /> },
+        { href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${shareText}`, label: "Share on X (Twitter)", Icon: <XIcon          className="h-3.5 w-3.5" /> },
+        { href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,          label: "Share on Facebook",    Icon: <Facebook        className="h-3.5 w-3.5" /> },
+        { href: `https://wa.me/?text=${shareText}%20${encodedUrl}`,                    label: "Share on WhatsApp",    Icon: <MessageCircle   className="h-3.5 w-3.5" /> },
       ].map(({ href, label, Icon }) => (
         <a key={label} href={href} target="_blank" rel="noopener noreferrer nofollow" aria-label={label} className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground">{Icon}</a>
       ))}
@@ -478,6 +478,34 @@ function ArticleSectionBlock({ section }: { section: ArticleSection }) {
         </div>
       )}
     </RevealSection>
+  )
+}
+
+/* ─── FAQ Item (Accordion) ──────────────────────────────────────────────────── */
+function FaqItem({ question, answer }: { question: string; answer: string }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="rounded-xl border border-border bg-card/50 overflow-hidden">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold text-foreground hover:bg-card transition-colors"
+      >
+        <span>{question}</span>
+        <ChevronRight
+          aria-hidden="true"
+          className={cn(
+            "h-4 w-4 shrink-0 text-primary transition-transform duration-200",
+            open && "rotate-90"
+          )}
+        />
+      </button>
+      {open && (
+        <div className="px-5 pb-5 pt-1 border-t border-border/50">
+          <p className="text-sm leading-relaxed text-muted-foreground">{answer}</p>
+        </div>
+      )}
+    </div>
   )
 }
 

@@ -1,11 +1,4 @@
-# *
 User-agent: *
 Allow: /
-Disallow: /api/
-Disallow: /demo/
 
-# Host
-Host: https://pixoranest.com
-
-# Sitemaps
 Sitemap: https://pixoranest.com/sitemap.xml

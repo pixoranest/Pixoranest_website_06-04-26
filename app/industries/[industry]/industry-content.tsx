@@ -617,8 +617,7 @@ export function IndustryPageContent({ industry }: { industry: IndustryData }) {
         <div className="grid gap-5 sm:grid-cols-2">
           {solutions.slice(0, 4).map((solution, i) => (
             <FadeIn key={solution.slug} delay={i * 80}>
-              <Link href={`/services/${solution.slug}`} style={{ textDecoration: "none" }}>
-                <SolutionCard
+        <Link href={`/solutions/${solution.slug}`} style={{ textDecoration: "none" }}><SolutionCard
                   title={solution.title} description={solution.description}
                   index={i} color={theme.color} light={theme.light}
                 />
