@@ -139,7 +139,7 @@ const solutions = [
   { name: "LeadNest — WhatsApp Automation",        href: "/solutions/leadnest-whatsapp-automation",   icon: MessageCircle   },
   { name: "CallOrbit — AI Call Automation",        href: "/solutions/callorbit-smart-call-routing",   icon: PhoneForwarded  },
   { name: "EchoAssist — AI Voice Agent",           href: "/solutions/echoassist-ai-voice-agent",      icon: Mic             },
-  { name: "Socialium — Social Media Automation",   href: "/solutions/socialium-social-automation",    icon: Share2          },
+  { name: "Socialium — Social Media Automation",   href:"/solutions/socialium",    icon: Share2          },
 ]
 
 // ─── Socials ───────────────────────────────────────────────────────────────────

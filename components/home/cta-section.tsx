@@ -6,11 +6,11 @@ import { ArrowRight, CheckCircle2, MessageCircle } from "lucide-react"
 const trustPoints = ["No commitment", "Free consultation", "Results-driven"]
 
 const serviceLinks = [
-  { label: "AI Receptionist for Business",   href: "/solutions/ai-receptionist"    },
-  { label: "WhatsApp Lead Management India", href: "/solutions/whatsapp-automation" },
-  { label: "AI Call Routing Software India", href: "/solutions/call-automation"     },
-  { label: "Social Media Automation India",  href: "/solutions/social-automation"   },
-  { label: "AI Voice Agent India",           href: "/solutions/ai-voice-agent"      },
+  { label: "AI Receptionist for Business",   href: "/solutions/firstvoice"  },
+  { label: "WhatsApp Lead Management India", href: "/solutions/leadnest"    },
+  { label: "AI Call Routing Software India", href: "/solutions/callorbit"   },
+  { label: "Social Media Automation India",  href: "/solutions/socialium"   },
+  { label: "AI Voice Agent India",           href: "/solutions/echoassist"  },
 ]
 
 export function CTASection() {

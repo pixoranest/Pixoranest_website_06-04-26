@@ -210,19 +210,19 @@ export function Footer() {
             Our AI Automation Services
           </h4>
           <div className="grid grid-cols-2 gap-x-8 gap-y-2 sm:grid-cols-3 lg:grid-cols-5">
-            <Link href="/solutions/ai-receptionist" className="text-xs text-muted-foreground hover:text-primary transition-colors">
+            <Link href="/solutions/firstvoice" className="text-xs text-muted-foreground hover:text-primary transition-colors">
               AI Receptionist for Business
             </Link>
-            <Link href="/solutions/whatsapp-automation" className="text-xs text-muted-foreground hover:text-primary transition-colors">
+            <Link href="/solutions/leadnest" className="text-xs text-muted-foreground hover:text-primary transition-colors">
               WhatsApp Lead Management
             </Link>
-            <Link href="/solutions/call-automation" className="text-xs text-muted-foreground hover:text-primary transition-colors">
+            <Link href="/solutions/callorbit" className="text-xs text-muted-foreground hover:text-primary transition-colors">
               AI Call Routing Software
             </Link>
-            <Link href="/solutions/social-automation" className="text-xs text-muted-foreground hover:text-primary transition-colors">
+            <Link href="/solutions/socialium" className="text-xs text-muted-foreground hover:text-primary transition-colors">
               Social Media Automation
             </Link>
-            <Link href="/solutions/ai-voice-agent" className="text-xs text-muted-foreground hover:text-primary transition-colors">
+            <Link href="/solutions/echoassist" className="text-xs text-muted-foreground hover:text-primary transition-colors">
               AI Voice Agent India
             </Link>
             <Link href="/industries" className="text-xs text-muted-foreground hover:text-primary transition-colors">

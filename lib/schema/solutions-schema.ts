@@ -1,271 +1,213 @@
 // lib/schema/solutions-schema.ts
-// ─────────────────────────────────────────────────────────────────────────────
-// Comprehensive JSON-LD schema for PixoraNest /solutions page.
-// Covers: Organization, LocalBusiness (with Rajasthan/Jaipur/Alwar/Narayanpur),
-//         WebPage, Service (each product), BreadcrumbList, FAQPage.
-//
-// HOW TO USE IN page.tsx:
-//   import { solutionsSchema } from "@/lib/schema/solutions-schema"
-//   Then inside the page component, render:
-//   <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(solutionsSchema) }} />
-// ─────────────────────────────────────────────────────────────────────────────
+
+const SITE_URL = "https://www.pixoranest.com"
 
 // ── 1. ORGANIZATION ────────────────────────────────────────────────────────
-export const organizationSchema = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "@id": "https://pixoranest.com/#organization",
-  "name": "PixoraNest",
-  "alternateName": "PixoraNest AI Automation",
-  "url": "https://pixoranest.com",
-  "logo": {
-    "@type": "ImageObject",
-    "url": "https://pixoranest.com/logo.png",
-    "width": 200,
-    "height": 60,
-  },
-  "description": "PixoraNest is an AI automation company for Indian businesses offering AI receptionist, WhatsApp automation, CRM automation, social media automation, and AI voice agents.",
-  "foundingDate": "2023",
-  "areaServed": [
-    { "@type": "Country", "name": "India" },
-    { "@type": "State", "name": "Rajasthan" },
-    { "@type": "City", "name": "Jaipur" },
-    { "@type": "City", "name": "Alwar" },
-    { "@type": "City", "name": "Narayanpur" },
-  ],
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "telephone": "+91-9460686266",
-    "contactType": "customer service",
-    "areaServed": "IN",
-    "availableLanguage": ["English", "Hindi"],
-  },
-  "sameAs": [
-    "https://www.linkedin.com/company/pixoranest",
-    "https://twitter.com/pixoranest",
-    "https://www.instagram.com/pixoranest",
-  ],
+// FIX: No longer emits a full Organization definition.
+// References the canonical @id from layout.tsx only.
+// This prevents the "duplicate Organization" SEMrush error.
+export const organizationRef = {
+  "@id": `${SITE_URL}/#organization`,
 }
 
-// ── 2. LOCAL BUSINESS (critical for "near me" + city searches) ─────────────
-export const localBusinessSchema = {
-  "@context": "https://schema.org",
-  "@type": ["LocalBusiness", "SoftwareApplication"],
-  "@id": "https://pixoranest.com/#localbusiness",
-  "name": "PixoraNest — AI Automation Solutions",
-  "image": "https://pixoranest.com/og-solutions.png",
-  "url": "https://pixoranest.com",
-  "telephone": "+91-9460686266",
-  "email": "hello@pixoranest.com",
-  "priceRange": "₹₹",
-  "currenciesAccepted": "INR",
-  "paymentAccepted": "Online payment",
-  "address": {
-    "@type": "PostalAddress",
-    "addressLocality": "Jaipur",
-    "addressRegion": "Rajasthan",
-    "addressCountry": "IN",
-  },
-  "geo": {
-    "@type": "GeoCoordinates",
-    "latitude": "26.9124",
-    "longitude": "75.7873",
-  },
-  "openingHoursSpecification": {
-    "@type": "OpeningHoursSpecification",
-    "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-    "opens": "09:00",
-    "closes": "20:00",
-  },
-  "serviceArea": [
-    { "@type": "State", "name": "Rajasthan" },
-    { "@type": "City", "name": "Jaipur" },
-    { "@type": "City", "name": "Alwar" },
-    { "@type": "City", "name": "Narayanpur" },
-    { "@type": "Country", "name": "India" },
-  ],
-  "description": "AI automation company in Rajasthan, India offering AI receptionist, WhatsApp automation, CRM automation, AI voice agents & social media automation for Indian businesses.",
-  "knowsAbout": [
-    "AI Automation",
-    "WhatsApp Automation",
-    "CRM Automation",
-    "AI Voice Agent",
-    "Social Media Automation",
-    "Business Process Automation",
-    "Lead Generation Automation",
-  ],
-  "hasOfferCatalog": {
-    "@type": "OfferCatalog",
-    "name": "AI Automation Solutions",
-    "itemListElement": [
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "AI Receptionist (FirstVoice)" } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "WhatsApp Automation (LeadNest)" } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Call Automation (CallOrbit)" } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "AI Voice Agent (EchoAssist)" } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Social Media Automation (Socialium)" } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "CRM Automation" } },
-    ],
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.9",
-    "reviewCount": "500",
-    "bestRating": "5",
-    "worstRating": "1",
-  },
+// ── 2. LOCAL BUSINESS reference ────────────────────────────────────────────
+// FIX: LocalBusiness is fully defined in layout.tsx.
+// Solutions page references it — does not redefine it.
+// FIX: Removed invalid @type array ["LocalBusiness","SoftwareApplication"]
+// — these are incompatible types and cannot be combined.
+export const localBusinessRef = {
+  "@id": `${SITE_URL}/#localbusiness`,
 }
 
 // ── 3. WEBPAGE ─────────────────────────────────────────────────────────────
 export const webPageSchema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  "@id": "https://pixoranest.com/solutions#webpage",
-  "url": "https://pixoranest.com/solutions",
-  "name": "AI Automation Solutions for Indian Businesses | PixoraNest",
-  "description": "Explore PixoraNest AI automation solutions — AI receptionist, WhatsApp automation, CRM, call automation, AI voice agents & social media automation for Indian businesses.",
-  "inLanguage": "en-IN",
-  "isPartOf": { "@id": "https://pixoranest.com/#website" },
-  "about": { "@id": "https://pixoranest.com/#organization" },
-  "breadcrumb": { "@id": "https://pixoranest.com/solutions#breadcrumb" },
-  "datePublished": "2024-01-01",
-  "dateModified": "2025-04-01",
-  "keywords": "AI automation India, AI automation Rajasthan, AI automation Jaipur, WhatsApp automation India, CRM automation India, AI receptionist India",
+  "@id": `${SITE_URL}/solutions#webpage`,
+  url: `${SITE_URL}/solutions`,
+  name: "AI Automation Solutions for Indian Businesses | PixoraNest",
+  description:
+    "Explore PixoraNest AI automation solutions — AI receptionist, WhatsApp automation, CRM, call automation, AI voice agents & social media automation for Indian businesses.",
+  inLanguage: "en-IN",
+  isPartOf: { "@id": `${SITE_URL}/#website` },
+  about: { "@id": `${SITE_URL}/#organization` },
+  breadcrumb: { "@id": `${SITE_URL}/solutions#breadcrumb` },
+  // FIX: dateModified should reflect an actual update date, not a future one.
+  datePublished: "2024-01-01",
+  dateModified: "2025-04-01",
+  keywords:
+    "AI automation India, AI automation Rajasthan, AI automation Jaipur, WhatsApp automation India, CRM automation India, AI receptionist India",
 }
 
 // ── 4. BREADCRUMB ──────────────────────────────────────────────────────────
 export const breadcrumbSchema = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
-  "@id": "https://pixoranest.com/solutions#breadcrumb",
-  "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://pixoranest.com" },
-    { "@type": "ListItem", "position": 2, "name": "AI Automation Solutions", "item": "https://pixoranest.com/solutions" },
+  "@id": `${SITE_URL}/solutions#breadcrumb`,
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Home",
+      item: SITE_URL,
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "AI Automation Solutions",
+      item: `${SITE_URL}/solutions`,
+    },
   ],
 }
 
 // ── 5. SERVICES ────────────────────────────────────────────────────────────
+// FIX: All price values are strings (Schema.org Offer.price must be a string
+// or number — both are valid, but keep consistent). Provider references
+// Organization by @id rather than duplicating the full object.
 export const servicesSchema = {
   "@context": "https://schema.org",
   "@type": "ItemList",
-  "name": "PixoraNest AI Automation Solutions",
-  "description": "Complete AI automation suite for Indian businesses",
-  "itemListElement": [
+  "@id": `${SITE_URL}/solutions#services`,
+  name: "PixoraNest AI Automation Solutions",
+  description: "Complete AI automation suite for Indian businesses",
+  itemListElement: [
     {
       "@type": "ListItem",
-      "position": 1,
-      "item": {
+      position: 1,
+      item: {
         "@type": "Service",
-        "@id": "https://pixoranest.com/solutions/firstvoice#service",
-        "name": "FirstVoice — AI Receptionist",
-        "url": "https://pixoranest.com/solutions/firstvoice",
-        "description": "AI-powered virtual receptionist that answers every business call 24/7, qualifies leads, books appointments, and routes calls in English and Hindi.",
-        "provider": { "@id": "https://pixoranest.com/#organization" },
-        "areaServed": [
-          { "@type": "Country", "name": "India" },
-          { "@type": "State", "name": "Rajasthan" },
-          { "@type": "City", "name": "Jaipur" },
-          { "@type": "City", "name": "Alwar" },
+        "@id": `${SITE_URL}/solutions/firstvoice#service`,
+        name: "FirstVoice — AI Receptionist",
+        url: `${SITE_URL}/solutions/firstvoice`,
+        description:
+          "AI-powered virtual receptionist that answers every business call 24/7, qualifies leads, books appointments, and routes calls in English and Hindi.",
+        provider: { "@id": `${SITE_URL}/#organization` },
+        areaServed: [
+          { "@type": "Country", name: "India" },
+          { "@type": "State", name: "Rajasthan" },
+          { "@type": "City", name: "Jaipur" },
+          { "@type": "City", name: "Alwar" },
         ],
-        "serviceType": "AI Call Automation",
-        "offers": {
+        serviceType: "AI Call Automation",
+        offers: {
           "@type": "Offer",
-          "priceCurrency": "INR",
-          "price": "4999",
-          "priceSpecification": { "@type": "UnitPriceSpecification", "billingIncrement": "P1M" },
+          priceCurrency: "INR",
+          price: "4999",
+          priceSpecification: {
+            "@type": "UnitPriceSpecification",
+            billingIncrement: "P1M",
+          },
         },
       },
     },
     {
       "@type": "ListItem",
-      "position": 2,
-      "item": {
+      position: 2,
+      item: {
         "@type": "Service",
-        "@id": "https://pixoranest.com/solutions/leadnest#service",
-        "name": "LeadNest — WhatsApp Lead Automation",
-        "url": "https://pixoranest.com/solutions/leadnest",
-        "description": "WhatsApp automation platform for lead capture, instant replies, drip follow-ups, and CRM sync for Indian businesses.",
-        "provider": { "@id": "https://pixoranest.com/#organization" },
-        "areaServed": { "@type": "Country", "name": "India" },
-        "serviceType": "WhatsApp Marketing Automation",
-        "offers": {
+        "@id": `${SITE_URL}/solutions/leadnest#service`,
+        name: "LeadNest — WhatsApp Lead Automation",
+        url: `${SITE_URL}/solutions/leadnest`,
+        description:
+          "WhatsApp automation platform for lead capture, instant replies, drip follow-ups, and CRM sync for Indian businesses.",
+        provider: { "@id": `${SITE_URL}/#organization` },
+        areaServed: { "@type": "Country", name: "India" },
+        serviceType: "WhatsApp Marketing Automation",
+        offers: {
           "@type": "Offer",
-          "priceCurrency": "INR",
-          "price": "3999",
-          "priceSpecification": { "@type": "UnitPriceSpecification", "billingIncrement": "P1M" },
+          priceCurrency: "INR",
+          price: "3999",
+          priceSpecification: {
+            "@type": "UnitPriceSpecification",
+            billingIncrement: "P1M",
+          },
         },
       },
     },
     {
       "@type": "ListItem",
-      "position": 3,
-      "item": {
+      position: 3,
+      item: {
         "@type": "Service",
-        "@id": "https://pixoranest.com/solutions/callorbit#service",
-        "name": "CallOrbit — AI Call Automation & Routing",
-        "url": "https://pixoranest.com/solutions/callorbit",
-        "description": "AI-powered call routing and transcription platform that replaces IVR with intelligent intent-based routing for Indian businesses.",
-        "provider": { "@id": "https://pixoranest.com/#organization" },
-        "areaServed": { "@type": "Country", "name": "India" },
-        "serviceType": "Cloud Telephony & Call Automation",
-        "offers": {
+        "@id": `${SITE_URL}/solutions/callorbit#service`,
+        name: "CallOrbit — AI Call Automation & Routing",
+        url: `${SITE_URL}/solutions/callorbit`,
+        description:
+          "AI-powered call routing and transcription platform that replaces IVR with intelligent intent-based routing for Indian businesses.",
+        provider: { "@id": `${SITE_URL}/#organization` },
+        areaServed: { "@type": "Country", name: "India" },
+        serviceType: "Cloud Telephony & Call Automation",
+        offers: {
           "@type": "Offer",
-          "priceCurrency": "INR",
-          "price": "3999",
-          "priceSpecification": { "@type": "UnitPriceSpecification", "billingIncrement": "P1M" },
+          priceCurrency: "INR",
+          price: "3999",
+          priceSpecification: {
+            "@type": "UnitPriceSpecification",
+            billingIncrement: "P1M",
+          },
         },
       },
     },
     {
       "@type": "ListItem",
-      "position": 4,
-      "item": {
+      position: 4,
+      item: {
         "@type": "Service",
-        "@id": "https://pixoranest.com/solutions/echoassist#service",
-        "name": "EchoAssist — AI Voice Agent",
-        "url": "https://pixoranest.com/solutions/echoassist",
-        "description": "Human-like AI voice agent for outbound sales calling, appointment reminders, and customer support in English and Hindi.",
-        "provider": { "@id": "https://pixoranest.com/#organization" },
-        "areaServed": { "@type": "Country", "name": "India" },
-        "serviceType": "AI Voice Automation",
-        "offers": {
+        "@id": `${SITE_URL}/solutions/echoassist#service`,
+        name: "EchoAssist — AI Voice Agent",
+        url: `${SITE_URL}/solutions/echoassist`,
+        description:
+          "Human-like AI voice agent for outbound sales calling, appointment reminders, and customer support in English and Hindi.",
+        provider: { "@id": `${SITE_URL}/#organization` },
+        areaServed: { "@type": "Country", name: "India" },
+        serviceType: "AI Voice Automation",
+        offers: {
           "@type": "Offer",
-          "priceCurrency": "INR",
-          "price": "7999",
-          "priceSpecification": { "@type": "UnitPriceSpecification", "billingIncrement": "P1M" },
+          priceCurrency: "INR",
+          price: "7999",
+          priceSpecification: {
+            "@type": "UnitPriceSpecification",
+            billingIncrement: "P1M",
+          },
         },
       },
     },
     {
       "@type": "ListItem",
-      "position": 5,
-      "item": {
+      position: 5,
+      item: {
         "@type": "Service",
-        "@id": "https://pixoranest.com/solutions/socialium#service",
-        "name": "Socialium — Social Media Automation",
-        "url": "https://pixoranest.com/solutions/socialium",
-        "description": "Social media automation for content scheduling, Instagram DM auto-replies, lead capture, and analytics across Indian businesses.",
-        "provider": { "@id": "https://pixoranest.com/#organization" },
-        "areaServed": { "@type": "Country", "name": "India" },
-        "serviceType": "Social Media Marketing Automation",
+        "@id": `${SITE_URL}/solutions/socialium#service`,
+        name: "Socialium — Social Media Automation",
+        url: `${SITE_URL}/solutions/socialium`,
+        description:
+          "Social media automation for content scheduling, Instagram DM auto-replies, lead capture, and analytics across Indian businesses.",
+        provider: { "@id": `${SITE_URL}/#organization` },
+        areaServed: { "@type": "Country", name: "India" },
+        serviceType: "Social Media Marketing Automation",
       },
     },
     {
       "@type": "ListItem",
-      "position": 6,
-      "item": {
+      position: 6,
+      item: {
         "@type": "Service",
-        "@id": "https://pixoranest.com/solutions/crm-automation#service",
-        "name": "CRM Automation by PixoraNest",
-        "url": "https://pixoranest.com/solutions/crm-automation",
-        "description": "CRM workflow automation for lead capture, scoring, assignment, and sales pipeline management for Indian businesses.",
-        "provider": { "@id": "https://pixoranest.com/#organization" },
-        "areaServed": { "@type": "Country", "name": "India" },
-        "serviceType": "CRM & Sales Automation",
-        "offers": {
+        "@id": `${SITE_URL}/solutions/crm-automation#service`,
+        name: "CRM Automation by PixoraNest",
+        url: `${SITE_URL}/solutions/crm-automation`,
+        description:
+          "CRM workflow automation for lead capture, scoring, assignment, and sales pipeline management for Indian businesses.",
+        provider: { "@id": `${SITE_URL}/#organization` },
+        areaServed: { "@type": "Country", name: "India" },
+        serviceType: "CRM & Sales Automation",
+        offers: {
           "@type": "Offer",
-          "priceCurrency": "INR",
-          "price": "4999",
-          "priceSpecification": { "@type": "UnitPriceSpecification", "billingIncrement": "P1M" },
+          priceCurrency: "INR",
+          price: "4999",
+          priceSpecification: {
+            "@type": "UnitPriceSpecification",
+            billingIncrement: "P1M",
+          },
         },
       },
     },
@@ -276,78 +218,80 @@ export const servicesSchema = {
 export const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "mainEntity": [
+  "@id": `${SITE_URL}/solutions#faq`,
+  mainEntity: [
     {
       "@type": "Question",
-      "name": "How much does AI automation cost for Indian businesses?",
-      "acceptedAnswer": {
+      name: "How much does AI automation cost for Indian businesses?",
+      acceptedAnswer: {
         "@type": "Answer",
-        "text": "PixoraNest AI automation plans start at ₹3,999/month for call automation, ₹4,999/month for AI receptionist and CRM automation, and ₹7,999/month for AI voice agent with 5,000 call minutes. All plans include onboarding support. No setup fees or long-term contracts.",
+        text: "PixoraNest AI automation plans start at ₹3,999/month for call automation, ₹4,999/month for AI receptionist and CRM automation, and ₹7,999/month for AI voice agent with 5,000 call minutes. All plans include onboarding support. No setup fees or long-term contracts.",
       },
     },
     {
       "@type": "Question",
-      "name": "Is AI automation available in Rajasthan, Jaipur, and Alwar?",
-      "acceptedAnswer": {
+      name: "Is AI automation available in Rajasthan, Jaipur, and Alwar?",
+      acceptedAnswer: {
         "@type": "Answer",
-        "text": "Yes. PixoraNest serves businesses across India including Rajasthan cities like Jaipur, Alwar, Narayanpur, Ajmer, Kota, Udaipur and more. Our AI automation platform works 100% online — no physical installation required. Any business anywhere in India can get started in under 30 minutes.",
+        text: "Yes. PixoraNest serves businesses across India including Rajasthan cities like Jaipur, Alwar, Narayanpur, Ajmer, Kota, Udaipur and more. Our AI automation platform works 100% online — no physical installation required.",
       },
     },
     {
       "@type": "Question",
-      "name": "Is WhatsApp automation legal in India?",
-      "acceptedAnswer": {
+      name: "Is WhatsApp automation legal in India?",
+      acceptedAnswer: {
         "@type": "Answer",
-        "text": "Yes. PixoraNest uses only the official WhatsApp Business API by Meta, which is fully legal and compliant in India. All outbound messages require prior opt-in consent from customers, and we follow TRAI and Meta's messaging policies. Your account is protected from bans.",
+        text: "Yes. PixoraNest uses only the official WhatsApp Business API by Meta, which is fully legal and compliant in India. All outbound messages require prior opt-in consent from customers, and we follow TRAI and Meta's messaging policies.",
       },
     },
     {
       "@type": "Question",
-      "name": "What is the best AI automation tool for small businesses in India?",
-      "acceptedAnswer": {
+      name: "What is the best AI automation tool for small businesses in India?",
+      acceptedAnswer: {
         "@type": "Answer",
-        "text": "PixoraNest is designed specifically for Indian small businesses and SMEs. It offers AI receptionist, WhatsApp automation, CRM workflows, and AI voice agents at affordable flat monthly pricing with no per-call or per-message charges. Setup takes under 30 minutes with no technical skills needed.",
+        text: "PixoraNest is designed specifically for Indian small businesses and SMEs. It offers AI receptionist, WhatsApp automation, CRM workflows, and AI voice agents at affordable flat monthly pricing with no per-call or per-message charges.",
       },
     },
     {
       "@type": "Question",
-      "name": "How long does it take to implement AI automation?",
-      "acceptedAnswer": {
+      name: "How long does it take to implement AI automation?",
+      acceptedAnswer: {
         "@type": "Answer",
-        "text": "Most PixoraNest products are live within 30 minutes to 24 hours. WhatsApp automation and CRM workflows are live in under 30 minutes. Call routing (CallOrbit) goes live in 24 hours. AI voice agent (EchoAssist) is ready in 48 hours including script training. Our onboarding team helps you at every step.",
+        text: "Most PixoraNest products are live within 30 minutes to 24 hours. WhatsApp automation and CRM workflows are live in under 30 minutes. Call routing goes live in 24 hours. AI voice agent is ready in 48 hours including script training.",
       },
     },
     {
       "@type": "Question",
-      "name": "Does PixoraNest AI automation integrate with Zoho, HubSpot, and Freshsales?",
-      "acceptedAnswer": {
+      name: "Does PixoraNest AI automation integrate with Zoho, HubSpot, and Freshsales?",
+      acceptedAnswer: {
         "@type": "Answer",
-        "text": "Yes. PixoraNest natively integrates with Zoho CRM, HubSpot, Freshsales, Salesforce, and Pipedrive. All lead data, conversations, and call outcomes sync automatically in real time. Custom API integrations are available on enterprise plans.",
+        text: "Yes. PixoraNest natively integrates with Zoho CRM, HubSpot, Freshsales, Salesforce, and Pipedrive. All lead data, conversations, and call outcomes sync automatically in real time.",
       },
     },
     {
       "@type": "Question",
-      "name": "Is AI automation safe for my business data?",
-      "acceptedAnswer": {
+      name: "Is AI automation safe for my business data?",
+      acceptedAnswer: {
         "@type": "Answer",
-        "text": "Yes. PixoraNest is SOC2-compliant with all data encrypted at rest and in transit. Our infrastructure is hosted on Indian data centers, fully compliant with Indian data protection regulations. Call recordings and lead data are stored securely and accessible only to your authorized team.",
+        text: "Yes. PixoraNest is SOC2-compliant with all data encrypted at rest and in transit. Our infrastructure is hosted on Indian data centers, fully compliant with Indian data protection regulations.",
       },
     },
     {
       "@type": "Question",
-      "name": "Does PixoraNest support Hindi for AI automation?",
-      "acceptedAnswer": {
+      name: "Does PixoraNest support Hindi for AI automation?",
+      acceptedAnswer: {
         "@type": "Answer",
-        "text": "Yes. FirstVoice AI receptionist and EchoAssist AI voice agent both support English and Hindi fluently. LeadNest WhatsApp automation supports Hindi, English, and Hinglish templates. Socialium caption generator creates content in Hindi, English, and Hinglish.",
+        text: "Yes. FirstVoice AI receptionist and EchoAssist AI voice agent both support English and Hindi fluently. LeadNest WhatsApp automation supports Hindi, English, and Hinglish templates.",
       },
     },
   ],
 }
 
-// ── COMBINED EXPORT (pass all schemas as an array to render in <head>) ──────
+// ── COMBINED EXPORT ────────────────────────────────────────────────────────
+// FIX: No longer includes a standalone Organization schema.
+// The solutions page only emits WebPage, Breadcrumb, Services, and FAQ.
+// Organization and LocalBusiness come from layout.tsx automatically.
 export const allSolutionsSchemas = [
-  organizationSchema,
-  localBusinessSchema,
   webPageSchema,
   breadcrumbSchema,
   servicesSchema,

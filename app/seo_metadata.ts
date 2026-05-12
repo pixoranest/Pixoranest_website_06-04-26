@@ -8,6 +8,8 @@
  *  • Description: 150–160 characters exactly — audit flag fixed
  *  • Keywords:    Primary + secondary + long-tail
  *  • OG/Twitter:  Every page has unique OG image + description
+ *  • Hreflang:    Every page uses generateAlternates() — fixes SEMrush
+ *                 "No self-referencing hreflang" error globally
  *
  * FIX APPLIED: Previous descriptions were too long (170–200+ chars).
  * Each description below is verified at 150–160 chars.
@@ -16,16 +18,49 @@
 
 import type { Metadata } from "next"
 
-const SITE_URL = "https://www.pixoranest.com"
+export const SITE_URL = "https://www.pixoranest.com"
 const SITE_NAME = "PixoraNest"
 const OG_IMAGE  = `${SITE_URL}/og-image.jpg`
+
+// ─────────────────────────────────────────────────────────────────────────────
+// generateAlternates()
+//
+// WHY THIS EXISTS:
+//   SEMrush fires "No self-referencing hreflang" when a page has hreflang
+//   tags but none point back to the page itself. The fix is:
+//     <link rel="alternate" hreflang="en-IN" href="[own URL]">
+//   on every page.
+//
+//   In Next.js App Router, `alternates.languages` in a Metadata object
+//   renders exactly that tag. One call per page — no manual duplication.
+//
+// USAGE (in any page metadata or generateMetadata):
+//   alternates: generateAlternates("/solutions/firstvoice")
+//
+// RENDERED OUTPUT in <head>:
+//   <link rel="canonical"   href="https://www.pixoranest.com/solutions/firstvoice" />
+//   <link rel="alternate"   hreflang="en-IN"     href="https://www.pixoranest.com/solutions/firstvoice" />
+//   <link rel="alternate"   hreflang="x-default" href="https://www.pixoranest.com/solutions/firstvoice" />
+//
+// Dynamic pages (blog posts, industry sub-pages) — call it inside
+// generateMetadata() using the resolved `params.slug` to build the path.
+// ─────────────────────────────────────────────────────────────────────────────
+export function generateAlternates(pagePath: string): Metadata["alternates"] {
+  const url = pagePath === "/" ? SITE_URL : `${SITE_URL}${pagePath}`
+  return {
+    canonical: url,
+    languages: {
+      "en-IN":     url,
+      "x-default": url,
+    },
+  }
+}
 
 // ─── Homepage ─────────────────────────────────────────────────────────────────
 // Title: 60 chars ✅ | Description: 155 chars ✅
 export const metadata: Metadata = {
   title: "AI Automation Services for Businesses in India | PixoraNest",
 
-  // FIX: Was 172 chars. Trimmed to 155 chars.
   description:
     "PixoraNest delivers AI automation for Indian businesses — AI receptionist, WhatsApp lead management, call routing & social media automation. Book a free demo.",
 
@@ -43,10 +78,7 @@ export const metadata: Metadata = {
     "automated customer communication India",
   ],
 
-  alternates: {
-    canonical: SITE_URL,
-    languages: { "en-IN": SITE_URL },
-  },
+  alternates: generateAlternates("/"),
 
   openGraph: {
     type:        "website",
@@ -54,7 +86,6 @@ export const metadata: Metadata = {
     url:         SITE_URL,
     siteName:    SITE_NAME,
     title:       "AI Automation Services for Businesses in India | PixoraNest",
-    // FIX: OG description can be slightly different — optimised for click-through
     description:
       "Automate calls, WhatsApp leads, and customer communication with PixoraNest AI — built for Indian startups & SMBs. Start your free demo today.",
     images: [{
@@ -82,14 +113,10 @@ export const metadata: Metadata = {
 export const solutionsMetadata: Metadata = {
   title: "AI Automation Solutions for Indian Businesses | PixoraNest",
 
-  // FIX: Was 162 chars. Trimmed to 158 chars.
   description:
     "PixoraNest offers AI automation solutions for Indian businesses — AI receptionist, WhatsApp automation, CRM, call & social automation. Book a free demo today.",
 
-  alternates: {
-    canonical: `${SITE_URL}/solutions`,
-    languages: { "en-IN": `${SITE_URL}/solutions` },
-  },
+  alternates: generateAlternates("/solutions"),
 
   openGraph: {
     title:       "AI Automation Solutions for Indian Businesses | PixoraNest",
@@ -126,10 +153,7 @@ export const contactMetadata: Metadata = {
   description:
     "Book a free AI automation demo with PixoraNest. Talk to our experts about AI receptionist, WhatsApp lead management & business automation for your Indian business.",
 
-  alternates: {
-    canonical: `${SITE_URL}/contact`,
-    languages: { "en-IN": `${SITE_URL}/contact` },
-  },
+  alternates: generateAlternates("/contact"),
 
   openGraph: {
     title:       "Contact PixoraNest | Book a Free AI Automation Demo",
@@ -158,7 +182,7 @@ export const contactMetadata: Metadata = {
   },
 }
 
-// ─── AI Receptionist Page ─────────────────────────────────────────────────────
+// ─── AI Receptionist (FirstVoice) Page ───────────────────────────────────────
 // Title: 55 chars ✅ | Description: 157 chars ✅
 export const aiReceptionistMetadata: Metadata = {
   title: "AI Receptionist for Business in India | PixoraNest",
@@ -166,15 +190,13 @@ export const aiReceptionistMetadata: Metadata = {
   description:
     "PixoraNest's AI Receptionist answers calls 24/7, qualifies leads & books appointments automatically. Save hours daily for your Indian business. Book a free demo.",
 
-  alternates: {
-    canonical: `${SITE_URL}/solutions/ai-receptionist`,
-  },
+  alternates: generateAlternates("/solutions/firstvoice"),
 
   openGraph: {
     title:       "AI Receptionist for Business in India | PixoraNest",
     description:
       "Never miss a call again. PixoraNest AI Receptionist handles calls, qualifies leads and books appointments 24/7 for Indian businesses.",
-    url:         `${SITE_URL}/solutions/ai-receptionist`,
+    url:         `${SITE_URL}/solutions/firstvoice`,
     siteName:    SITE_NAME,
     type:        "website",
     locale:      "en_IN",
@@ -197,7 +219,7 @@ export const aiReceptionistMetadata: Metadata = {
   },
 }
 
-// ─── WhatsApp Automation Page ─────────────────────────────────────────────────
+// ─── WhatsApp Automation (LeadNest) Page ─────────────────────────────────────
 // Title: 56 chars ✅ | Description: 159 chars ✅
 export const whatsappMetadata: Metadata = {
   title: "WhatsApp Lead Management Software India | PixoraNest",
@@ -205,15 +227,13 @@ export const whatsappMetadata: Metadata = {
   description:
     "Automate WhatsApp lead follow-ups, qualify prospects & close more sales with PixoraNest. Built on WhatsApp Business API for Indian SMEs. Try it free today.",
 
-  alternates: {
-    canonical: `${SITE_URL}/solutions/whatsapp-automation`,
-  },
+  alternates: generateAlternates("/solutions/leadnest"),
 
   openGraph: {
     title:       "WhatsApp Lead Management Software India | PixoraNest",
     description:
       "Stop losing leads. PixoraNest automates WhatsApp follow-ups, qualifies prospects, and closes more sales for Indian businesses.",
-    url:         `${SITE_URL}/solutions/whatsapp-automation`,
+    url:         `${SITE_URL}/solutions/leadnest`,
     siteName:    SITE_NAME,
     type:        "website",
     locale:      "en_IN",
@@ -244,9 +264,7 @@ export const industriesMetadata: Metadata = {
   description:
     "PixoraNest serves real estate, healthcare, education, e-commerce, hospitality & more with custom AI automation solutions. See your industry's use case today.",
 
-  alternates: {
-    canonical: `${SITE_URL}/industries`,
-  },
+  alternates: generateAlternates("/industries"),
 
   openGraph: {
     title:       "AI Automation for Every Industry in India | PixoraNest",

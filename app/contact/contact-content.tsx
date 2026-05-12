@@ -10,58 +10,6 @@ import {
 const BLUE = "#2563eb"
 const NAVY = "#0f172a"
 
-// ─── Schema JSON-LD ────────────────────────────────────────────────────────────
-const contactSchema = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "ContactPage",
-      "@id": "https://pixoranest.com/contact#webpage",
-      "url": "https://pixoranest.com/contact",
-      "name": "Contact PixoraNest | Free AI Automation Demo India",
-      "description":
-        "Contact PixoraNest to book a free AI automation demo for your Indian business. Get expert help with AI receptionist, WhatsApp automation & AI voice agents.",
-      "isPartOf": { "@id": "https://pixoranest.com/#organization" },
-      "breadcrumb": {
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home",    "item": "https://pixoranest.com" },
-          { "@type": "ListItem", "position": 2, "name": "Contact", "item": "https://pixoranest.com/contact" },
-        ],
-      },
-    },
-    {
-      "@type": "LocalBusiness",
-      "@id": "https://pixoranest.com/#localbusiness",
-      "name": "PixoraNest",
-      "description": "AI automation company in India providing AI receptionist, WhatsApp automation, AI voice agents and CRM workflow automation for businesses.",
-      "url": "https://pixoranest.com",
-      "telephone": "+91-9460686266",
-      "email": "info@pixoranest.com",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "1st Floor, Near Tehsil Bhawan",
-        "addressLocality": "Narayanpur",
-        "addressRegion": "Rajasthan",
-        "postalCode": "301024",
-        "addressCountry": "IN",
-      },
-      "openingHoursSpecification": {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-        "opens": "09:00",
-        "closes": "19:00",
-      },
-      "sameAs": [
-        "https://www.facebook.com/pixoranest2025",
-        "https://www.instagram.com/pixoranest/",
-        "https://www.linkedin.com/company/pixoranest-official/",
-        "https://youtube.com/@pixora-nest",
-      ],
-    },
-  ],
-}
-
 // ─── Contact info cards ────────────────────────────────────────────────────────
 const contactInfo = [
   {
@@ -197,12 +145,11 @@ export function ContactPageContent() {
     fullName: "", email: "", phone: "", company: "", requirements: "",
   })
 
-  // Fade-in refs
-  const heroRef     = useFadeIn(0)
-  const badgesRef   = useFadeIn(200)
-  const formRef     = useFadeIn(100)
-  const rightRef    = useFadeIn(200)
-  const bottomRef   = useFadeIn(0)
+  const heroRef   = useFadeIn(0)
+  const badgesRef = useFadeIn(200)
+  const formRef   = useFadeIn(100)
+  const rightRef  = useFadeIn(200)
+  const bottomRef = useFadeIn(0)
 
   function update(key: keyof FormData) {
     return (v: string) => setFormData(prev => ({ ...prev, [key]: v }))
@@ -259,15 +206,6 @@ export function ContactPageContent() {
         .contact-card-hover:hover {
           transform: translateY(-4px);
         }
-        .contact-trust-item {
-          opacity: 0;
-          transform: translateY(12px);
-          transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-        .contact-trust-item.visible {
-          opacity: 1;
-          transform: translateY(0);
-        }
         .contact-submit-btn {
           transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
         }
@@ -299,12 +237,6 @@ export function ContactPageContent() {
         }
       `}</style>
 
-      {/* JSON-LD Schema */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactSchema) }}
-      />
-
       <div className="overflow-x-hidden" style={{ background: "transparent" }}>
 
         {/* ══════════════════════════════════════════
@@ -331,7 +263,6 @@ export function ContactPageContent() {
           }} />
 
           <div className="max-w-4xl mx-auto text-center" style={{ position: "relative", zIndex: 1 }}>
-
             <div ref={heroRef}>
               {/* Breadcrumb */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 16, fontSize: 12, color: "#64748b" }}>
@@ -350,7 +281,7 @@ export function ContactPageContent() {
               <h1 style={{ fontSize: "clamp(2.2rem, 5vw, 3.6rem)", fontWeight: 900, color: NAVY, lineHeight: 1.1, letterSpacing: "-0.03em", marginBottom: 20 }}>
                 Contact{" "}
                 <span style={{ color: BLUE }}>PixoraNest</span>{" "}
-                — India's AI Automation Experts
+                — India&apos;s AI Automation Experts
               </h1>
 
               {/* Opening paragraph */}
@@ -371,7 +302,6 @@ export function ContactPageContent() {
                 )
               })}
             </div>
-
           </div>
         </section>
 
@@ -430,7 +360,7 @@ export function ContactPageContent() {
                     </div>
                     <div>
                       <p style={{ fontSize: 16, fontWeight: 800, color: "#fff", margin: 0 }}>Send Us a Message</p>
-                      <p style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", margin: 0 }}>We'll get back to you within 4 hours</p>
+                      <p style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", margin: 0 }}>We&apos;ll get back to you within 4 hours</p>
                     </div>
                   </div>
                 </div>
@@ -453,12 +383,20 @@ export function ContactPageContent() {
                       </p>
                       <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
                         <button
-                          onClick={() => { setSubmitted(false); setFormData({ fullName: "", email: "", phone: "", company: "", requirements: "" }) }}
-                          style={{ background: "rgba(37,99,235,0.08)", color: BLUE, border: "1px solid rgba(37,99,235,0.2)", borderRadius: 10, padding: "10px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                          onClick={() => {
+                            setSubmitted(false)
+                            setFormData({ fullName: "", email: "", phone: "", company: "", requirements: "" })
+                          }}
+                          style={{ background: "rgba(37,99,235,0.08)", color: BLUE, border: "1px solid rgba(37,99,235,0.2)", borderRadius: 10, padding: "10px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
+                        >
                           Send another
                         </button>
-                        <a href="https://wa.me/919460686266" target="_blank" rel="noopener noreferrer"
-                          style={{ background: "#25d366", color: "#fff", borderRadius: 10, padding: "10px 20px", fontSize: 13, fontWeight: 600, textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}>
+                        <a
+                          href="https://wa.me/919460686266"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ background: "#25d366", color: "#fff", borderRadius: 10, padding: "10px 20px", fontSize: 13, fontWeight: 600, textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}
+                        >
                           <MessageCircle size={14} />
                           WhatsApp us
                         </a>
@@ -545,12 +483,9 @@ export function ContactPageContent() {
                           cursor: loading ? "not-allowed" : "pointer",
                           boxShadow: loading ? "none" : "0 8px 20px rgba(37,99,235,0.3)",
                           width: "100%",
-                        }}>
-                        {loading ? (
-                          <><Spinner /> Sending...</>
-                        ) : (
-                          <>Send Message <Send size={15} /></>
-                        )}
+                        }}
+                      >
+                        {loading ? <><Spinner /> Sending...</> : <>Send Message <Send size={15} /></>}
                       </button>
 
                     </form>
@@ -576,7 +511,8 @@ export function ContactPageContent() {
                   textDecoration: "none",
                   boxShadow: "0 12px 32px rgba(37,99,235,0.28)",
                   cursor: "pointer", position: "relative", overflow: "hidden",
-                }}>
+                }}
+              >
                 <div style={{ position: "absolute", top: -40, right: -40, width: 160, height: 160, borderRadius: "50%", background: "rgba(255,255,255,0.08)", pointerEvents: "none" }} />
                 <div style={{ position: "absolute", bottom: -30, left: -30, width: 120, height: 120, borderRadius: "50%", background: "rgba(255,255,255,0.05)", pointerEvents: "none" }} />
 
@@ -608,7 +544,8 @@ export function ContactPageContent() {
                 {trustPoints.map((point, i) => {
                   const PIcon = point.icon
                   return (
-                    <div key={i}
+                    <div
+                      key={i}
                       style={{
                         display: "flex", alignItems: "flex-start", gap: 14,
                         background: "rgba(255,255,255,0.65)", backdropFilter: "blur(12px)",
@@ -616,7 +553,8 @@ export function ContactPageContent() {
                         padding: "16px 18px", boxShadow: "0 4px 16px rgba(37,99,235,0.05)",
                         opacity: 0,
                         animation: `contact-success-pop 0.5s ease ${0.2 + i * 0.08}s both`,
-                      }}>
+                      }}
+                    >
                       <div style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(37,99,235,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
                         <PIcon size={17} color={BLUE} />
                       </div>
@@ -651,13 +589,16 @@ export function ContactPageContent() {
                 <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#94a3b8", margin: "0 0 12px" }}>Explore Before You Contact</p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {[
-                    { label: "View all AI automation solutions",  href: "/solutions" },
-                    { label: "See pricing plans",                  href: "/pricing"   },
-                    { label: "Read customer success stories",      href: "/customer-stories" },
-                    { label: "Learn about PixoraNest",             href: "/about"     },
+                    { label: "View all AI automation solutions", href: "/solutions" },
+                    { label: "See pricing plans",                href: "/pricing" },
+                    { label: "Read customer success stories",    href: "/customer-stories" },
+                    { label: "Learn about PixoraNest",           href: "/about" },
                   ].map((link, i) => (
-                    <Link key={i} href={link.href}
-                      style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 600, color: BLUE, textDecoration: "none" }}>
+                    <Link
+                      key={i}
+                      href={link.href}
+                      style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 600, color: BLUE, textDecoration: "none" }}
+                    >
                       <ArrowRight size={13} color={BLUE} />
                       {link.label}
                     </Link>
@@ -691,12 +632,16 @@ export function ContactPageContent() {
                   Join 500+ businesses across India already using PixoraNest to capture leads, reply 24/7, and close more deals with AI automation.
                 </p>
                 <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-                  <Link href="/pricing"
-                    style={{ background: `linear-gradient(135deg, ${BLUE} 0%, #4f46e5 100%)`, color: "#fff", padding: "14px 28px", borderRadius: 12, fontWeight: 700, fontSize: 14, display: "flex", alignItems: "center", gap: 8, boxShadow: "0 8px 24px rgba(37,99,235,0.3)", textDecoration: "none" }}>
+                  <Link
+                    href="/pricing"
+                    style={{ background: `linear-gradient(135deg, ${BLUE} 0%, #4f46e5 100%)`, color: "#fff", padding: "14px 28px", borderRadius: 12, fontWeight: 700, fontSize: 14, display: "flex", alignItems: "center", gap: 8, boxShadow: "0 8px 24px rgba(37,99,235,0.3)", textDecoration: "none" }}
+                  >
                     View Pricing <ArrowRight size={15} />
                   </Link>
-                  <Link href="/solutions"
-                    style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.2)", color: BLUE, padding: "14px 28px", borderRadius: 12, fontWeight: 600, fontSize: 14, textDecoration: "none" }}>
+                  <Link
+                    href="/solutions"
+                    style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.2)", color: BLUE, padding: "14px 28px", borderRadius: 12, fontWeight: 600, fontSize: 14, textDecoration: "none" }}
+                  >
                     Explore Solutions
                   </Link>
                 </div>

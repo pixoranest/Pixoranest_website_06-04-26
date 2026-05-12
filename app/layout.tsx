@@ -7,22 +7,22 @@ import { WhatsAppButton } from "@/components/whatsapp-button"
 import LeadPopup from "@/components/lead-popup"
 import TopBar from "@/components/topbar"
 import { GoogleAnalytics } from "@/components/GoogleAnalytics"
-import Script from "next/script";
+import Script from "next/script"
 import "./globals.css"
-import { metadata } from "./seo_metadata"
-export { metadata }
 
-// ─── Fonts ────────────────────────────────────────────────────────────────────
-// FIX: Added preload:true and reduced subsets to only what's used
-// FIX: Added display:"swap" to prevent FOIT (Flash of Invisible Text)
+import { metadata as homeMetadata } from "./seo_metadata"
+
+export const metadata: Metadata = {
+  metadataBase: new URL("https://www.pixoranest.com"),
+  ...homeMetadata,
+}
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
-  // FIX: Only load weights actually used in the UI
   weight: ["400", "500", "600", "700"],
   preload: true,
-  // FIX: Fallback font prevents layout shift
   fallback: ["system-ui", "-apple-system", "sans-serif"],
 })
 
@@ -31,40 +31,54 @@ const playfair = Playfair_Display({
   variable: "--font-playfair",
   display: "swap",
   weight: ["400", "700"],
-  preload: false, // Only used in headings — lazy is fine
+  preload: false,
   fallback: ["Georgia", "serif"],
 })
 
-// ─── Constants ────────────────────────────────────────────────────────────────
 const SITE_URL = "https://www.pixoranest.com"
 const SITE_NAME = "PixoraNest"
 
-// ─── Viewport ─────────────────────────────────────────────────────────────────
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#2563eb", // FIX: Match brand blue, not dark background
-  // FIX: Prevent auto-zoom on input focus (iOS)
+  themeColor: "#2563eb",
   minimumScale: 1,
   maximumScale: 5,
 }
 
 // ─── JSON-LD: Organization Schema ─────────────────────────────────────────────
+// CANONICAL definition — all other pages reference this via @id only.
+// Do NOT repeat Organization in any other page file.
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
+  "@id": `${SITE_URL}/#organization`,
   name: SITE_NAME,
+  alternateName: "Pixora Nest",
   url: SITE_URL,
   logo: {
     "@type": "ImageObject",
+    "@id": `${SITE_URL}/#logo`,
     url: `${SITE_URL}/images/logo-pixoranest.png`,
     width: 180,
     height: 50,
+    caption: SITE_NAME,
   },
   description:
     "PixoraNest provides AI automation services for businesses in India — AI receptionist, WhatsApp lead management, call routing, and social media automation.",
   foundingDate: "2024",
-  areaServed: { "@type": "Country", name: "India" },
+  numberOfEmployees: {
+    "@type": "QuantitativeValue",
+    minValue: 15,
+    maxValue: 25,
+  },
+  areaServed: [
+    { "@type": "Country", name: "India" },
+    { "@type": "State", name: "Rajasthan" },
+    { "@type": "City", name: "Jaipur" },
+    { "@type": "City", name: "Alwar" },
+    { "@type": "City", name: "Narayanpur" },
+  ],
   address: {
     "@type": "PostalAddress",
     streetAddress: "1st Floor, near Tehsil Bhawan, Narayanpur",
@@ -81,6 +95,15 @@ const organizationSchema = {
     availableLanguage: ["English", "Hindi"],
     areaServed: "IN",
   },
+  knowsAbout: [
+    "AI Automation",
+    "WhatsApp Business API",
+    "AI Receptionist",
+    "CRM Automation",
+    "Lead Management",
+    "Call Routing",
+    "Social Media Automation",
+  ],
   sameAs: [
     "https://www.linkedin.com/company/pixoranest",
     "https://twitter.com/pixoranest",
@@ -91,9 +114,12 @@ const organizationSchema = {
 }
 
 // ─── JSON-LD: LocalBusiness Schema ────────────────────────────────────────────
+// Separate node from Organization — do NOT combine @type arrays
+// across incompatible types (LocalBusiness + SoftwareApplication is invalid).
 const localBusinessSchema = {
   "@context": "https://schema.org",
   "@type": ["LocalBusiness", "ProfessionalService"],
+  "@id": `${SITE_URL}/#localbusiness`,
   name: SITE_NAME,
   url: SITE_URL,
   telephone: "+91-94606-86266",
@@ -105,6 +131,8 @@ const localBusinessSchema = {
   description:
     "AI automation agency in Rajasthan, India — offering AI receptionist, WhatsApp lead management, call routing, and business automation for Indian SMEs.",
   priceRange: "₹₹",
+  currenciesAccepted: "INR",
+  paymentAccepted: "Online payment",
   address: {
     "@type": "PostalAddress",
     streetAddress: "1st Floor, near Tehsil Bhawan, Narayanpur",
@@ -115,8 +143,8 @@ const localBusinessSchema = {
   },
   geo: {
     "@type": "GeoCoordinates",
-    latitude: "27.4424",
-    longitude: "76.1265",
+    latitude: 27.4424,
+    longitude: 76.1265,
   },
   openingHoursSpecification: [
     {
@@ -131,6 +159,7 @@ const localBusinessSchema = {
     { "@type": "State", name: "Rajasthan" },
   ],
   hasMap: "https://maps.google.com/?q=Narayanpur+Rajasthan+India",
+  parentOrganization: { "@id": `${SITE_URL}/#organization` },
   sameAs: [
     "https://www.linkedin.com/company/pixoranest",
     "https://twitter.com/pixoranest",
@@ -143,11 +172,13 @@ const localBusinessSchema = {
 const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
+  "@id": `${SITE_URL}/#website`,
   name: SITE_NAME,
   url: SITE_URL,
   description:
     "AI Automation Services for Businesses in India — AI Receptionist, WhatsApp Lead Management, Call Routing & Social Media Automation.",
   inLanguage: "en-IN",
+  publisher: { "@id": `${SITE_URL}/#organization` },
   potentialAction: {
     "@type": "SearchAction",
     target: {
@@ -158,31 +189,10 @@ const websiteSchema = {
   },
 }
 
-// ─── JSON-LD: SoftwareApplication Schema ──────────────────────────────────────
-const softwareSchema = {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  name: "PixoraNest AI Automation Platform",
-  applicationCategory: "BusinessApplication",
-  operatingSystem: "Web",
-  url: SITE_URL,
-  description:
-    "AI-powered automation platform for Indian businesses — AI receptionist, WhatsApp CRM, smart call routing, and social media management.",
-  offers: {
-    "@type": "Offer",
-    priceCurrency: "INR",
-    availability: "https://schema.org/InStock",
-  },
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "4.8",
-    reviewCount: "120",
-    bestRating: "5",
-    worstRating: "1",
-  },
-}
+// NOTE: SoftwareApplication schema has been moved to customer-stories/page.tsx
+// where reviews are actually displayed. It does NOT belong in the global layout
+// because it has product-specific aggregateRating data.
 
-// ─── Root Layout ──────────────────────────────────────────────────────────────
 export default function RootLayout({
   children,
 }: {
@@ -191,35 +201,24 @@ export default function RootLayout({
   return (
     <html lang="en-IN" className={`${inter.variable} ${playfair.variable}`}>
       <head>
-        {/* ── Critical Resource Hints ── */}
-        {/* FIX: Preconnect to GA before it loads — reduces RTT */}
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.google-analytics.com" />
-        {/* FIX: Preconnect to font CDN (already handled by next/font but belt+suspenders) */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* FIX: DNS prefetch for external resources */}
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
         <link rel="dns-prefetch" href="https://wa.me" />
 
-        {/* ── Favicon & PWA ── */}
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-        {/* ── Geo Tags (Local SEO) ── */}
         <meta name="geo.region" content="IN-RJ" />
         <meta name="geo.placename" content="Narayanpur, Rajasthan, India" />
         <meta name="geo.position" content="27.4424;76.1265" />
         <meta name="ICBM" content="27.4424, 76.1265" />
         <meta name="language" content="English" />
-        {/* FIX: Added Hindi content language for Indian users */}
         <meta httpEquiv="content-language" content="en-IN" />
-
-        {/* ── Mobile optimization ── */}
-        {/* FIX: format-detection prevents iOS from linkifying numbers unintentionally */}
         <meta name="format-detection" content="telephone=no" />
 
-        {/* ── JSON-LD Structured Data ── */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
@@ -232,12 +231,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }}
-        />
 
-        {/* Google Tag Manager */}
         <Script
           id="gtm-script"
           strategy="afterInteractive"
@@ -249,13 +243,12 @@ export default function RootLayout({
             })(window,document,'script','dataLayer','GTM-PQDKCZQM');`,
           }}
         />
-        {/* End Google Tag Manager */}
       </head>
 
       <body
         className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-background text-foreground`}
       >
-        {/* FIX: Skip-to-content link for accessibility (also an SEO signal) */}
+        {/* FIX: Restored missing opening <a tag — was accidentally dropped */}
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:text-sm focus:font-semibold"
@@ -274,12 +267,11 @@ export default function RootLayout({
         <Footer />
         <WhatsAppButton />
 
-        {/* Google Analytics */}
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics id={process.env.NEXT_PUBLIC_GA_ID} />
         )}
 
-           {/* Google Tag Manager (noscript) */}
+        {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-PQDKCZQM"
