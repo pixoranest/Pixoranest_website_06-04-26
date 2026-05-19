@@ -1,189 +1,94 @@
-import type { Metadata } from "next"
-import CustomerStoriesClient from "./CustomerStoriesClient"
+import type { Metadata } from "next";
+import CustomerStoriesClient from "./CustomerStoriesClient";
 
-const SITE_URL = "https://www.pixoranest.com"
+const PAGE_URL = "https://pixoranest.com/customer-stories";
+const PAGE_TITLE = "Customer Stories | PixoraNest";
+const PAGE_DESCRIPTION =
+  "Real customer success stories that prove AI automation works. See how Indian businesses in real estate, healthcare, and education improved lead response and operations with PixoraNest.";
 
 export const metadata: Metadata = {
-  title: "Customer Success Stories | PixoraNest AI Automation",
-  description:
-    "Discover how 500+ Indian businesses including NoBroker, Apollo Hospitals, Meesho, HDFC Bank, Zomato and Delhivery achieved 4X ROI using PixoraNest WhatsApp automation, AI call automation, CRM workflow automation, and AI voice agents.",
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
   keywords: [
-    "WhatsApp automation India",
-    "AI call automation",
+    "PixoraNest customer stories",
+    "AI automation case studies India",
+    "AI receptionist results",
+    "WhatsApp lead automation",
     "CRM workflow automation",
-    "AI voice agent",
-    "customer success stories",
-    "NoBroker automation",
-    "Apollo AI receptionist",
-    "Meesho CRM",
-    "HDFC Bank AI",
-    "PixoraNest case studies",
+    "AI voice agent case study",
   ],
   openGraph: {
-    title: "Customer Success Stories | PixoraNest AI Automation",
-    description:
-      "Real results from 500+ Indian businesses using PixoraNest's WhatsApp automation, AI calling, and CRM workflows.",
-    url: `${SITE_URL}/customer-stories`,
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    url: PAGE_URL,
     siteName: "PixoraNest",
+    locale: "en_IN",
     type: "website",
-    images: [
-      {
-        url: `${SITE_URL}/og-customer-stories.jpg`,
-        width: 1200,
-        height: 630,
-        alt: "PixoraNest Customer Success Stories",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Customer Success Stories | PixoraNest AI Automation",
-    description:
-      "Discover how NoBroker, Apollo, Meesho, HDFC Bank and more achieved 4X ROI with PixoraNest.",
-    images: [`${SITE_URL}/og-customer-stories.jpg`],
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    site: "@pixoranest",
   },
-  alternates: {
-    canonical: `${SITE_URL}/customer-stories`,
+  alternates: { canonical: PAGE_URL },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
-}
+};
 
-// ─── JSON-LD ──────────────────────────────────────────────────────────────────
-// SoftwareApplication is defined HERE (once, canonical) — NOT in layout.tsx.
-// Organization is referenced by @id, not redefined.
-// All numeric values (ratingValue, reviewCount, ratingCount) must be numbers,
-// not strings — Google's validator rejects quoted numerics in AggregateRating.
-const jsonLdString = JSON.stringify({
+// Only safe, factual schema — no fabricated reviews or aggregateRating.
+const organizationJsonLd = {
   "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebPage",
-      "@id": `${SITE_URL}/customer-stories#webpage`,
-      url: `${SITE_URL}/customer-stories`,
-      name: "Customer Success Stories | PixoraNest AI Automation",
-      description:
-        "Discover how 500+ Indian businesses achieved 4X ROI using PixoraNest WhatsApp automation, AI call automation, CRM workflow automation, and AI voice agents.",
-      isPartOf: { "@id": `${SITE_URL}/#website` },
-      breadcrumb: {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: "Customer Stories",
-            item: `${SITE_URL}/customer-stories`,
-          },
-        ],
-      },
-    },
+  "@type": "Organization",
+  name: "PixoraNest",
+  url: "https://pixoranest.com",
+  description:
+    "AI automation platform for Indian businesses — AI Receptionist, WhatsApp Lead Automation, AI Voice Agents, CRM Workflow Automation.",
+};
 
-    // ── CANONICAL SoftwareApplication node ──────────────────────────────────
-    // This is the single authoritative definition. layout.tsx no longer emits one.
-    // Reviews are nested — do NOT add itemReviewed inside a nested review.
-    {
-      "@type": "SoftwareApplication",
-      "@id": `${SITE_URL}/#product`,
-      name: "PixoraNest AI Automation Platform",
-      applicationCategory: "BusinessApplication",
-      operatingSystem: "Web",
-      url: SITE_URL,
-      description:
-        "India's leading WhatsApp automation, AI calling, and CRM workflow platform trusted by 500+ businesses.",
-      offers: {
-        "@type": "Offer",
-        priceCurrency: "INR",
-        availability: "https://schema.org/InStock",
-      },
-      // FIX: ratingValue must be a number, not a string.
-      // FIX: Use only reviewCount — ratingCount is a synonym; using both
-      //      causes validators to flag a duplicate property warning.
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: 4.8,
-        bestRating: 5,
-        worstRating: 1,
-        reviewCount: 500,
-      },
-      review: [
-        {
-          "@type": "Review",
-          name: "Transformed our entire operations — 100% lead capture",
-          reviewBody:
-            "PixoraNest didn't just automate our calls — they transformed how our entire operations team functions. We went from missing 40% of inbound leads to capturing every single one, 24/7.",
-          reviewRating: {
-            "@type": "Rating",
-            ratingValue: 5,
-            bestRating: 5,
-            worstRating: 1,
-          },
-          datePublished: "2024-10-01",
-          author: {
-            "@type": "Person",
-            name: "Sanjay Kumar",
-            jobTitle: "CEO",
-          },
-          publisher: {
-            "@type": "Organization",
-            name: "RealtyPlus India",
-          },
-        },
-        {
-          "@type": "Review",
-          name: "Lead response time dropped from 4 hours to 8 seconds",
-          reviewBody:
-            "The WhatsApp automation was live in 3 days. Within the first month, our lead response time dropped from 4 hours to 8 seconds. Our sales team finally has time to close, not chase.",
-          reviewRating: {
-            "@type": "Rating",
-            ratingValue: 5,
-            bestRating: 5,
-            worstRating: 1,
-          },
-          datePublished: "2024-11-01",
-          author: {
-            "@type": "Person",
-            name: "Preethi Iyer",
-            jobTitle: "VP Growth",
-          },
-          publisher: {
-            "@type": "Organization",
-            name: "HealthFirst",
-          },
-        },
-        {
-          "@type": "Review",
-          name: "Custom workflow that fits our logistics operations perfectly",
-          reviewBody:
-            "We tried 3 other automation platforms before PixoraNest. None of them understood our industry. PixoraNest built a custom workflow that fits our logistics operations perfectly.",
-          reviewRating: {
-            "@type": "Rating",
-            ratingValue: 5,
-            bestRating: 5,
-            worstRating: 1,
-          },
-          datePublished: "2024-12-01",
-          author: {
-            "@type": "Person",
-            name: "Mahesh Rao",
-            jobTitle: "COO",
-          },
-          publisher: {
-            "@type": "Organization",
-            name: "FastShip Logistics",
-          },
-        },
-      ],
-    },
+const webPageJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
+  url: PAGE_URL,
+  isPartOf: { "@type": "WebSite", name: "PixoraNest", url: "https://pixoranest.com" },
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://pixoranest.com" },
+    { "@type": "ListItem", position: 2, name: "Customer Stories", item: PAGE_URL },
   ],
-})
+};
 
 export default function CustomerStoriesPage() {
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLdString }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <CustomerStoriesClient />
     </>
-  )
+  );
 }

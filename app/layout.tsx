@@ -114,8 +114,6 @@ const organizationSchema = {
 }
 
 // ─── JSON-LD: LocalBusiness Schema ────────────────────────────────────────────
-// Separate node from Organization — do NOT combine @type arrays
-// across incompatible types (LocalBusiness + SoftwareApplication is invalid).
 const localBusinessSchema = {
   "@context": "https://schema.org",
   "@type": ["LocalBusiness", "ProfessionalService"],
@@ -189,10 +187,6 @@ const websiteSchema = {
   },
 }
 
-// NOTE: SoftwareApplication schema has been moved to customer-stories/page.tsx
-// where reviews are actually displayed. It does NOT belong in the global layout
-// because it has product-specific aggregateRating data.
-
 export default function RootLayout({
   children,
 }: {
@@ -248,13 +242,13 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-background text-foreground`}
       >
-        {/* FIX: Restored missing opening <a tag — was accidentally dropped */}
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:text-sm focus:font-semibold"
-        >
-          Skip to main content
-        </a>
+        
+         <a
+  href="#main-content"
+  className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:text-sm focus:font-semibold"
+>
+  Skip to main content
+</a>
 
         <TopBar />
         <Navbar />
@@ -271,7 +265,6 @@ export default function RootLayout({
           <GoogleAnalytics id={process.env.NEXT_PUBLIC_GA_ID} />
         )}
 
-        {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-PQDKCZQM"
@@ -280,7 +273,6 @@ export default function RootLayout({
             style={{ display: "none", visibility: "hidden" }}
           />
         </noscript>
-        {/* End Google Tag Manager (noscript) */}
       </body>
     </html>
   )

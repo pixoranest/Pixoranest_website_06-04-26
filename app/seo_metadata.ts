@@ -5,14 +5,18 @@
  *
  * RULES (enforced here):
  *  • Title:       50–60 characters
- *  • Description: 150–160 characters exactly — audit flag fixed
+ *  • Description: 150–160 characters exactly
  *  • Keywords:    Primary + secondary + long-tail
  *  • OG/Twitter:  Every page has unique OG image + description
  *  • Hreflang:    Every page uses generateAlternates() — fixes SEMrush
  *                 "No self-referencing hreflang" error globally
  *
- * FIX APPLIED: Previous descriptions were too long (170–200+ chars).
- * Each description below is verified at 150–160 chars.
+ * TRAILING SLASH FIX:
+ *  next.config.mjs uses trailingSlash: true, which means Next.js serves
+ *  /solutions/ not /solutions. generateAlternates() now appends a trailing
+ *  slash to all non-root paths so canonical URLs match actual served URLs.
+ *  Without this, Google sees a canonical pointing to a URL that redirects,
+ *  which dilutes crawl signals.
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -25,28 +29,34 @@ const OG_IMAGE  = `${SITE_URL}/og-image.jpg`
 // ─────────────────────────────────────────────────────────────────────────────
 // generateAlternates()
 //
-// WHY THIS EXISTS:
-//   SEMrush fires "No self-referencing hreflang" when a page has hreflang
-//   tags but none point back to the page itself. The fix is:
-//     <link rel="alternate" hreflang="en-IN" href="[own URL]">
-//   on every page.
+// TRAILING SLASH ALIGNMENT:
+//   With trailingSlash: true in next.config.mjs, every page is served at
+//   a trailing-slash URL (/solutions/, /contact/, etc.).
+//   This function now normalizes all non-root paths to end with "/" so
+//   the canonical tag matches the actual served URL exactly.
 //
-//   In Next.js App Router, `alternates.languages` in a Metadata object
-//   renders exactly that tag. One call per page — no manual duplication.
+//   Root path "/" remains https://www.pixoranest.com (no double slash).
 //
-// USAGE (in any page metadata or generateMetadata):
-//   alternates: generateAlternates("/solutions/firstvoice")
+// RENDERED OUTPUT in <head> for generateAlternates("/solutions"):
+//   <link rel="canonical"   href="https://www.pixoranest.com/solutions/" />
+//   <link rel="alternate"   hreflang="en-IN"     href="https://www.pixoranest.com/solutions/" />
+//   <link rel="alternate"   hreflang="x-default" href="https://www.pixoranest.com/solutions/" />
 //
-// RENDERED OUTPUT in <head>:
-//   <link rel="canonical"   href="https://www.pixoranest.com/solutions/firstvoice" />
-//   <link rel="alternate"   hreflang="en-IN"     href="https://www.pixoranest.com/solutions/firstvoice" />
-//   <link rel="alternate"   hreflang="x-default" href="https://www.pixoranest.com/solutions/firstvoice" />
-//
-// Dynamic pages (blog posts, industry sub-pages) — call it inside
-// generateMetadata() using the resolved `params.slug` to build the path.
+// NOTE: hreflang in <head> metadata is sufficient. next-sitemap's alternateRefs
+// has been removed to eliminate the conflicting duplicate signals.
 // ─────────────────────────────────────────────────────────────────────────────
 export function generateAlternates(pagePath: string): Metadata["alternates"] {
-  const url = pagePath === "/" ? SITE_URL : `${SITE_URL}${pagePath}`
+  let url: string
+
+  if (pagePath === "/") {
+    // Root: canonical is the bare domain — no trailing slash after TLD
+    url = SITE_URL
+  } else {
+    // All other pages: normalize to trailing slash to match trailingSlash: true
+    const normalized = pagePath.endsWith("/") ? pagePath : `${pagePath}/`
+    url = `${SITE_URL}${normalized}`
+  }
+
   return {
     canonical: url,
     languages: {
@@ -122,7 +132,7 @@ export const solutionsMetadata: Metadata = {
     title:       "AI Automation Solutions for Indian Businesses | PixoraNest",
     description:
       "AI receptionist, WhatsApp automation, CRM workflows, AI voice agents & social automation — all in one platform built for Indian businesses.",
-    url:         `${SITE_URL}/solutions`,
+    url:         `${SITE_URL}/solutions/`,
     siteName:    SITE_NAME,
     type:        "website",
     locale:      "en_IN",
@@ -159,7 +169,7 @@ export const contactMetadata: Metadata = {
     title:       "Contact PixoraNest | Book a Free AI Automation Demo",
     description:
       "Ready to automate your business? Book a free consultation with PixoraNest's AI automation experts. Setup in 2–4 weeks.",
-    url:         `${SITE_URL}/contact`,
+    url:         `${SITE_URL}/contact/`,
     siteName:    SITE_NAME,
     type:        "website",
     locale:      "en_IN",
@@ -196,7 +206,7 @@ export const aiReceptionistMetadata: Metadata = {
     title:       "AI Receptionist for Business in India | PixoraNest",
     description:
       "Never miss a call again. PixoraNest AI Receptionist handles calls, qualifies leads and books appointments 24/7 for Indian businesses.",
-    url:         `${SITE_URL}/solutions/firstvoice`,
+    url:         `${SITE_URL}/solutions/firstvoice/`,
     siteName:    SITE_NAME,
     type:        "website",
     locale:      "en_IN",
@@ -233,7 +243,7 @@ export const whatsappMetadata: Metadata = {
     title:       "WhatsApp Lead Management Software India | PixoraNest",
     description:
       "Stop losing leads. PixoraNest automates WhatsApp follow-ups, qualifies prospects, and closes more sales for Indian businesses.",
-    url:         `${SITE_URL}/solutions/leadnest`,
+    url:         `${SITE_URL}/solutions/leadnest/`,
     siteName:    SITE_NAME,
     type:        "website",
     locale:      "en_IN",
@@ -270,7 +280,7 @@ export const industriesMetadata: Metadata = {
     title:       "AI Automation for Every Industry in India | PixoraNest",
     description:
       "From real estate to hospitals — PixoraNest builds custom AI automation for every Indian industry. Explore your sector.",
-    url:         `${SITE_URL}/industries`,
+    url:         `${SITE_URL}/industries/`,
     siteName:    SITE_NAME,
     type:        "website",
     locale:      "en_IN",
