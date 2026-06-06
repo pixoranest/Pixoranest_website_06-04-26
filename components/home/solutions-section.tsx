@@ -17,43 +17,41 @@ interface Solution {
 
 const solutions: Solution[] = [
   {
-    slug: "ai-chatbot",
+    slug: "firstvoice",
     icon: "Phone",
     title: "AI Receptionist — FirstVoice",
     description:
       "FirstVoice is an advanced AI receptionist software designed to automate inbound business calls and provide a virtual phone answering service for modern companies. This AI-powered call handling system automatically answers customer calls, captures leads, routes conversations to the right team members, and schedules appointments using intelligent automation technology.",
   },
   {
-    slug: "whatsapp-automation",
+    slug: "leadnest",
     icon: "MessageCircle",
     title: "WhatsApp Automation — LeadNest",
     description:
       "LeadNest is a powerful WhatsApp automation software built to help businesses automate customer communication, capture leads, and run automated WhatsApp marketing campaigns. Using the official WhatsApp Business API, this platform allows companies to send automated messages, create chatbot workflows, and manage conversations at scale.",
   },
   {
-    slug: "call-automation",
+    slug: "callorbit",   
     icon: "PhoneForwarded",
     title: "AI Call Automation — CallOrbit",
     description:
       "CallOrbit is an AI call automation platform that helps businesses automate inbound and outbound call management using intelligent routing technology. This AI-powered call handling system automatically distributes calls, prioritises conversations, and provides real-time analytics to improve communication efficiency.",
   },
   {
-    slug: "voice-agent",
+    slug: "echoassist",
     icon: "Mic",
     title: "AI Voice Agent — EchoAssist",
     description:
       "EchoAssist is an intelligent AI voice agent designed to automate phone conversations and provide automated customer support using natural voice technology. This AI voice automation system can answer customer inquiries, qualify leads, schedule appointments, and handle routine support requests without human intervention.",
   },
   {
-    slug: "social-media-automation",
-    icon: "Share2",
+slug: "socialium",    icon: "Share2",
     title: "Social Media Automation — Socialium",
     description:
       "Socialium is a social media automation platform that helps businesses automate content publishing, audience engagement, and response management across multiple social media channels. This automation tool allows companies to schedule posts, automate replies to messages and comments, track engagement analytics, and maintain consistent brand communication.",
   },
   {
-    slug: "workflow-automation",
-    icon: "Settings",
+slug: "crm-automation",    icon: "Settings",
     title: "CRM Workflow Automation",
     description:
       "CRM Workflow Automation is an AI-powered automation solution designed to help businesses manage leads, automate follow-ups, and streamline sales pipelines using intelligent workflow automation. This business automation platform integrates with CRM systems to capture leads automatically, track customer interactions, and trigger automated communication sequences.",

@@ -250,6 +250,7 @@ export default function HomePage() {
         ✅ Use H2: "Industries We Serve Across India"
         ✅ Include: real estate, healthcare, education, e-commerce, hospitality
         ✅ Internal link: "View all industry solutions" → /industries
+        
         ✅ Helps capture long-tail: "AI automation for real estate India" etc.
       */}
       <IndustriesSection />

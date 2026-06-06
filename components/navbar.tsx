@@ -102,8 +102,7 @@ export function Navbar() {
                       : "opacity-0 scale-95 pointer-events-none"
                   )}
                 >
-                  {industries.slice(0, 10).map((ind) => (
-                    <Link
+{industries.map((ind) => (                    <Link
                       key={ind.slug}
                       href={`/industries/${ind.slug}`}
                       role="menuitem"

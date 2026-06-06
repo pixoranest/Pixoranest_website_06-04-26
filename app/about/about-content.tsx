@@ -135,11 +135,11 @@ const values = [
 
 // ─── Solutions ─────────────────────────────────────────────────────────────────
 const solutions = [
-  { name: "FirstVoice — AI Receptionist",         href: "/solutions/firstvoice-ai-receptionist",     icon: Phone           },
-  { name: "LeadNest — WhatsApp Automation",        href: "/solutions/leadnest-whatsapp-automation",   icon: MessageCircle   },
-  { name: "CallOrbit — AI Call Automation",        href: "/solutions/callorbit-smart-call-routing",   icon: PhoneForwarded  },
-  { name: "EchoAssist — AI Voice Agent",           href: "/solutions/echoassist-ai-voice-agent",      icon: Mic             },
-  { name: "Socialium — Social Media Automation",   href:"/solutions/socialium",    icon: Share2          },
+  { name: "FirstVoice — AI Receptionist",       href: "/solutions/firstvoice",      icon: Phone },
+  { name: "LeadNest — WhatsApp Automation",     href: "/solutions/leadnest",        icon: MessageCircle },
+  { name: "CallOrbit — AI Call Automation",     href: "/solutions/callorbit",       icon: PhoneForwarded },
+  { name: "EchoAssist — AI Voice Agent",        href: "/solutions/echoassist",      icon: Mic },
+  { name: "Socialium — Social Media Automation",href: "/solutions/socialium",       icon: Share2 },
 ]
 
 // ─── Socials ───────────────────────────────────────────────────────────────────

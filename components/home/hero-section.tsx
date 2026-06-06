@@ -230,25 +230,29 @@ export function HeroSection() {
                 aria-label="Quick links to PixoraNest AI services"
                 className="mt-8 flex flex-wrap gap-x-3 gap-y-2"
               >
-                <Link href="/solutions/ai-receptionist" className="internal-link text-xs">
-                  AI Receptionist
-                </Link>
-                <span className="text-xs text-muted-foreground/30" aria-hidden="true">·</span>
-                <Link href="/solutions/whatsapp-automation" className="internal-link text-xs">
-                  WhatsApp Automation
-                </Link>
-                <span className="text-xs text-muted-foreground/30" aria-hidden="true">·</span>
-                <Link href="/solutions/call-automation" className="internal-link text-xs">
-                  Call Routing
-                </Link>
-                <span className="text-xs text-muted-foreground/30" aria-hidden="true">·</span>
-                <Link href="/solutions/social-automation" className="internal-link text-xs">
-                  Social Media Automation
-                </Link>
-                <span className="text-xs text-muted-foreground/30" aria-hidden="true">·</span>
-                <Link href="/solutions/ai-voice-agent" className="internal-link text-xs">
-                  AI Voice Agent
-                </Link>
+                <Link href="/solutions/firstvoice" className="internal-link text-xs">
+  AI Receptionist
+</Link>
+<span className="text-xs text-muted-foreground/30" aria-hidden="true">·</span>
+
+<Link href="/solutions/leadnest" className="internal-link text-xs">
+  WhatsApp Automation
+</Link>
+<span className="text-xs text-muted-foreground/30" aria-hidden="true">·</span>
+
+<Link href="/solutions/callorbit" className="internal-link text-xs">
+  Call Routing
+</Link>
+<span className="text-xs text-muted-foreground/30" aria-hidden="true">·</span>
+
+<Link href="/solutions/socialium" className="internal-link text-xs">
+  Social Media Automation
+</Link>
+<span className="text-xs text-muted-foreground/30" aria-hidden="true">·</span>
+
+<Link href="/solutions/echoassist" className="internal-link text-xs">
+  AI Voice Agent
+</Link>
               </nav>
             </div>
 
@@ -258,6 +262,7 @@ export function HeroSection() {
               <div className="relative">
                 <div
                   className="absolute -inset-4 rounded-3xl bg-primary/10 blur-2xl hero-glow-pulse"
+                  
                   aria-hidden="true"
                 />
                 <div className="relative">

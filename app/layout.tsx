@@ -193,7 +193,17 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en-IN" className={`${inter.variable} ${playfair.variable}`}>
+    /*
+      suppressHydrationWarning on <html> silences attribute mismatches injected
+      by browser extensions (Grammarly, LastPass, dark-mode tools, etc.) after
+      server render. Safe — only suppresses single-level attribute diffs, not
+      child content mismatches.
+    */
+    <html
+      lang="en-IN"
+      className={`${inter.variable} ${playfair.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.google-analytics.com" />
@@ -238,17 +248,16 @@ export default function RootLayout({
           }}
         />
       </head>
-
       <body
+        suppressHydrationWarning
         className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-background text-foreground`}
       >
-        
-         <a
-  href="#main-content"
-  className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:text-sm focus:font-semibold"
->
-  Skip to main content
-</a>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:text-sm focus:font-semibold"
+        >
+          Skip to main content
+        </a>
 
         <TopBar />
         <Navbar />
