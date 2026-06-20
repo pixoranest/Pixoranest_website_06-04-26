@@ -1,12 +1,10 @@
 import type { Metadata } from "next"
-import { PricingPageContent } from "./pricing-content"
+import PricingContent from "./pricing-content"
 
 export const metadata: Metadata = {
   title: "AI Automation Pricing Plans for Businesses | PixoraNest",
-
   description:
     "Compare PixoraNest AI automation pricing plans for businesses. Choose from WhatsApp automation, AI voice agents and workflow automation solutions that fit your budget.",
-
   keywords: [
     "AI automation pricing plans",
     "AI automation pricing for businesses",
@@ -14,18 +12,16 @@ export const metadata: Metadata = {
     "AI voice agent pricing",
     "business automation pricing",
     "AI automation solutions pricing",
-     "AI automation pricing",
+    "AI automation pricing",
     "WhatsApp automation pricing",
     "AI voice agent pricing",
     "business automation plans",
     "automation pricing india",
-    "affordable AI automation"
+    "affordable AI automation",
   ],
-
   alternates: {
     canonical: "https://pixoranest.com/pricing",
   },
-
   openGraph: {
     title: "AI Automation Pricing Plans | PixoraNest",
     description:
@@ -42,7 +38,6 @@ export const metadata: Metadata = {
       },
     ],
   },
-
   twitter: {
     card: "summary_large_image",
     title: "AI Automation Pricing Plans | PixoraNest",
@@ -53,5 +48,5 @@ export const metadata: Metadata = {
 }
 
 export default function PricingPage() {
-  return <PricingPageContent />
+  return <PricingContent />
 }

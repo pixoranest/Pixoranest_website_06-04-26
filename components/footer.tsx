@@ -190,10 +190,17 @@ export function Footer() {
               <div className="flex items-start gap-2.5">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                 {/* FIX: <address> wraps contact info — correct semantic HTML */}
-                <address className="not-italic text-sm leading-relaxed text-muted-foreground">
-                  PixoraNest, 1st Floor, near Tehsil Bhawan,{" "}
-                  Narayanpur, Rajasthan 301024, India
-                </address>
+               <address className="not-italic text-sm leading-relaxed text-muted-foreground">
+  <strong>Head Office:</strong><br />
+  SHAHID WALI, NR SDM OFFICE BARH PUROHIT, BANSUR, ALWAR,
+  Rajasthan, India - 301402.
+  <br /><br />
+
+  <strong>Branch Office (Jaipur):</strong><br />
+  Shree Ram Nagar, Ho. 8-B, Cabin No. C-3 & C-4,
+  Hanuman Marg, Opp. Dhanwantri Hospital,
+  Mansarovar, Jaipur, Rajasthan - 302020.
+</address>
               </div>
 
             </div>
